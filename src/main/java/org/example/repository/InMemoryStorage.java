@@ -10,8 +10,6 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -33,7 +31,7 @@ public class InMemoryStorage {
 	private long ticketIndex = 1;
 
 	@PostConstruct
-	private void postConstruct() throws IOException {
+	private void postConstruct() {
 		tickets = DataInitializer.initializeTickets();
 		logger.info("Initialized {} tickets.", tickets.size());
 		users = DataInitializer.initializeUsers();
@@ -44,14 +42,6 @@ public class InMemoryStorage {
 		ticketIndex += tickets.size();
 		userIndex += users.size();
 		eventIndex += events.size();
-
-//		System.out.println(events);todo
-//		System.out.println(users);
-//		System.out.println(tickets);
-//
-//		System.out.println(ticketIndex);
-//		System.out.println(userIndex);
-//		System.out.println(eventIndex);
 	}
 
 	public  Map<Long, Ticket> getTickets() {
