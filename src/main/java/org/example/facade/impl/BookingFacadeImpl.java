@@ -7,17 +7,19 @@ import org.example.model.User;
 import org.example.service.EventService;
 import org.example.service.TicketService;
 import org.example.service.UserService;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Component
 public class BookingFacadeImpl implements BookingFacade {
 
-	private EventService eventService;
+	private final EventService eventService;
 
-	private TicketService ticketService;
+	private final TicketService ticketService;
 
-	private UserService userService;
+	private final UserService userService;
 
 	public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService) {
 		this.eventService = eventService;
@@ -86,8 +88,8 @@ public class BookingFacadeImpl implements BookingFacade {
 	}
 
 	@Override
-	public Ticket bookTicket(long userId, long eventId, int place, Ticket.Category category) {
-		return ticketService.bookTicket(userId, eventId, place, category);
+	public Ticket bookTicket(long userId, long eventId, Ticket.Category category, int place) {
+		return ticketService.bookTicket(userId, eventId, category, place);
 	}
 
 	@Override

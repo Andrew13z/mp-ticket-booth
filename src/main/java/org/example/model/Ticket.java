@@ -5,18 +5,18 @@ public class Ticket {
 
 	private long id;
 
-	private long eventId;
-
 	private long userId;
+
+	private long eventId;
 
 	private Category category;
 
 	private int place;
 
-	public Ticket(long id, long eventId, long userId, Category category, int place) {
+	public Ticket(long id, long userId, long eventId, Category category, int place) {
 		this.id = id;
-		this.eventId = eventId;
 		this.userId = userId;
+		this.eventId = eventId;
 		this.category = category;
 		this.place = place;
 	}
@@ -33,16 +33,16 @@ public class Ticket {
 		return eventId;
 	}
 
-	public void setEventId(long eventId) {
-		this.eventId = eventId;
-	}
-
 	public long getUserId() {
 		return userId;
 	}
 
 	public void setUserId(long userId) {
 		this.userId = userId;
+	}
+
+	public void setEventId(long eventId) {
+		this.eventId = eventId;
 	}
 
 	public Category getCategory() {
@@ -60,4 +60,5 @@ public class Ticket {
 	public void setPlace(int place) {
 		this.place = place;
 	}
+
 }

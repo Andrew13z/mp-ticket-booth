@@ -39,4 +39,13 @@ public class Event {
 	public void setDate(LocalDate date) {
 		this.date = date;
 	}
+
+	@Override
+	public String toString() {
+		return "Event{" +
+				"id=" + id +
+				", title='" + title + '\'' +
+				", date=" + date +
+				'}';
+	}
 }

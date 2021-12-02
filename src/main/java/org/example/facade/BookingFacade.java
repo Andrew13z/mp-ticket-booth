@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * Groups together all operations related to tickets booking.
+ * Groups together all operations related to ticket booking.
  * Created by maksym_govorischev.
  */
 public interface BookingFacade {
@@ -125,7 +125,7 @@ public interface BookingFacade {
 	 * @return Booked ticket object.
 	 * @throws java.lang.IllegalStateException if this place has already been booked.
 	 */
-	Ticket bookTicket(long userId, long eventId, int place, Ticket.Category category);
+	Ticket bookTicket(long userId, long eventId, Ticket.Category category, int place);
 
 	/**
 	 * Get all booked tickets for specified user. Tickets should be sorted by event date in descending order.
