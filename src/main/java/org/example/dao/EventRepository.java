@@ -2,8 +2,10 @@ package org.example.dao;
 
 import org.example.exception.EntityNotFoundException;
 import org.example.model.Event;
+import org.example.repository.InMemoryStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -16,14 +18,21 @@ public class EventRepository extends InMemoryRepository<Long, Event> {
 
 	private static final Logger logger = LoggerFactory.getLogger(EventRepository.class);
 
+	private InMemoryStorage<Event> storage;
+
+	@Autowired
+	public void setStorage(InMemoryStorage<Event> storage) {
+		this.storage = storage;
+	}
+
 	@Override
 	public Map<Long, Event> getData() {
-		return storage.getEvents();
+		return storage.getData();
 	}
 
 	@Override
 	public Event save(Event event) {
-		var index = storage.getEventIndex();
+		var index = storage.getIndex();
 		event.setId(index);
 		getData().put(index, event);
 		logger.info("Saved event with id {}.", index);

@@ -2,8 +2,11 @@ package org.example.dao;
 
 import org.example.exception.EntityNotFoundException;
 import org.example.model.User;
+import org.example.repository.InMemoryStorage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,21 +19,31 @@ public class UserRepository extends InMemoryRepository<Long, User>{
 
 	private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
 
+	private final InMemoryStorage<User> storage;
+
+	@Value("${users.source}")
+	private String usersFile;
+
+	@Autowired
+	public UserRepository(InMemoryStorage<User> storage) {
+		this.storage = storage;
+	}
+
 	@Override
 	public Map<Long, User> getData() {
-		return storage.getUsers();
+		return storage.getData();
 	}
 
 	@Override
 	public User save(User user) {
 		if (isEmailUnique(user.getEmail())) {
-			var index = storage.getUserIndex();
+			var index = storage.getIndex();
 			user.setId(index);
 			getData().put(index, user);
 			logger.info("Saved user with id {}.", index);
 			return user;
 		}
-		logger.warn("Failed to create user. Email: {} is already taken.", user.getEmail());
+		logger.error("Failed to create user. Email: {} is already taken.", user.getEmail());
 		throw new IllegalArgumentException("User email must be unique");
 	}
 
@@ -43,7 +56,7 @@ public class UserRepository extends InMemoryRepository<Long, User>{
 			if (isEmailUnique(email)){
 				oldUser.setEmail(email);
 			} else {
-				logger.warn("Failed to create user. Email: {} is already taken.", email);
+				logger.error("Failed to create user. Email: {} is already taken.", email);
 				throw new IllegalArgumentException("User email must be unique");
 			}
 		}

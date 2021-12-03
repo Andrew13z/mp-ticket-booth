@@ -3,6 +3,7 @@ package org.example.dao;
 import org.example.exception.EntityNotFoundException;
 import org.example.model.User;
 import org.example.repository.InMemoryStorage;
+import org.example.repository.UserInMemoryStorage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -35,7 +36,7 @@ class UserRepositoryTest {
 	private final String EMAIL_NOT_UNIQUE_MESSAGE = "User email must be unique";
 
 	@Mock
-	private InMemoryStorage mockStorage;
+	private UserInMemoryStorage mockStorage;
 
 	@InjectMocks
 	private UserRepository repository;
@@ -46,8 +47,8 @@ class UserRepositoryTest {
 
 		var userMap = new HashMap<Long, User>();
 
-		when(mockStorage.getUsers()).thenReturn(userMap);
-		when(mockStorage.getUserIndex()).thenReturn(ID_1);
+		when(mockStorage.getData()).thenReturn(userMap);
+		when(mockStorage.getIndex()).thenReturn(ID_1);
 
 		var savedUser = repository.save(user);
 		assertEquals(1, userMap.size());
@@ -57,7 +58,7 @@ class UserRepositoryTest {
 	@Test
 	void saveTestWithExistingEmail() {
 		var user = createUser(ID_ZERO, NAME_1, EMAIL_1);
-		when(mockStorage.getUsers()).thenReturn(Map.of(ID_2, createUser(ID_2, NAME_2, EMAIL_1)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_2, createUser(ID_2, NAME_2, EMAIL_1)));
 		assertThrowsExactly(IllegalArgumentException.class,
 							() -> repository.save(user),
 		 					EMAIL_NOT_UNIQUE_MESSAGE);
@@ -66,7 +67,7 @@ class UserRepositoryTest {
 	@Test
 	void updateUserNameTestWithValidIdAndEmail(){
 		var oldUser = createUser(ID_1, NAME_1, EMAIL_1);
-		when(mockStorage.getUsers()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1)));
 
 		var newUser = createUser(ID_1, NAME_2, EMAIL_1);
 
@@ -78,7 +79,7 @@ class UserRepositoryTest {
 	@Test
 	void updateUserEmailTestWithValidIdAndEmail(){
 		var oldUser = createUser(ID_1, NAME_1, EMAIL_1);
-		when(mockStorage.getUsers()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1)));
 
 		var newUser = createUser(ID_1, NAME_1, EMAIL_2);
 		var updatedUser = repository.update(newUser);
@@ -89,7 +90,7 @@ class UserRepositoryTest {
 	@Test
 	void updateUserEmailTestWithValidIdAndExistingEmail(){
 		var oldUser = createUser(ID_1, NAME_1, EMAIL_1);
-		when(mockStorage.getUsers()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1),
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1),
 				ID_2, createUser(ID_2, NAME_2, EMAIL_2)));
 		var newUser = createUser(ID_1, NAME_1, EMAIL_2);
 
@@ -109,7 +110,7 @@ class UserRepositoryTest {
 
 	@Test
 	void getTestWithExistingId() {
-		when(mockStorage.getUsers()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1)));
 		Optional<User> user = repository.get(ID_1);
 		assertTrue(user.isPresent());
 		assertEquals(ID_1, user.get().getId());
@@ -117,14 +118,14 @@ class UserRepositoryTest {
 
 	@Test
 	void getTestWithNotExistingId() {
-		when(mockStorage.getUsers()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1)));
 		Optional<User> user = repository.get(ID_2);
 		assertTrue(user.isEmpty());
 	}
 
 	@Test
 	void getAllTest(){
-		when(mockStorage.getUsers()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1),
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1),
 													   ID_2, createUser(ID_2, NAME_2, EMAIL_2)));
 		var userList = repository.getAll();
 		assertEquals(2, userList.size());
@@ -136,7 +137,7 @@ class UserRepositoryTest {
 		userMap.put(ID_1, createUser(ID_1, NAME_1, EMAIL_1));
 		userMap.put(ID_2, createUser(ID_2, NAME_2, EMAIL_2));
 
-		when(mockStorage.getUsers()).thenReturn(userMap);
+		when(mockStorage.getData()).thenReturn(userMap);
 
 		assertTrue(repository.delete(ID_1));
 		assertEquals(1, userMap.size());
@@ -147,7 +148,7 @@ class UserRepositoryTest {
 		var userMap = new HashMap<Long, User>();
 		userMap.put(ID_2, createUser(ID_2, NAME_2, EMAIL_2));
 
-		when(mockStorage.getUsers()).thenReturn(userMap);
+		when(mockStorage.getData()).thenReturn(userMap);
 
 		assertFalse(repository.delete(ID_1));
 		assertEquals(1, userMap.size());
@@ -155,7 +156,7 @@ class UserRepositoryTest {
 
 	@Test
 	void getUserByEmailTestWithExistingEmail() {
-		when(mockStorage.getUsers()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1)));
 		Optional<User> user = repository.getUserByEmail(EMAIL_1);
 		assertTrue(user.isPresent());
 		assertEquals(EMAIL_1, user.get().getEmail());
@@ -163,14 +164,14 @@ class UserRepositoryTest {
 
 	@Test
 	void getUserByEmailTestWithNotExistingEmail() {
-		when(mockStorage.getUsers()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1)));
 		Optional<User> user = repository.getUserByEmail(EMAIL_2);
 		assertTrue(user.isEmpty());
 	}
 
 	@Test
-	void getUsersByNameTest() {
-		when(mockStorage.getUsers()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1),
+	void getDataByNameTest() {
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1),
 				ID_2, createUser(ID_2, NAME_2, EMAIL_2)));
 		var userList = repository.getUsersByName(NAME_1, 2, 1);
 
@@ -179,8 +180,8 @@ class UserRepositoryTest {
 	}
 
 	@Test
-	void getUsersByNamePaginationTest() {
-		when(mockStorage.getUsers()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1),
+	void getDataByNamePaginationTest() {
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createUser(ID_1, NAME_1, EMAIL_1),
 													   ID_2, createUser(ID_2, NAME_2, EMAIL_2),
 													   3L, createUser(3L, NAME_1, "email3@mail.com"),
 													   4L, createUser(4L, NAME_1, "email4@mail.com")));

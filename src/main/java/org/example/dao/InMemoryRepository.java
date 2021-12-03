@@ -1,20 +1,10 @@
 package org.example.dao;
 
-import org.example.repository.InMemoryStorage;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
 public abstract class InMemoryRepository<K, V> implements Repository<K, V> {
-
-	protected InMemoryStorage storage;
-
-	@Autowired
-	public void setStorage(InMemoryStorage storage) {
-		this.storage = storage;
-	}
 
 	public abstract Map<K, V> getData();
 

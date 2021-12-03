@@ -1,70 +1,23 @@
 package org.example.repository;
 
-import org.example.model.Event;
-import org.example.model.Ticket;
-import org.example.model.User;
-import org.example.repository.util.DataInitializer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.stereotype.Repository;
+import org.example.repository.parser.AbstractParser;
 
-import javax.annotation.PostConstruct;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
-@Repository
-@DependsOn("dataInitializer")
-public class InMemoryStorage {
+public abstract class InMemoryStorage<T> {
 
-	private static final Logger logger = LoggerFactory.getLogger(InMemoryStorage.class);
+	protected final AbstractParser<T> parser;
 
-	private Map<Long, Ticket> tickets;
+	protected AtomicLong index = new AtomicLong();
 
-	private  Map<Long, Event> events;
-
-	private  Map<Long, User> users;
-
-	private long userIndex = 1;
-
-	private long eventIndex = 1;
-
-	private long ticketIndex = 1;
-
-	@PostConstruct
-	private void postConstruct() {
-		tickets = DataInitializer.initializeTickets();
-		logger.info("Initialized {} tickets.", tickets.size());
-		users = DataInitializer.initializeUsers();
-		logger.info("Initialized {} users.", users.size());
-		events = DataInitializer.initializeEvents();
-		logger.info("Initialized {} events.", events.size());
-
-		ticketIndex += tickets.size();
-		userIndex += users.size();
-		eventIndex += events.size();
+	protected InMemoryStorage(AbstractParser<T> parser) {
+		this.parser = parser;
 	}
 
-	public  Map<Long, Ticket> getTickets() {
-		return tickets;
+	public long getIndex() {
+		return index.incrementAndGet();
 	}
 
-	public  Map<Long, Event> getEvents() {
-		return events;
-	}
-
-	public Map<Long, User> getUsers() {
-		return users;
-	}
-
-	public long getUserIndex() {
-		return userIndex++;
-	}
-
-	public long getEventIndex() {
-		return eventIndex++;
-	}
-
-	public long getTicketIndex() {
-		return ticketIndex++;
-	}
+	public abstract Map<Long, T> getData();
 }

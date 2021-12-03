@@ -5,6 +5,7 @@ import org.example.model.Ticket;
 import org.example.model.TicketBuilder;
 import org.example.model.User;
 import org.example.repository.InMemoryStorage;
+import org.example.repository.TicketInMemoryStorage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,7 +37,7 @@ class TicketRepositoryTest {
 	private final int PLACE_2 = 2;
 
 	@Mock
-	private InMemoryStorage mockStorage;
+	private TicketInMemoryStorage mockStorage;
 
 	@InjectMocks
 	private TicketRepository repository;
@@ -45,8 +46,8 @@ class TicketRepositoryTest {
 	void saveTest(){
 		var ticketMap = new HashMap<Long, Ticket>();
 
-		when(mockStorage.getTickets()).thenReturn(ticketMap);
-		when(mockStorage.getTicketIndex()).thenReturn(ID_1);
+		when(mockStorage.getData()).thenReturn(ticketMap);
+		when(mockStorage.getIndex()).thenReturn(ID_1);
 
 		var savedEvent = repository.save(createTicket(ID_1, USER_ID_1, EVENT_ID_1, CATEGORY_1, PLACE_1));
 
@@ -56,7 +57,7 @@ class TicketRepositoryTest {
 
 	@Test
 	void getTestWithExistingId() {
-		when(mockStorage.getTickets()).thenReturn(Map.of(ID_1, createTicket(ID_1, USER_ID_1, EVENT_ID_1, CATEGORY_1, PLACE_1)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createTicket(ID_1, USER_ID_1, EVENT_ID_1, CATEGORY_1, PLACE_1)));
 		Optional<Ticket> ticket = repository.get(ID_1);
 		assertTrue(ticket.isPresent());
 		assertEquals(ID_1, ticket.get().getId());
@@ -64,14 +65,14 @@ class TicketRepositoryTest {
 
 	@Test
 	void getTestWithNotExistingId() {
-		when(mockStorage.getTickets()).thenReturn(Map.of(ID_1, createTicket(ID_1, USER_ID_1, EVENT_ID_1, CATEGORY_1, PLACE_1)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createTicket(ID_1, USER_ID_1, EVENT_ID_1, CATEGORY_1, PLACE_1)));
 		Optional<Ticket> ticket = repository.get(ID_2);
 		assertTrue(ticket.isEmpty());
 	}
 
 	@Test
 	void getAllTest(){
-		when(mockStorage.getTickets()).thenReturn(Map.of(ID_1, createTicket(ID_1, USER_ID_1, EVENT_ID_1, CATEGORY_1, PLACE_1),
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createTicket(ID_1, USER_ID_1, EVENT_ID_1, CATEGORY_1, PLACE_1),
 														 ID_2, createTicket(ID_2, USER_ID_1, EVENT_ID_2, CATEGORY_2, PLACE_2)));
 		var ticketList = repository.getAll();
 		assertEquals(2, ticketList.size());
@@ -83,7 +84,7 @@ class TicketRepositoryTest {
 		ticketMap.put(ID_1, createTicket(ID_1, USER_ID_1, EVENT_ID_1, CATEGORY_1, PLACE_1));
 		ticketMap.put(ID_2, createTicket(ID_2, USER_ID_2, EVENT_ID_2, CATEGORY_2, PLACE_2));
 
-		when(mockStorage.getTickets()).thenReturn(ticketMap);
+		when(mockStorage.getData()).thenReturn(ticketMap);
 
 		assertTrue(repository.delete(ID_1));
 		assertEquals(1, ticketMap.size());
@@ -94,17 +95,17 @@ class TicketRepositoryTest {
 		var ticketMap = new HashMap<Long, Ticket>();
 		ticketMap.put(ID_2, createTicket(ID_2, USER_ID_2, EVENT_ID_2, CATEGORY_2, PLACE_2));
 
-		when(mockStorage.getTickets()).thenReturn(ticketMap);
+		when(mockStorage.getData()).thenReturn(ticketMap);
 
 		assertFalse(repository.delete(ID_1));
 		assertEquals(1, ticketMap.size());
 	}
 
 	@Test
-	void getTicketsForUserPaginationTest() {
+	void getDataForUserPaginationTest() {
 		User user = new User(USER_ID_1, null, null);
 
-		when(mockStorage.getTickets()).thenReturn(Map.of(ID_1, createTicket(ID_1, USER_ID_1, EVENT_ID_1, CATEGORY_1, PLACE_1),
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createTicket(ID_1, USER_ID_1, EVENT_ID_1, CATEGORY_1, PLACE_1),
 														ID_2, createTicket(ID_2,USER_ID_2, EVENT_ID_2, CATEGORY_2, PLACE_2),
 														3L, createTicket(3L, USER_ID_1, 3L, Ticket.Category.BAR, 3),
 														4L, createTicket(4L, USER_ID_1, 4L, Ticket.Category.BAR, 4)));
@@ -121,7 +122,7 @@ class TicketRepositoryTest {
 	}
 
 	@Test
-	void getTicketsForEventPaginationTest() {
+	void getDataForEventPaginationTest() {
 		Event event = new Event(EVENT_ID_1, null, null);
 
 		var ticket = createTicket(ID_1, USER_ID_1, EVENT_ID_1, CATEGORY_1, PLACE_1);
@@ -130,7 +131,7 @@ class TicketRepositoryTest {
 				ID_2, createTicket(ID_2, USER_ID_2, EVENT_ID_2, CATEGORY_2, PLACE_2),
 				3L, ticket3,
 				4L, createTicket(4L, 4L, EVENT_ID_1, Ticket.Category.BAR, 4));
-		when(mockStorage.getTickets()).thenReturn(map);
+		when(mockStorage.getData()).thenReturn(map);
 
 		var ticketListFirstPage = repository.getBookedTickets(event, 2, 1);
 		var ticketListSecondPage = repository.getBookedTickets(event, 2, 2);
