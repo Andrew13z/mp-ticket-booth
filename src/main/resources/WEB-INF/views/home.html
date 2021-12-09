@@ -53,4 +53,65 @@
         <input type="number" th:name="id"/>
         <input type="submit"/>
     </form>
+
+    <h1>Events</h1>
+
+    <h3>Create Event</h3>
+    <form th:action="@{/event}" th:object="${event}" method="post">
+        <label>Id</label>
+        <input type="number" th:field="*{id}"/>
+        <label>Title</label>
+        <input type="text" th:field="*{title}"/>
+        <label>Date</label>
+        <input type="date" th:field="*{date}"/>
+        <input type="submit"/>
+    </form>
+
+    <h3>Get Event By Id</h3>
+    <form th:action="@{/event}" method="get">
+        <label>Id</label>
+        <input type="number" th:name="id"/>
+        <input type="submit"/>
+    </form>
+
+    <h3>Get Event By Title</h3>
+    <form th:action="@{/eventsByTitle}" method="get">
+        <label>Title</label>
+        <input type="text" th:name="title"/>
+        <label>Page size</label>
+        <input type="number" min="1" th:name="pageSize"/>
+        <label>Page number</label>
+        <input type="number" min="1" th:name="pageNum"/>
+        <input type="submit"/>
+    </form>
+
+    <h3>Get Event By Date</h3>
+    <form th:action="@{/eventsByDate}" method="get">
+        <label>Title</label>
+        <input type="date" th:name="date"/>
+        <label>Page size</label>
+        <input type="number" min="1" th:name="pageSize"/>
+        <label>Page number</label>
+        <input type="number" min="1" th:name="pageNum"/>
+        <input type="submit"/>
+    </form>
+
+    <h3>Update Event</h3>
+    <form th:action="@{/updateEvent}" th:object="${event}" method="post">
+        <label>Id</label>
+        <input type="number" th:field="*{id}"/>
+        <label>New Title (leave blank to not change)</label>
+        <input type="text" th:field="*{title}"/>
+        <label>New Date (leave blank to not change)</label>
+        <input type="date" th:field="*{date}"/>
+        <input type="submit"/>
+    </form>
+
+    <h3>Delete event:</h3>
+    <form th:action="@{/deleteEvent}" method="post">
+        <label>Id</label>
+        <input type="number" th:name="id"/>
+        <input type="submit"/>
+    </form>
+
 </body>

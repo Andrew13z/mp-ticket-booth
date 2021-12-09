@@ -21,11 +21,6 @@ public class UserController {
 		this.facade = facade;
 	}
 
-	@GetMapping("/home")
-	public String home(){
-		return "home";
-	}
-
 	@PostMapping(value = "/user", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public String createUser(@ModelAttribute User user, ModelMap model){
 		var createdUser = facade.createUser(new User(0L, user.getName(), user.getEmail()));
@@ -71,9 +66,6 @@ public class UserController {
 		return "user";
 	}
 
-	@ModelAttribute("user")
-	public User getEmptyUser() {
-		return new User(0L, null, null);
-	}
+
 
 }

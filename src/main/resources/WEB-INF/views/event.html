@@ -2,42 +2,75 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 
-<div th:if="${createdUser != null}">
-    <p>Created user:</p>
-    <p th:text="${createdUser.id}"></p>
-    <p th:text="${createdUser.name}"></p>
-    <p th:text="${createdUser.email}"></p>
-</div>
+<head>
+    <title>Event</title>
+</head>
 
-<div th:if="${updatedUser != null}">
-    <p>Found user by id:</p>
-    <p th:text="${updatedUser.id}"></p>
-    <p th:text="${updatedUser.name}"></p>
-    <p th:text="${updatedUser.email}"></p>
-</div>
+<body>
+    <div th:if="${createdEvent != null}">
+        <p>Created event:</p>
+        <p th:text="${createdEvent.id}"></p>
+        <p th:text="${createdEvent.title}"></p>
+        <p th:text="${createdEvent.date}"></p>
+    </div>
 
-<div th:if="${userById != null}">
-    <p>Updated user:</p>
-    <p th:text="${userById.id}"></p>
-    <p th:text="${userById.name}"></p>
-    <p th:text="${userById.email}"></p>
-</div>
+    <div th:if="${updatedEvent != null}">
+        <p>Updated event:</p>
+        <p th:text="${updatedEvent.id}"></p>
+        <p th:text="${updatedEvent.title}"></p>
+        <p th:text="${updatedEvent.date}"></p>
+    </div>
 
-<div th:if="${userByEmail != null}">
-    <p>Found user by email:</p>
-    <p th:text="${userByEmail.id}"></p>
-    <p th:text="${userByEmail.name}"></p>
-    <p th:text="${userByEmail.email}"></p>
-</div>
+    <div th:if="${eventById != null}">
+        <p>Found event by id:</p>
+        <p th:text="${eventById.id}"></p>
+        <p th:text="${eventById.title}"></p>
+        <p th:text="${eventById.date}"></p>
+    </div>
 
-<div th:if="${userDeleted != null}">
-    <p>User deleted:</p>
-    <p th:text="${userDeleted}"></p>
-</div>
+    <div th:if="${eventsByTitle != null}">
+        <p>Events:</p>
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Date</th>
+            </tr>
+            <tbody>
+            <tr th:each="event : ${eventsByTitle}">
+                <td th:text="${event.id}"></td>
+                <td th:text="${event.title}"></td>
+                <td th:text="${event.date}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
+    <div th:if="${eventsByDate != null}">
+        <p>Events:</p>
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Date</th>
+            </tr>
+            <tbody>
+            <tr th:each="event : ${eventsByDate}">
+                <td th:text="${event.id}"></td>
+                <td th:text="${event.title}"></td>
+                <td th:text="${event.date}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-<form th:action="@{/home}" method="get">
-    <button type="submit">Home</button>
-</form>
+    <div th:if="${eventDeleted != null}">
+        <p>Event deleted:</p>
+        <p th:text="${eventDeleted}"></p>
+    </div>
 
+    <form th:action="@{/home}" method="get">
+        <button type="submit">Home</button>
+    </form>
+</body>
 

@@ -1,5 +1,7 @@
 package org.example.model;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDate;
 
 public class Event {
@@ -8,6 +10,7 @@ public class Event {
 
 	private String title;
 
+	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate date;
 
 	public Event(long id, String title, LocalDate date) {

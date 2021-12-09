@@ -42,9 +42,13 @@ public class EventRepository extends InMemoryRepository<Long, Event> {
 	public Event updateEvent(Event updatedEvent) {
 		Event event = get(updatedEvent.getId())
 				.orElseThrow(() -> new EntityNotFoundException("Event not found by id: " + updatedEvent.getId()));
-		event.setTitle(updatedEvent.getTitle());
-		event.setDate(updatedEvent.getDate());
-		logger.info("Saved event with id {}.", updatedEvent.getId());
+		if (!updatedEvent.getTitle().isEmpty()) {
+			event.setTitle(updatedEvent.getTitle());
+		}
+		if (updatedEvent.getDate() != null) {
+			event.setDate(updatedEvent.getDate());
+		}
+		logger.info("Updated event with id {}.", updatedEvent.getId());
 		return event;
 	}
 
