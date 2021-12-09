@@ -6,11 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -50,8 +48,11 @@ public class UserController {
 	}
 
 	@GetMapping("/usersByName")
-	public String getUsersByName(@RequestParam("name") String name, ModelMap model) {
-		var users = facade.getUsersByName(name, 20, 1);
+	public String getUsersByName(@RequestParam("name") String name,
+								 @RequestParam("pageSize") int pageSize,
+								 @RequestParam("pageNum") int pageNum,
+								 ModelMap model) {
+		var users = facade.getUsersByName(name, pageSize, pageNum);
 		model.addAttribute("users", users);
 		return "users";
 	}
