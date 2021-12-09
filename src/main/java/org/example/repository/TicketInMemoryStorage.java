@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -17,22 +18,22 @@ public class TicketInMemoryStorage extends InMemoryStorage<Ticket> {
 
 	private static final Logger logger = LoggerFactory.getLogger(TicketInMemoryStorage.class);
 
-	@Value("${tickets.source}")
-	private String ticketsFileName;
+//	@Value("${tickets.source}")
+//	private String ticketsFileName;
 
-	private Map<Long, Ticket> tickets;
+	private Map<Long, Ticket> tickets = new HashMap<>();
 
 	@Autowired
 	public TicketInMemoryStorage(AbstractParser<Ticket> parser) {
 		super(parser);
 	}
 
-	@PostConstruct
-	private void postConstruct() {
-		tickets = parser.loadData(ticketsFileName);
-		index = new AtomicLong(tickets.size());
-		logger.info("Loaded ticket data with {} entries.", tickets.size());
-	}
+//	@PostConstruct
+//	private void postConstruct() {
+//		tickets = parser.loadData(ticketsFileName);
+//		index = new AtomicLong(tickets.size());
+//		logger.info("Loaded ticket data with {} entries.", tickets.size());
+//	}
 
 	@Override
 	public Map<Long, Ticket> getData() {
