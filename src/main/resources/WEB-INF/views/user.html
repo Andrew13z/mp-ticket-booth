@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+
+<div th:if="${createdUser != null}">
+    <p>Created user:</p>
+    <p th:text="${createdUser.id}"></p>
+    <p th:text="${createdUser.name}"></p>
+    <p th:text="${createdUser.email}"></p>
+</div>
+
+<div th:if="${updatedUser != null}">
+    <p>Found user by id:</p>
+    <p th:text="${updatedUser.id}"></p>
+    <p th:text="${updatedUser.name}"></p>
+    <p th:text="${updatedUser.email}"></p>
+</div>
+
+<div th:if="${userById != null}">
+    <p>Updated user:</p>
+    <p th:text="${userById.id}"></p>
+    <p th:text="${userById.name}"></p>
+    <p th:text="${userById.email}"></p>
+</div>
+
+<div th:if="${userByEmail != null}">
+    <p>Found user by email:</p>
+    <p th:text="${userByEmail.id}"></p>
+    <p th:text="${userByEmail.name}"></p>
+    <p th:text="${userByEmail.email}"></p>
+</div>
+
+<div th:if="${userDeleted != null}">
+    <p>User deleted:</p>
+    <p th:text="${userDeleted}"></p>
+</div>
+
+
+<form th:action="@{/home}" method="get">
+    <button type="submit">Home</button>
+</form>
+
+

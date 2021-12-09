@@ -2,9 +2,44 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org">
 <!--<form action="/ticket-booth-1.0-SNAPSHOT/user" method="post">-->
-<form action="/ticket-booth-1.0-SNAPSHOT/user" th:object="${user}" method="post">
+<h1>Users</h1>
+
+<h3>Create User</h3>
+<form th:action="@{/user}" th:object="${user}" method="post">
     <input type="number" th:field="*{id}"/>
     <input type="text" th:field="*{name}"/>
     <input type="text" th:field="*{email}"/>
-    <input type="submit">
+    <input type="submit"/>
+</form>
+
+<h3>Get User By Id</h3>
+<form th:action="@{/user}" method="get">
+    <input type="number" th:name="id"/>
+    <input type="submit"/>
+</form>
+
+<h3>Get User By Email</h3>
+<form th:action="@{/userByEmail}" method="get">
+    <input type="text" th:name="email"/>
+    <input type="submit"/>
+</form>
+
+<h3>Get Users By Name</h3>
+<form th:action="@{/usersByName}" method="get">
+    <input type="text" th:name="name"/>
+    <input type="submit"/>
+</form>
+
+<h3>Update User</h3>
+<form th:action="@{/updateUser}" th:object="${user}" method="post">
+    <input type="number" th:field="*{id}"/>
+    <input type="text" th:field="*{name}"/>
+    <input type="text" th:field="*{email}"/>
+    <input type="submit"/>
+</form>
+
+<h3>Delete user:</h3>
+<form th:action="@{/deleteUser}" method="post">
+    <input type="number" th:name="id"/>
+    <input type="submit"/>
 </form>

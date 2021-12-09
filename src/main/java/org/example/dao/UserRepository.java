@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public class UserRepository extends InMemoryRepository<Long, User>{
 				.orElseThrow(() -> new EntityNotFoundException("User not found by id: " + updatedUser.getId()));
 
 		var email = updatedUser.getEmail();
-		if (!oldUser.getEmail().equals(email)){
+		if (!email.isEmpty() && !oldUser.getEmail().equals(email)){
 			if (isEmailUnique(email)){
 				oldUser.setEmail(email);
 			} else {
@@ -61,7 +62,10 @@ public class UserRepository extends InMemoryRepository<Long, User>{
 			}
 		}
 
-		oldUser.setName(updatedUser.getName());
+		if (!updatedUser.getName().isEmpty()) {
+			oldUser.setName(updatedUser.getName());
+		}
+
 		logger.info("Updated user with id {}.", updatedUser.getId());
 
 		return oldUser;
@@ -81,7 +85,7 @@ public class UserRepository extends InMemoryRepository<Long, User>{
 
 	public List<User> getUsersByName(String name, int pageSize, int pageNum) {
 		return getAll().stream()
-				.filter(user -> name.equals(user.getName()))
+				.filter(user -> user.getName().contains(name))
 				.skip(pageSize * (pageNum - 1L))
 				.limit(pageSize)
 				.collect(Collectors.toList());
