@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import org.example.model.Event;
+import org.example.model.Ticket;
 import org.example.model.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,5 +23,10 @@ public class HomeController {
 	@ModelAttribute("event")
 	public Event getEmptyEvent() {
 		return new Event(0L, null, null);
+	}
+
+	@ModelAttribute("ticket")
+	public Ticket getEmptyTicket() {
+		return new Ticket(0L, 0L, 0L, null, 0);
 	}
 }

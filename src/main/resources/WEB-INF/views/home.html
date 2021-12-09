@@ -11,8 +11,10 @@
 
     <h3>Create User</h3>
     <form th:action="@{/user}" th:object="${user}" method="post">
-        <input type="number" th:field="*{id}"/>
+        <input type="hidden" th:field="*{id}"/>
+        <label>Name</label>
         <input type="text" th:field="*{name}"/>
+        <label>Email</label>
         <input type="text" th:field="*{email}"/>
         <input type="submit"/>
     </form>
@@ -111,6 +113,55 @@
     <form th:action="@{/deleteEvent}" method="post">
         <label>Id</label>
         <input type="number" th:name="id"/>
+        <input type="submit"/>
+    </form>
+
+    <h1>Tickets</h1>
+
+    <h3>Book ticket</h3>
+    <form th:action="@{/ticket}" th:object="${ticket}" method="post">
+        <label>Id</label>
+        <input type="hidden" th:field="*{id}"/>
+        <label>User Id</label>
+        <input type="number" th:field="*{userId}"/>
+        <label>Event Id</label>
+        <input type="number" th:field="*{eventId}"/>
+        <label>Category</label>
+        <select th:field="*{category}">
+            <option th:each="categoryOpt : ${T(org.example.model.Ticket.Category).values()}"
+                    th:value="${categoryOpt}" th:text="${categoryOpt}"></option>
+        </select>
+        <label>Place</label>
+        <input type="number" min="1" th:field="*{place}"/>
+        <input type="submit"/>
+    </form>
+
+    <h3>Get Ticket By User</h3>
+    <form th:action="@{/ticketsByUser}" method="get">
+        <label>User Id</label>
+        <input type="number" min="1" th:name="userId"/>
+        <label>Page size</label>
+        <input type="number" min="1" th:name="pageSize"/>
+        <label>Page number</label>
+        <input type="number" min="1" th:name="pageNum"/>
+        <input type="submit"/>
+    </form>
+
+    <h3>Get Ticket By Event</h3>
+    <form th:action="@{/ticketsByEvent}" method="get">
+        <label>Event Id</label>
+        <input type="number" min="1" th:name="eventId"/>
+        <label>Page size</label>
+        <input type="number" min="1" th:name="pageSize"/>
+        <label>Page number</label>
+        <input type="number" min="1" th:name="pageNum"/>
+        <input type="submit"/>
+    </form>
+
+    <h3>Delete ticket:</h3>
+    <form th:action="@{/deleteTicket}" method="post">
+        <label>Id</label>
+        <input type="number" min="1" th:name="id"/>
         <input type="submit"/>
     </form>
 
