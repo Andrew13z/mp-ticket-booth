@@ -8,10 +8,6 @@ public class User {
 
 	private String email;
 
-//	public User(String name, String email) { todo
-//		this(0L, name, email);
-//	}
-
 	public User(long id, String name, String email) {
 		this.id = id;
 		this.name = name;

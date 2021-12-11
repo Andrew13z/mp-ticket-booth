@@ -61,4 +61,14 @@ public class Ticket {
 		this.place = place;
 	}
 
+	@Override
+	public String toString() {
+		return "Ticket{" +
+				"id=" + id +
+				", userId=" + userId +
+				", eventId=" + eventId +
+				", category=" + category +
+				", place=" + place +
+				'}';
+	}
 }
