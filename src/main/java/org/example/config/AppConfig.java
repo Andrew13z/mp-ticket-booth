@@ -1,9 +1,12 @@
 package org.example.config;
 
+import com.thoughtworks.xstream.security.AnyTypePermission;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.oxm.Unmarshaller;
+import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver;
@@ -37,6 +40,13 @@ public class AppConfig extends WebMvcConfigurationSupport {
 		var viewResolver = new ThymeleafViewResolver();
 		viewResolver.setTemplateEngine(templateEngine());
 		return viewResolver;
+	}
+
+	@Bean
+	public Unmarshaller unmarshaller(){
+		var unmarshaller = new XStreamMarshaller();
+		unmarshaller.getXStream().addPermission(AnyTypePermission.ANY);
+		return unmarshaller;
 	}
 
 }
