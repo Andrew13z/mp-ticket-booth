@@ -26,13 +26,13 @@
     </form>
 
     <h3>Get User By Email</h3>
-    <form th:action="@{/userByEmail}" method="get">
+    <form th:action="@{/user/byEmail}" method="get">
         <input type="text" th:name="email"/>
         <input type="submit"/>
     </form>
 
     <h3>Get Users By Name</h3>
-    <form th:action="@{/usersByName}" method="get">
+    <form th:action="@{/user/byName}" method="get">
         <label>Name</label>
         <input type="text" th:name="name"/>
         <label>Page size</label>
@@ -43,7 +43,7 @@
     </form>
 
     <h3>Update User</h3>
-    <form th:action="@{/updateUser}" th:object="${user}" method="post">
+    <form th:action="@{/user/update}" th:object="${user}" method="post">
         <input type="number" th:field="*{id}"/>
         <input type="text" th:field="*{name}"/>
         <input type="text" th:field="*{email}"/>
@@ -51,7 +51,7 @@
     </form>
 
     <h3>Delete user:</h3>
-    <form th:action="@{/deleteUser}" method="post">
+    <form th:action="@{/user/delete}" method="post">
         <input type="number" th:name="id"/>
         <input type="submit"/>
     </form>
@@ -77,7 +77,7 @@
     </form>
 
     <h3>Get Event By Title</h3>
-    <form th:action="@{/eventsByTitle}" method="get">
+    <form th:action="@{/event/byTitle}" method="get">
         <label>Title</label>
         <input type="text" th:name="title"/>
         <label>Page size</label>
@@ -88,7 +88,7 @@
     </form>
 
     <h3>Get Event By Date</h3>
-    <form th:action="@{/eventsByDate}" method="get">
+    <form th:action="@{/event/byDate}" method="get">
         <label>Title</label>
         <input type="date" th:name="date"/>
         <label>Page size</label>
@@ -99,7 +99,7 @@
     </form>
 
     <h3>Update Event</h3>
-    <form th:action="@{/updateEvent}" th:object="${event}" method="post">
+    <form th:action="@{/event/update}" th:object="${event}" method="post">
         <label>Id</label>
         <input type="number" th:field="*{id}"/>
         <label>New Title (leave blank to not change)</label>
@@ -110,7 +110,7 @@
     </form>
 
     <h3>Delete event:</h3>
-    <form th:action="@{/deleteEvent}" method="post">
+    <form th:action="@{/event/delete}" method="post">
         <label>Id</label>
         <input type="number" th:name="id"/>
         <input type="submit"/>
@@ -137,7 +137,7 @@
     </form>
 
     <h3>Get Ticket By User</h3>
-    <form th:action="@{/ticketsByUser}" method="get">
+    <form th:action="@{/ticket/byUser}" method="get">
         <label>User Id</label>
         <input type="number" min="1" th:name="userId"/>
         <label>Page size</label>
@@ -148,7 +148,7 @@
     </form>
 
     <h3>Get Ticket By Event</h3>
-    <form th:action="@{/ticketsByEvent}" method="get">
+    <form th:action="@{/ticket/byEvent}" method="get">
         <label>Event Id</label>
         <input type="number" min="1" th:name="eventId"/>
         <label>Page size</label>
@@ -159,7 +159,7 @@
     </form>
 
     <h3>Delete ticket:</h3>
-    <form th:action="@{/deleteTicket}" method="post">
+    <form th:action="@{/ticket/delete}" method="post">
         <label>Id</label>
         <input type="number" min="1" th:name="id"/>
         <input type="submit"/>

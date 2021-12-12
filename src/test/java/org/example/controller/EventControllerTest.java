@@ -83,7 +83,7 @@ class EventControllerTest {
 
 	@Test
 	void testGetEventsByTitle_WithExistingTitle() throws Exception{
-		var result = mockMvc.perform(get("/eventsByTitle")
+		var result = mockMvc.perform(get("/event/byTitle")
 						.param("title", TITLE)
 						.param("pageSize", "1")
 						.param("pageNum", "1"))
@@ -96,7 +96,7 @@ class EventControllerTest {
 
 	@Test
 	void testGetEventsByTitle_WithNotExistingTitle() throws Exception{
-		var result = mockMvc.perform(get("/eventsByTitle")
+		var result = mockMvc.perform(get("/event/byTitle")
 						.param("title", "Not a title")
 						.param("pageSize", "1")
 						.param("pageNum", "1"))
@@ -109,7 +109,7 @@ class EventControllerTest {
 
 	@Test
 	void testGetEventsByDate_WithExistingDate() throws Exception{
-		var result = mockMvc.perform(get("/eventsByDate")
+		var result = mockMvc.perform(get("/event/byDate")
 						.param("date", DATE.toString())
 						.param("pageSize", "1")
 						.param("pageNum", "1"))
@@ -122,7 +122,7 @@ class EventControllerTest {
 
 	@Test
 	void testGetEventsByDate_WithNotExistingDate() throws Exception{
-		var result = mockMvc.perform(get("/eventsByDate")
+		var result = mockMvc.perform(get("/event/byDate")
 						.param("date", LocalDate.of(1000, 1, 1).toString())
 						.param("pageSize", "1")
 						.param("pageNum", "1"))
@@ -136,7 +136,7 @@ class EventControllerTest {
 	@Test
 	void updateEventTest_WithAllAttributesUpdated() throws Exception{
 		var localDate = LocalDate.now();
-		var result = mockMvc.perform(post("/updateEvent")
+		var result = mockMvc.perform(post("/event/update")
 						.flashAttr("event", new Event(1L, "New Title", localDate)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedEvent"))
@@ -151,7 +151,7 @@ class EventControllerTest {
 	@Test
 	void updateEventTest_WithoutUpdatedTitle() throws Exception{
 		var localDate = LocalDate.now();
-		var result = mockMvc.perform(post("/updateEvent")
+		var result = mockMvc.perform(post("/event/update")
 						.flashAttr("event", new Event(1L, "", localDate)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedEvent"))
@@ -166,7 +166,7 @@ class EventControllerTest {
 	@Test
 	void updateEventTest_WithoutUpdatedDate() throws Exception{
 		var localDate = LocalDate.now();
-		var result = mockMvc.perform(post("/updateEvent")
+		var result = mockMvc.perform(post("/event/update")
 						.flashAttr("event", new Event(1L, "New Title", null)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedEvent"))
@@ -180,14 +180,14 @@ class EventControllerTest {
 
 	@Test
 	void updateEventTest_WithNotExistingId() throws Exception{
-		mockMvc.perform(post("/updateEvent")
+		mockMvc.perform(post("/event/update")
 						.flashAttr("event", new Event(100L, "", null)))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	void deleteEventTest_WithExistingId() throws Exception{
-		var result = mockMvc.perform(post("/deleteEvent")
+		var result = mockMvc.perform(post("/event/delete")
 						.param("id", "1"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("eventDeleted"))
@@ -199,7 +199,7 @@ class EventControllerTest {
 
 	@Test
 	void deleteEventTest_WithNotExistingId() throws Exception{
-		var result = mockMvc.perform(post("/deleteEvent")
+		var result = mockMvc.perform(post("/event/delete")
 						.param("id", "100"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("eventDeleted"))

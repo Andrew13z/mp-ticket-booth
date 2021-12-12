@@ -17,6 +17,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -27,6 +28,7 @@ import java.io.IOException;
  * @author Andrii Krokhta
  */
 @Controller
+@RequestMapping("/ticket")
 public class TicketController {
 
 	private static final Logger logger = LoggerFactory.getLogger(TicketController.class);
@@ -46,7 +48,7 @@ public class TicketController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@PostMapping(value = "/ticket")
+	@PostMapping
 	public String createTicket(@ModelAttribute Ticket ticket, ModelMap model){
 		var bookedTicket =
 				facade.bookTicket(ticket.getUserId(), ticket.getEventId(), ticket.getCategory(), ticket.getPlace());
@@ -63,7 +65,7 @@ public class TicketController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@GetMapping("/ticketsByUser")
+	@GetMapping("/byUser")
 	public String getTicketsByUser(@RequestParam("userId") long userId,
 								   @RequestParam("pageSize") int pageSize,
 								   @RequestParam("pageNum") int pageNum,
@@ -81,7 +83,7 @@ public class TicketController {
 	 * @param pageNum Number of page to display.
 	 * @return byte[] of pdf with ticket data.
 	 */
-	@GetMapping(value = "/ticketsByUser", headers = "Accept=application/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+	@GetMapping(value = "/byUser", headers = "Accept=application/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
 	public @ResponseBody byte[] getTicketsByUserPdf(@RequestParam("userId") long userId,
 													@RequestParam("pageSize") int pageSize,
 													@RequestParam("pageNum") int pageNum) {
@@ -106,7 +108,7 @@ public class TicketController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@GetMapping("/ticketsByEvent")
+	@GetMapping("/byEvent")
 	public String getTicketsByEvent(@RequestParam("eventId") long eventId,
 									@RequestParam("pageSize") int pageSize,
 									@RequestParam("pageNum") int pageNum,
@@ -123,7 +125,7 @@ public class TicketController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@PostMapping("/deleteTicket")
+	@PostMapping("/delete")
 	public String deleteTicket(@RequestParam("id") long id, ModelMap model) {
 		var deleteSuccessful = facade.cancelTicket(id);
 		model.addAttribute("ticketDeleted", deleteSuccessful);

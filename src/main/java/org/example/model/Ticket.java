@@ -1,7 +1,5 @@
 package org.example.model;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
-
 /**
  * Ticket entity
  * @author Andrii Krokhta

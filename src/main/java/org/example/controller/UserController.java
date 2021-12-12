@@ -8,6 +8,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author Andrii Krokhta
  */
 @Controller
+@RequestMapping("/user")
 public class UserController {
 
 	public static final String USER_VIEW_NAME = "user";
@@ -32,7 +34,7 @@ public class UserController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@PostMapping(value = "/user")
+	@PostMapping
 	public String createUser(@ModelAttribute User user, ModelMap model){
 		var createdUser = facade.createUser(new User(0L, user.getName(), user.getEmail()));
 		model.addAttribute("createdUser", createdUser);
@@ -46,7 +48,7 @@ public class UserController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@GetMapping("/user")
+	@GetMapping
 	public String getUserById(@RequestParam("id") long id, ModelMap model) {
 		var user = facade.getUserById(id);
 		model.addAttribute("userById", user);
@@ -60,7 +62,7 @@ public class UserController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@GetMapping("/userByEmail")
+	@GetMapping("/byEmail")
 	public String getUserByEmail(@RequestParam("email") String email, ModelMap model) {
 		var user = facade.getUserByEmail(email);
 		model.addAttribute("userByEmail", user);
@@ -76,7 +78,7 @@ public class UserController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@GetMapping("/usersByName")
+	@GetMapping("/byName")
 	public String getUsersByName(@RequestParam("name") String name,
 								 @RequestParam("pageSize") int pageSize,
 								 @RequestParam("pageNum") int pageNum,
@@ -93,7 +95,7 @@ public class UserController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@PostMapping("/updateUser")
+	@PostMapping("/update")
 	public String updateUser (@ModelAttribute User user, ModelMap model) {
 		var updatedUser = facade.updateUser(user);
 		model.addAttribute("updatedUser", updatedUser);
@@ -107,7 +109,7 @@ public class UserController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@PostMapping("/deleteUser")
+	@PostMapping("/delete")
 	public String deleteUser(@RequestParam("id") long id, ModelMap model) {
 		var deleteSuccessful = facade.deleteUser(id);
 		model.addAttribute("userDeleted", deleteSuccessful);

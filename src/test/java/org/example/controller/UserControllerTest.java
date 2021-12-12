@@ -87,7 +87,7 @@ class UserControllerTest {
 
 	@Test
 	void testGetUserById_WithExistingEmail() throws Exception{
-		var result = mockMvc.perform(get("/userByEmail")
+		var result = mockMvc.perform(get("/user/byEmail")
 						.param("email", USER_EMAIL))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("userByEmail"))
@@ -98,14 +98,14 @@ class UserControllerTest {
 
 	@Test
 	void testGetUserById_WithNotExistingEmail() throws Exception{
-		var result = mockMvc.perform(get("/userByEmail")
+		var result = mockMvc.perform(get("/user/byEmail")
 						.param("email", "uniquemail@mail.com"))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	void testGetUsersByName_WithExistingName() throws Exception{
-		var result = mockMvc.perform(get("/usersByName")
+		var result = mockMvc.perform(get("/user/byName")
 						.param("name", USER_NAME)
 						.param("pageSize", "1")
 						.param("pageNum", "1"))
@@ -118,7 +118,7 @@ class UserControllerTest {
 
 	@Test
 	void testGetUsersByName_WithNotExistingName() throws Exception{
-		var result = mockMvc.perform(get("/usersByName")
+		var result = mockMvc.perform(get("/user/byName")
 						.param("name", "Not a name")
 						.param("pageSize", "1")
 						.param("pageNum", "1"))
@@ -131,7 +131,7 @@ class UserControllerTest {
 
 	@Test
 	void updateUserTest_WithAllAttributesUpdate() throws Exception{
-		var result = mockMvc.perform(post("/updateUser")
+		var result = mockMvc.perform(post("/user/update")
 						.flashAttr("user", new User(1L, "New Name", "newmail@mail.com")))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedUser"))
@@ -145,7 +145,7 @@ class UserControllerTest {
 
 	@Test
 	void updateUserTest_WithoutUpdatedName() throws Exception{
-		var result = mockMvc.perform(post("/updateUser")
+		var result = mockMvc.perform(post("/user/update")
 						.flashAttr("user", new User(1L, "", "newmail@mail.com")))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedUser"))
@@ -159,7 +159,7 @@ class UserControllerTest {
 
 	@Test
 	void updateUserTest_WithoutUpdatedEmail() throws Exception{
-		var result = mockMvc.perform(post("/updateUser")
+		var result = mockMvc.perform(post("/user/update")
 						.flashAttr("user", new User(1L, "New Name", "")))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedUser"))
@@ -173,21 +173,21 @@ class UserControllerTest {
 
 	@Test
 	void updateUserTest_WithNotUniqueEmail() throws Exception{
-		mockMvc.perform(post("/updateUser")
+		mockMvc.perform(post("/user/update")
 						.flashAttr("user", new User(2L, "New Name", USER_EMAIL)))
 				.andExpect(status().isBadRequest());
 	}
 
 	@Test
 	void updateUserTest_WithNotExistingId() throws Exception{
-		mockMvc.perform(post("/updateUser")
+		mockMvc.perform(post("/user/update")
 						.flashAttr("user", new User(100L, USER_NAME, USER_EMAIL)))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
 	void deleteUserTest_WithExistingId() throws Exception{
-		var result = mockMvc.perform(post("/deleteUser")
+		var result = mockMvc.perform(post("/user/delete")
 						.param("id", "1"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("userDeleted"))
@@ -199,7 +199,7 @@ class UserControllerTest {
 
 	@Test
 	void deleteUserTest_WithNotExistingId() throws Exception{
-		var result = mockMvc.perform(post("/deleteUser")
+		var result = mockMvc.perform(post("/user/delete")
 						.param("id", "100"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("userDeleted"))

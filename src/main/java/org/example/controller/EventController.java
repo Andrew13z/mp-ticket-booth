@@ -9,6 +9,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import java.time.LocalDate;
  * @author Andrii Krokhta
  */
 @Controller
+@RequestMapping("/event")
 public class EventController {
 
 	private static final String EVENT_VIEW_NAME = "event";
@@ -35,7 +37,7 @@ public class EventController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@PostMapping(value = "/event")
+	@PostMapping
 	public String createEvent(@ModelAttribute Event event, ModelMap model){
 		var createdEvent = facade.createEvent(new Event(0L, event.getTitle(), event.getDate()));
 		model.addAttribute("createdEvent", createdEvent);
@@ -49,7 +51,7 @@ public class EventController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@GetMapping("/event")
+	@GetMapping
 	public String getEventById(@RequestParam("id") long id, ModelMap model) {
 		var event = facade.getEventById(id);
 		model.addAttribute("eventById", event);
@@ -65,7 +67,7 @@ public class EventController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@GetMapping("/eventsByTitle")
+	@GetMapping("/byTitle")
 	public String getEventsByTitle(@RequestParam("title") String title,
 								 @RequestParam("pageSize") int pageSize,
 								 @RequestParam("pageNum") int pageNum,
@@ -84,7 +86,7 @@ public class EventController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@GetMapping("/eventsByDate")
+	@GetMapping("/byDate")
 	public String getEventsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
 								 @RequestParam("pageSize") int pageSize,
 								 @RequestParam("pageNum") int pageNum,
@@ -101,7 +103,7 @@ public class EventController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@PostMapping("/updateEvent")
+	@PostMapping("/update")
 	public String updateEvent (@ModelAttribute Event event, ModelMap model) {
 		var updatedEvent = facade.updateEvent(event);
 		model.addAttribute("updatedEvent", updatedEvent);
@@ -115,7 +117,7 @@ public class EventController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@PostMapping("/deleteEvent")
+	@PostMapping("/delete")
 	public String deleteEvent(@RequestParam("id") long id, ModelMap model) {
 		var deleteSuccessful = facade.deleteEvent(id);
 		model.addAttribute("eventDeleted", deleteSuccessful);

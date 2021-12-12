@@ -72,7 +72,7 @@ class TicketControllerTest {
 
 	@Test
 	void testGetTicketsByUser_WithExistingUser() throws Exception{
-		var result = mockMvc.perform(get("/ticketsByUser")
+		var result = mockMvc.perform(get("/ticket/byUser")
 						.param("userId", String.valueOf(USER_ID))
 						.param("pageSize", "1")
 						.param("pageNum", "1"))
@@ -85,7 +85,7 @@ class TicketControllerTest {
 
 	@Test
 	void testGetTicketsByUser_WithNotExistingUser() throws Exception{
-		var result = mockMvc.perform(get("/ticketsByUser")
+		var result = mockMvc.perform(get("/ticket/byUser")
 						.param("userId", "100")
 						.param("pageSize", "1")
 						.param("pageNum", "1"))
@@ -98,7 +98,7 @@ class TicketControllerTest {
 
 	@Test
 	void testGetTicketsByUserPdf() throws Exception{
-		var result = mockMvc.perform(get("/ticketsByUser")
+		var result = mockMvc.perform(get("/ticket/byUser")
 						.header("Accept", "application/pdf")
 						.param("userId", "1")
 						.param("pageSize", "1")
@@ -109,7 +109,7 @@ class TicketControllerTest {
 
 	@Test
 	void testGetTicketsByEvent_WithExistingEvent() throws Exception{
-		var result = mockMvc.perform(get("/ticketsByEvent")
+		var result = mockMvc.perform(get("/ticket/byEvent")
 						.param("eventId", String.valueOf(EVENT_ID))
 						.param("pageSize", "1")
 						.param("pageNum", "1"))
@@ -122,7 +122,7 @@ class TicketControllerTest {
 
 	@Test
 	void testGetTicketsByEvent_WithNotExistingEvent() throws Exception{
-		var result = mockMvc.perform(get("/ticketsByEvent")
+		var result = mockMvc.perform(get("/ticket/byEvent")
 						.param("eventId", "100")
 						.param("pageSize", "1")
 						.param("pageNum", "1"))
@@ -135,7 +135,7 @@ class TicketControllerTest {
 
 	@Test
 	void deleteTicketTest_WithExistingId() throws Exception{
-		var result = mockMvc.perform(post("/deleteTicket")
+		var result = mockMvc.perform(post("/ticket/delete")
 						.param("id", "1"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("ticketDeleted"))
@@ -147,7 +147,7 @@ class TicketControllerTest {
 
 	@Test
 	void deleteTicketTest_WithNotExistingId() throws Exception{
-		var result = mockMvc.perform(post("/deleteTicket")
+		var result = mockMvc.perform(post("/ticket/delete")
 						.param("id", "100"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("ticketDeleted"))
