@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Repository for all operations on Tickets.
+ * @author Andrii Krokhta
+ */
 @Repository
 public class TicketRepository extends InMemoryRepository<Long, Ticket>{
 
@@ -25,11 +29,17 @@ public class TicketRepository extends InMemoryRepository<Long, Ticket>{
 		this.storage = storage;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Map<Long, Ticket> getData() {
 		return storage.getData();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Ticket save(Ticket ticket) {
 		var index = storage.getIndex();
@@ -39,6 +49,14 @@ public class TicketRepository extends InMemoryRepository<Long, Ticket>{
 		return ticket;
 	}
 
+	/**
+	 * Gets a list of tickets by user.
+	 *
+	 * @param user User.
+	 * @param pageSize Number of ticket entries per page.
+	 * @param pageNum Number of page to display.
+	 * @return List of tickets or empty list if no tickets for the provided user are found.
+	 */
 	public List<Ticket> getBookedTickets(User user, int pageSize, int pageNum) {
 		return getAll().stream()
 				.filter(ticket -> ticket.getUserId() == user.getId())
@@ -47,6 +65,14 @@ public class TicketRepository extends InMemoryRepository<Long, Ticket>{
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * Gets a list of tickets by event.
+	 *
+	 * @param event Event.
+	 * @param pageSize Number of ticket entries per page.
+	 * @param pageNum Number of page to display.
+	 * @return List of tickets or empty list if no tickets for the provided event are found.
+	 */
 	public List<Ticket> getBookedTickets(Event event, int pageSize, int pageNum) {
 		return getAll().stream()
 				.filter(ticket -> ticket.getEventId() == event.getId())

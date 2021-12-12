@@ -1,5 +1,8 @@
 package org.example.model;
 
+/**
+ * Bulder for ticket entity.
+ */
 public class TicketBuilder {
 	private long id;
 	private long userId;

@@ -44,6 +44,11 @@ public final class DocumentUtil {
 		//private constructor
 	}
 
+	/**
+	 * Writes a list of tickets to pdf file.
+	 * @param tickets
+	 * @return String path to the file
+	 */
 	public static String writeToPdf(List<Ticket> tickets) {
 		try (PDDocument doc = new PDDocument()) {
 			PDPage page = new PDPage();
@@ -52,13 +57,13 @@ public final class DocumentUtil {
 			var contentStream = new PDPageContentStream(doc, page);
 			contentStream.setFont(DOCUMENT_FONT, 12);
 
-			int lines = 1;
+			int lineNumber = 1;
 			float pageHeight = page.getMediaBox().getHeight();
 
 			for (Ticket ticket : tickets) {
-				writeLine(contentStream, lines, pageHeight, ticket);
-				lines++;
-				if (lines > MAX_LINES_ON_PAGE) {
+				writeLine(contentStream, lineNumber, pageHeight, ticket);
+				lineNumber++;
+				if (lineNumber > MAX_LINES_ON_PAGE) {
 					addNextPage(doc, contentStream);
 				}
 			}
@@ -74,6 +79,12 @@ public final class DocumentUtil {
 		}
 	}
 
+	/**
+	 * Created new page in the provided document
+	 * @param doc Document
+	 * @param contentStream Content stream
+	 * @throws IOException
+	 */
 	private static void addNextPage(PDDocument doc, PDPageContentStream contentStream) throws IOException{
 		PDPage page2 = new PDPage();
 		doc.addPage(page2);
@@ -82,13 +93,27 @@ public final class DocumentUtil {
 		contentStream.setFont(DOCUMENT_FONT, 12);
 	}
 
-	private static void writeLine(PDPageContentStream contentStream, int lines, float pageHeight, Ticket ticket) throws IOException {
+	/**
+	 * Writes a line of text to the document.
+	 * @param contentStream
+	 * @param lineNumber
+	 * @param pageHeight
+	 * @param ticket
+	 * @throws IOException
+	 */
+	private static void writeLine(PDPageContentStream contentStream, int lineNumber, float pageHeight, Ticket ticket) throws IOException {
 		contentStream.beginText();
-		contentStream.newLineAtOffset(LINE_OFFSET, pageHeight - LINE_HEIGHT * lines);
+		contentStream.newLineAtOffset(LINE_OFFSET, pageHeight - LINE_HEIGHT * lineNumber);
 		contentStream.showText(ticket.toString());
 		contentStream.endText();
 	}
 
+	/**
+	 * Create a new pdf file.
+	 * @return Created file.
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
 	private static File createFile() throws IOException, URISyntaxException {
 		var mainPath = FILE_PATH_PREFIX + (System.currentTimeMillis() + ".pdf");
 		File file = new File(new URI(mainPath));

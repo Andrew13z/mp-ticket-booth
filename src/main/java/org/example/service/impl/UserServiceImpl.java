@@ -15,33 +15,51 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserRepository repository;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public User getUserById(long userId) {
 		return repository.get(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found by id: " + userId));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public User getUserByEmail(String email) {
 		return repository.getUserByEmail(email)
 				.orElseThrow(() -> new EntityNotFoundException("User not found by email: " + email));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public List<User> getUsersByName(String name, int pageSize, int pageNum) {
 		return repository.getUsersByName(name, pageSize, pageNum);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public User createUser(User user) {
 		return repository.save(user);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public User updateUser(User user) {
 		return repository.update(user);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean deleteUser(long userId) {
 		return repository.delete(userId);

@@ -29,11 +29,17 @@ public class UserRepository extends InMemoryRepository<Long, User>{
 		this.storage = storage;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Map<Long, User> getData() {
 		return storage.getData();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public User save(User user) {
 		if (isEmailUnique(user.getEmail())) {
@@ -47,6 +53,12 @@ public class UserRepository extends InMemoryRepository<Long, User>{
 		throw new IllegalArgumentException("User email must be unique");
 	}
 
+	/**
+	 * Updates a user by user id. If user email is to be updated, it must be unique.
+	 *
+	 * @param updatedUser Updated user with the same id.
+	 * @return Updated user.
+	 */
 	public User update(User updatedUser) {
 		User oldUser = get(updatedUser.getId())
 				.orElseThrow(() -> new EntityNotFoundException("User not found by id: " + updatedUser.getId()));
@@ -70,18 +82,37 @@ public class UserRepository extends InMemoryRepository<Long, User>{
 		return oldUser;
 	}
 
+	/**
+	 * Checks if there isn't a created user with the provided email.
+	 * @param email
+	 * @return true if no user with the provided email is found, otherwise - false
+	 */
 	private boolean isEmailUnique(String email) {
 		return getAll().stream()
 				.map(User::getEmail)
 				.noneMatch(email::equals);
 	}
 
+	/**
+	 * Gets a user by email.
+	 *
+	 * @param email User email.
+	 * @return Optional of user.
+	 */
 	public Optional<User> getUserByEmail(String email) {
 		return getAll().stream()
 				.filter(user -> email.equals(user.getEmail()))
 				.findAny();
 	}
 
+	/**
+	 * Gets a list of users by name. Name is matched using 'contains' approach.
+	 *
+	 * @param name User name.
+	 * @param pageSize Number of ticket entries per page.
+	 * @param pageNum Number of page to display.
+	 * @return List of users or empty list if no users for the provided name are found.
+	 */
 	public List<User> getUsersByName(String name, int pageSize, int pageNum) {
 		return getAll().stream()
 				.filter(user -> user.getName().contains(name))

@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Repository for all operations on Events.
+ * @author Andrii Krokhta
+ */
 @Repository
 public class EventRepository extends InMemoryRepository<Long, Event> {
 
@@ -25,11 +29,17 @@ public class EventRepository extends InMemoryRepository<Long, Event> {
 		this.storage = storage;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Map<Long, Event> getData() {
 		return storage.getData();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Event save(Event event) {
 		var index = storage.getIndex();
@@ -39,6 +49,12 @@ public class EventRepository extends InMemoryRepository<Long, Event> {
 		return event;
 	}
 
+	/**
+	 * Updates an event by event id.
+	 *
+	 * @param updatedEvent Updated event with the same id.
+	 * @return Updated event.
+	 */
 	public Event updateEvent(Event updatedEvent) {
 		Event event = get(updatedEvent.getId())
 				.orElseThrow(() -> new EntityNotFoundException("Event not found by id: " + updatedEvent.getId()));
@@ -52,6 +68,14 @@ public class EventRepository extends InMemoryRepository<Long, Event> {
 		return event;
 	}
 
+	/**
+	 * Gets a list of events by title.
+	 *
+	 * @param title Event title.
+	 * @param pageSize Number of ticket entries per page.
+	 * @param pageNum Number of page to display.
+	 * @return List of events or empty list if no events for the provided title are found.
+	 */
 	public List<Event> getEventsByTitle(String title, int pageSize, int pageNum) {
 		return getAll().stream()
 				.filter(event -> title.equals(event.getTitle()))
@@ -60,6 +84,14 @@ public class EventRepository extends InMemoryRepository<Long, Event> {
 				.collect(Collectors.toList());
 	}
 
+	/**
+	 * Gets a list of events by date.
+	 *
+	 * @param day Event date.
+	 * @param pageSize Number of ticket entries per page.
+	 * @param pageNum Number of page to display.
+	 * @return List of events or empty list if no events for the provided date are found.
+	 */
 	public List<Event> getEventsForDay(LocalDate day, int pageSize, int pageNum) {
 		return getAll().stream()
 				.filter(event -> day.equals(event.getDate()))

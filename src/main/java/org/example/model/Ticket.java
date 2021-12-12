@@ -2,23 +2,21 @@ package org.example.model;
 
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
-@XStreamAlias("ticket")
+/**
+ * Ticket entity
+ * @author Andrii Krokhta
+ */
 public class Ticket {
 	public enum Category {STANDARD, PREMIUM, BAR}
 
-	@XStreamAlias("id")
 	private long id;
 
-	@XStreamAlias("userId")
 	private long userId;
 
-	@XStreamAlias("eventId")
 	private long eventId;
 
-	@XStreamAlias("category")
 	private Category category;
 
-	@XStreamAlias("place")
 	private int place;
 
 	public Ticket(long id, long userId, long eventId, Category category, int place) {

@@ -11,9 +11,14 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * Controller for all operations on Users.
+ * @author Andrii Krokhta
+ */
 @Controller
 public class UserController {
 
+	public static final String USER_VIEW_NAME = "user";
 	private final BookingFacade facade;
 
 	@Autowired
@@ -21,27 +26,57 @@ public class UserController {
 		this.facade = facade;
 	}
 
+	/**
+	 * Creates a new user and adds to it model data.
+	 *
+	 * @param user New user data.
+	 * @param model Model data.
+	 * @return Name of the view.
+	 */
 	@PostMapping(value = "/user", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public String createUser(@ModelAttribute User user, ModelMap model){
 		var createdUser = facade.createUser(new User(0L, user.getName(), user.getEmail()));
 		model.addAttribute("createdUser", createdUser);
-		return "user";
+		return USER_VIEW_NAME;
 	}
 
+	/**
+	 * Gets a user by id and adds it to model data.
+	 *
+	 * @param id User id.
+	 * @param model Model data.
+	 * @return Name of the view.
+	 */
 	@GetMapping("/user")
 	public String getUserById(@RequestParam("id") long id, ModelMap model) {
 		var user = facade.getUserById(id);
 		model.addAttribute("userById", user);
-		return "user";
+		return USER_VIEW_NAME;
 	}
 
+	/**
+	 * Gets a user by email and adds it to model data.
+	 *
+	 * @param email User email.
+	 * @param model Model data.
+	 * @return Name of the view.
+	 */
 	@GetMapping("/userByEmail")
 	public String getUserByEmail(@RequestParam("email") String email, ModelMap model) {
 		var user = facade.getUserByEmail(email);
 		model.addAttribute("userByEmail", user);
-		return "user";
+		return USER_VIEW_NAME;
 	}
 
+	/**
+	 * Gets a list of user by name and adds it to model data. Name is matched using 'contains' approach.
+	 *
+	 * @param name User name.
+	 * @param pageSize Number of ticket entries per page.
+	 * @param pageNum Number of page to display.
+	 * @param model Model data.
+	 * @return Name of the view.
+	 */
 	@GetMapping("/usersByName")
 	public String getUsersByName(@RequestParam("name") String name,
 								 @RequestParam("pageSize") int pageSize,
@@ -49,21 +84,35 @@ public class UserController {
 								 ModelMap model) {
 		var users = facade.getUsersByName(name, pageSize, pageNum);
 		model.addAttribute("users", users);
-		return "users";
+		return USER_VIEW_NAME;
 	}
 
+	/**
+	 * Updates a user by user id and adds the updated object to model data.
+	 *
+	 * @param user Updated user with the same id.
+	 * @param model Model data.
+	 * @return Name of the view.
+	 */
 	@PostMapping("/updateUser")
 	public String updateUser (@ModelAttribute User user, ModelMap model) {
 		var updatedUser = facade.updateUser(user);
 		model.addAttribute("updatedUser", updatedUser);
-		return "user";
+		return USER_VIEW_NAME;
 	}
 
+	/**
+	 * Deletes a user by id. Adds a boolean to model data with information if deletion was successful or not.
+	 *
+	 * @param id Id of the user to be deleted.
+	 * @param model Model data.
+	 * @return Name of the view.
+	 */
 	@PostMapping("/deleteUser")
 	public String deleteUser(@RequestParam("id") long id, ModelMap model) {
 		var deleteSuccessful = facade.deleteUser(id);
 		model.addAttribute("userDeleted", deleteSuccessful);
-		return "user";
+		return USER_VIEW_NAME;
 	}
 
 

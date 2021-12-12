@@ -11,10 +11,9 @@ public class TicketInMemoryStorage extends InMemoryStorage<Ticket> {
 
 	private final Map<Long, Ticket> tickets = new HashMap<>();
 
-	public TicketInMemoryStorage() {
-		super(null);//todo
-	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public Map<Long, Ticket> getData() {
 		return tickets;

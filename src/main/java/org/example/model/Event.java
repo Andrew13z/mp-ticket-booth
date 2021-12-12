@@ -4,6 +4,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
+/**
+ * Event entity
+ */
 public class Event {
 
 	private long id;
@@ -43,12 +46,4 @@ public class Event {
 		this.date = date;
 	}
 
-	@Override
-	public String toString() {
-		return "Event{" +
-				"id=" + id +
-				", title='" + title + '\'' +
-				", date=" + date +
-				'}';
-	}
 }
