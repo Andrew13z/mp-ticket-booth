@@ -197,20 +197,8 @@ class UserRepositoryTest {
 		assertEquals(NAME_1, userListSecondPage.get(0).getName());
 	}
 
-
-
-
-
-
-
-
-
-
-
-
 	private User createUser(long id, String name, String email) {
 		return new User(id, name, email);
 	}
-
 
 }

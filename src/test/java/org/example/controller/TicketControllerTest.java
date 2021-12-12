@@ -1,0 +1,159 @@
+package org.example.controller;
+
+import org.example.config.AppConfig;
+import org.example.model.Ticket;
+import org.example.repository.InMemoryStorage;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {AppConfig.class })
+@WebAppConfiguration
+class TicketControllerTest {
+
+	private static final long TICKET_ID = 1L;
+	private static final long USER_ID = 6L;
+	private static final long EVENT_ID = 1L;
+	private static final int PLACE = 130;
+
+	private MockMvc mockMvc;
+
+	@Autowired
+	private InMemoryStorage<Ticket> storage;
+
+	@BeforeEach
+	void setUp(WebApplicationContext wac){
+		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+	}
+
+	@AfterEach
+	void cleanUp() {
+		storage.getData().remove(1L);
+		storage.getData().put(1L, new Ticket (TICKET_ID, USER_ID, EVENT_ID, Ticket.Category.STANDARD, PLACE));
+	}
+
+	@Test
+	void testCreateEvent() throws Exception{
+		var localDate = LocalDate.now();
+		var result = mockMvc.perform(post("/ticket")
+						.flashAttr("ticket", new Ticket(0L, USER_ID, EVENT_ID, Ticket.Category.BAR, PLACE)))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("bookedTicket"))
+				.andReturn();
+		var ticket = (Ticket) result.getModelAndView().getModel().get("bookedTicket");
+
+		assertEquals(USER_ID, ticket.getUserId());
+		assertEquals(EVENT_ID, ticket.getEventId());
+		assertEquals(Ticket.Category.BAR, ticket.getCategory());
+		assertEquals(PLACE, ticket.getPlace());
+	}
+
+	@Test
+	void testGetTicketsByUser_WithExistingUser() throws Exception{
+		var result = mockMvc.perform(get("/ticketsByUser")
+						.param("userId", String.valueOf(USER_ID))
+						.param("pageSize", "1")
+						.param("pageNum", "1"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("ticketsByUser"))
+				.andReturn();
+		var tickets = (List<Ticket>) result.getModelAndView().getModel().get("ticketsByUser");
+		assertEquals(USER_ID, tickets.get(0).getUserId());
+	}
+
+	@Test
+	void testGetTicketsByUser_WithNotExistingUser() throws Exception{
+		var result = mockMvc.perform(get("/ticketsByUser")
+						.param("userId", "100")
+						.param("pageSize", "1")
+						.param("pageNum", "1"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("ticketsByUser"))
+				.andReturn();
+		var tickets = (List<Ticket>) result.getModelAndView().getModel().get("ticketsByUser");
+		assertEquals(0, tickets.size());
+	}
+
+	@Test
+	void testGetTicketsByUserPdf() throws Exception{
+		var result = mockMvc.perform(get("/ticketsByUser")
+						.header("Accept", "application/pdf")
+						.param("userId", "1")
+						.param("pageSize", "1")
+						.param("pageNum", "1"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_PDF_VALUE));
+	}
+
+	@Test
+	void testGetTicketsByEvent_WithExistingEvent() throws Exception{
+		var result = mockMvc.perform(get("/ticketsByEvent")
+						.param("eventId", String.valueOf(EVENT_ID))
+						.param("pageSize", "1")
+						.param("pageNum", "1"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("ticketsByEvent"))
+				.andReturn();
+		var tickets = (List<Ticket>) result.getModelAndView().getModel().get("ticketsByEvent");
+		assertEquals(EVENT_ID, tickets.get(0).getEventId());
+	}
+
+	@Test
+	void testGetTicketsByEvent_WithNotExistingEvent() throws Exception{
+		var result = mockMvc.perform(get("/ticketsByEvent")
+						.param("eventId", "100")
+						.param("pageSize", "1")
+						.param("pageNum", "1"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("ticketsByEvent"))
+				.andReturn();
+		var tickets = (List<Ticket>) result.getModelAndView().getModel().get("ticketsByEvent");
+		assertEquals(0, tickets.size());
+	}
+
+	@Test
+	void deleteTicketTest_WithExistingId() throws Exception{
+		var result = mockMvc.perform(post("/deleteTicket")
+						.param("id", "1"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("ticketDeleted"))
+				.andReturn();
+
+		var ticketDeleted = (boolean) result.getModelAndView().getModel().get("ticketDeleted");
+		assertTrue(ticketDeleted);
+	}
+
+	@Test
+	void deleteTicketTest_WithNotExistingId() throws Exception{
+		var result = mockMvc.perform(post("/deleteTicket")
+						.param("id", "100"))
+				.andExpect(status().isOk())
+				.andExpect(model().attributeExists("ticketDeleted"))
+				.andReturn();
+
+		var ticketDeleted = (boolean) result.getModelAndView().getModel().get("ticketDeleted");
+		assertFalse(ticketDeleted);
+	}
+}

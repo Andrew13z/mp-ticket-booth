@@ -4,7 +4,6 @@ import org.example.facade.BookingFacade;
 import org.example.model.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,7 +20,6 @@ import java.time.LocalDate;
 @Controller
 public class EventController {
 
-	public static final String EVENT = "event";
 	private static final String EVENT_VIEW_NAME = "event";
 	private final BookingFacade facade;
 
@@ -37,7 +35,7 @@ public class EventController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@PostMapping(value = "/event", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	@PostMapping(value = "/event")
 	public String createEvent(@ModelAttribute Event event, ModelMap model){
 		var createdEvent = facade.createEvent(new Event(0L, event.getTitle(), event.getDate()));
 		model.addAttribute("createdEvent", createdEvent);
@@ -55,7 +53,7 @@ public class EventController {
 	public String getEventById(@RequestParam("id") long id, ModelMap model) {
 		var event = facade.getEventById(id);
 		model.addAttribute("eventById", event);
-		return EVENT;
+		return EVENT_VIEW_NAME;
 	}
 
 	/**
@@ -74,7 +72,7 @@ public class EventController {
 								 ModelMap model) {
 		var events = facade.getEventsByTitle(title, pageSize, pageNum);
 		model.addAttribute("eventsByTitle", events);
-		return EVENT;
+		return EVENT_VIEW_NAME;
 	}
 
 	/**
@@ -93,7 +91,7 @@ public class EventController {
 								 ModelMap model) {
 		var events = facade.getEventsForDay(date, pageSize, pageNum);
 		model.addAttribute("eventsByDate", events);
-		return EVENT;
+		return EVENT_VIEW_NAME;
 	}
 
 	/**
@@ -107,7 +105,7 @@ public class EventController {
 	public String updateEvent (@ModelAttribute Event event, ModelMap model) {
 		var updatedEvent = facade.updateEvent(event);
 		model.addAttribute("updatedEvent", updatedEvent);
-		return EVENT;
+		return EVENT_VIEW_NAME;
 	}
 
 	/**
@@ -121,6 +119,6 @@ public class EventController {
 	public String deleteEvent(@RequestParam("id") long id, ModelMap model) {
 		var deleteSuccessful = facade.deleteEvent(id);
 		model.addAttribute("eventDeleted", deleteSuccessful);
-		return EVENT;
+		return EVENT_VIEW_NAME;
 	}
 }

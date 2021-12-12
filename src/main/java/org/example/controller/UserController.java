@@ -3,7 +3,6 @@ package org.example.controller;
 import org.example.facade.BookingFacade;
 import org.example.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +32,7 @@ public class UserController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@PostMapping(value = "/user", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	@PostMapping(value = "/user")
 	public String createUser(@ModelAttribute User user, ModelMap model){
 		var createdUser = facade.createUser(new User(0L, user.getName(), user.getEmail()));
 		model.addAttribute("createdUser", createdUser);

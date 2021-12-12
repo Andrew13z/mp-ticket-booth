@@ -46,7 +46,7 @@ public class TicketController {
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
-	@PostMapping(value = "/ticket", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	@PostMapping(value = "/ticket")
 	public String createTicket(@ModelAttribute Ticket ticket, ModelMap model){
 		var bookedTicket =
 				facade.bookTicket(ticket.getUserId(), ticket.getEventId(), ticket.getCategory(), ticket.getPlace());
