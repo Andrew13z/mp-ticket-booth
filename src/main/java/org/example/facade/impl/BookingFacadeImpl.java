@@ -1,5 +1,6 @@
 package org.example.facade.impl;
 
+import org.example.converter.TicketXmlConverter;
 import org.example.facade.BookingFacade;
 import org.example.model.Event;
 import org.example.model.Ticket;
@@ -7,13 +8,21 @@ import org.example.model.User;
 import org.example.service.EventService;
 import org.example.service.TicketService;
 import org.example.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class BookingFacadeImpl implements BookingFacade {
+
+	private static final Logger logger = LoggerFactory.getLogger(BookingFacadeImpl.class);
 
 	private final EventService eventService;
 
@@ -21,10 +30,33 @@ public class BookingFacadeImpl implements BookingFacade {
 
 	private final UserService userService;
 
-	public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService) {
+	private final TicketXmlConverter ticketXmlConverter;
+
+	@Autowired
+	public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService, TicketXmlConverter ticketXmlConverter) {
 		this.eventService = eventService;
 		this.ticketService = ticketService;
 		this.userService = userService;
+		this.ticketXmlConverter = ticketXmlConverter;
+	}
+
+	@PostConstruct
+	private void preloadTickets() {
+		var tickets = parseTicketListFromXml();
+		tickets.forEach(ticket -> ticketService.bookTicket(ticket.getUserId(), ticket.getEventId(),
+				ticket.getCategory(), ticket.getPlace()));
+		logger.info("Loaded ticket data with {} entries.", tickets.size());
+	}
+
+	private List<Ticket> parseTicketListFromXml() {
+		List<Ticket> tickets = new ArrayList<>();
+		try {
+			tickets = ticketXmlConverter.xmlToObject();
+		} catch (IOException e) {
+			logger.warn("Failed to load ticket data.");
+			e.printStackTrace();
+		}
+		return tickets;
 	}
 
 	@Override
