@@ -17,6 +17,7 @@ import java.time.LocalDate;
 @Controller
 public class EventController {
 
+	private static final String EVENT_VIEW_NAME = "event";
 	private final BookingFacade facade;
 
 	@Autowired
@@ -28,7 +29,7 @@ public class EventController {
 	public String createEvent(@ModelAttribute Event event, ModelMap model){
 		var createdEvent = facade.createEvent(new Event(0L, event.getTitle(), event.getDate()));
 		model.addAttribute("createdEvent", createdEvent);
-		return "event";
+		return EVENT_VIEW_NAME;
 	}
 
 	@GetMapping("/event")

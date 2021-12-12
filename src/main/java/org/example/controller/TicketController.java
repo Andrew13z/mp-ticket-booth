@@ -26,6 +26,7 @@ import java.io.IOException;
 public class TicketController {
 
 	private static final Logger logger = LoggerFactory.getLogger(TicketController.class);
+	public static final String TICKET_VIEW_NAME = "ticket";
 
 	private final BookingFacade facade;
 
@@ -39,7 +40,7 @@ public class TicketController {
 		var bookedTicket =
 				facade.bookTicket(ticket.getUserId(), ticket.getEventId(), ticket.getCategory(), ticket.getPlace());
 		model.addAttribute("bookedTicket", bookedTicket);
-		return "ticket";
+		return TICKET_VIEW_NAME;
 	}
 
 	@GetMapping("/ticketsByUser")
