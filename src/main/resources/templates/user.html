@@ -35,6 +35,24 @@
         <p th:text="${userByEmail.email}"></p>
     </div>
 
+    <div th:if="${users != null}">
+        <p>Users:</p>
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.email}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
     <div th:if="${userDeleted != null}">
         <p>User deleted:</p>
         <p th:text="${userDeleted}"></p>

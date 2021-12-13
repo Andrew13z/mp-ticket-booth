@@ -136,6 +136,12 @@
         <input type="submit"/>
     </form>
 
+    <h3>Batch book tickets</h3>
+    <form  th:action="@{/ticket/batch}" enctype="multipart/form-data" method="post">
+        <input type="file" name="file" class="form-control-file">
+        <button type="submit" class="btn btn-primary">Upload File</button>
+    </form>
+
     <h3>Get Ticket By User</h3>
     <form th:action="@{/ticket/byUser}" method="get">
         <label>User Id</label>

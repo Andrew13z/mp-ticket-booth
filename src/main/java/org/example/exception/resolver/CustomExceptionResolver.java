@@ -2,6 +2,7 @@ package org.example.exception.resolver;
 
 import org.example.exception.EntityNotFoundException;
 import org.example.exception.PdfGenerationException;
+import org.example.exception.UnmarshallingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class CustomExceptionResolver extends AbstractHandlerExceptionResolver {
 
-	private static final String ERROR_VIEW_NAME = "error";
+	private static final String ERROR_VIEW_NAME = "error.html";
 	private static final String MESSAGE = "message";
 
 	/**
@@ -31,7 +32,10 @@ public class CustomExceptionResolver extends AbstractHandlerExceptionResolver {
 			return handlePdfGenerationException((PdfGenerationException) ex);
 		} else if (ex instanceof IllegalArgumentException){
 			return handleIllegalArgumentException((IllegalArgumentException) ex);
-		} else{
+		} else if (ex instanceof UnmarshallingException){
+			return handleUnmarshallingException((UnmarshallingException) ex);
+		}
+		else{
 			return handleException(ex);
 		}
 	}
@@ -58,6 +62,19 @@ public class CustomExceptionResolver extends AbstractHandlerExceptionResolver {
 		var modelAndView = new ModelAndView();
 		modelAndView.setViewName(ERROR_VIEW_NAME);
 		modelAndView.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+		modelAndView.addObject(MESSAGE, ex.getMessage());
+		return modelAndView;
+	}
+
+	/**
+	 * Handles UnmarshallingException
+	 * @param ex thrown UnmarshallingException
+	 * @return model with view name, response status, and message
+	 */
+	private ModelAndView handleUnmarshallingException(UnmarshallingException ex) {
+		var modelAndView = new ModelAndView();
+		modelAndView.setViewName(ERROR_VIEW_NAME);
+		modelAndView.setStatus(HttpStatus.BAD_REQUEST);
 		modelAndView.addObject(MESSAGE, ex.getMessage());
 		return modelAndView;
 	}

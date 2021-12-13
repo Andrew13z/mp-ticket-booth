@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +31,14 @@ public class BookingFacadeImpl implements BookingFacade {
 
 	private final UserService userService;
 
-	private final XmlConverter ticketXmlConverter;
+	private final XmlConverter xmlConverter;
 
 	@Autowired
-	public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService, XmlConverter ticketXmlConverter) {
+	public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService, XmlConverter xmlConverter) {
 		this.eventService = eventService;
 		this.ticketService = ticketService;
 		this.userService = userService;
-		this.ticketXmlConverter = ticketXmlConverter;
+		this.xmlConverter = xmlConverter;
 	}
 
 	/**
@@ -65,7 +66,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	private List<Ticket> parseTicketListFromXml() {
 		List<Ticket> tickets = new ArrayList<>();
 		try {
-			tickets = ticketXmlConverter.parseTicketXmlToObject();
+			tickets = xmlConverter.parseTicketXmlToObject();
 		} catch (IOException e) {
 			logger.warn("Failed to load ticket data.");
 			e.printStackTrace();
@@ -81,7 +82,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	private List<User> parseUserListFromXml() {
 		List<User> users = new ArrayList<>();
 		try {
-			users = ticketXmlConverter.parseUserXmlToObject();
+			users = xmlConverter.parseUserXmlToObject();
 		} catch (IOException e) {
 			logger.warn("Failed to load user data.");
 			e.printStackTrace();
@@ -97,7 +98,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	private List<Event> parseEventListFromXml() {
 		List<Event> events = new ArrayList<>();
 		try {
-			events = ticketXmlConverter.parseEventXmlToObject();
+			events = xmlConverter.parseEventXmlToObject();
 		} catch (IOException e) {
 			logger.warn("Failed to load event data.");
 			e.printStackTrace();
@@ -207,6 +208,13 @@ public class BookingFacadeImpl implements BookingFacade {
 	@Override
 	public Ticket bookTicket(long userId, long eventId, Ticket.Category category, int place) {
 		return ticketService.bookTicket(userId, eventId, category, place);
+	}
+
+	@Override
+	public List<Ticket> batchBookTickets(InputStream stream) throws IOException {
+		var tickets = xmlConverter.parseTicketXmlToObject(stream);
+		tickets.forEach(ticket -> bookTicket(ticket.getUserId(), ticket.getEventId(), ticket.getCategory(), ticket.getPlace()));
+		return tickets;
 	}
 
 	/**
