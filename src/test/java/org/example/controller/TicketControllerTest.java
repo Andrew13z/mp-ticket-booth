@@ -60,9 +60,9 @@ class TicketControllerTest {
 		var result = mockMvc.perform(post("/ticket")
 						.flashAttr("ticket", new Ticket(0L, USER_ID, EVENT_ID, Ticket.Category.BAR, PLACE)))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("bookedTicket"))
+				.andExpect(model().attributeExists("createdTicket"))
 				.andReturn();
-		var ticket = (Ticket) result.getModelAndView().getModel().get("bookedTicket");
+		var ticket = (Ticket) result.getModelAndView().getModel().get("createdTicket");
 
 		assertEquals(USER_ID, ticket.getUserId());
 		assertEquals(EVENT_ID, ticket.getEventId());

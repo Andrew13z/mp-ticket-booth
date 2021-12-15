@@ -1,28 +1,23 @@
 package org.example.facade.impl;
 
-import org.example.converter.XmlConverter;
 import org.example.facade.BookingFacade;
 import org.example.model.Event;
 import org.example.model.Ticket;
 import org.example.model.User;
+import org.example.preloader.DataPreloader;
 import org.example.service.EventService;
 import org.example.service.TicketService;
 import org.example.service.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class BookingFacadeImpl implements BookingFacade {
 
-	private static final Logger logger = LoggerFactory.getLogger(BookingFacadeImpl.class);
 
 	private final EventService eventService;
 
@@ -30,79 +25,22 @@ public class BookingFacadeImpl implements BookingFacade {
 
 	private final UserService userService;
 
-	private final XmlConverter ticketXmlConverter;
+	private final List<DataPreloader<?>> dataPreloaders;
 
 	@Autowired
-	public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService, XmlConverter ticketXmlConverter) {
+	public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService, List<DataPreloader<?>> dataPreloaders) {
 		this.eventService = eventService;
 		this.ticketService = ticketService;
 		this.userService = userService;
-		this.ticketXmlConverter = ticketXmlConverter;
+		this.dataPreloaders = dataPreloaders;
 	}
 
 	/**
-	 * Preloads ticket data from xml file.
+	 * Preloads data from xml files.
 	 */
 	@PostConstruct
 	private void preloadData() {
-		var tickets = parseTicketListFromXml();
-		tickets.forEach(ticket -> ticketService.bookTicket(ticket.getUserId(), ticket.getEventId(),
-				ticket.getCategory(), ticket.getPlace()));
-		logger.info("Loaded ticket data with {} entries.", tickets.size());
-		var users = parseUserListFromXml();
-		users.forEach(user -> userService.createUser(new User(user.getId(), user.getName(), user.getEmail())));
-		logger.info("Loaded user data with {} entries.", users.size());
-		var events = parseEventListFromXml();
-		events.forEach(event -> eventService.createEvent(new Event(event.getId(), event.getTitle(), event.getDate())));
-		logger.info("Loaded event data with {} entries.", events.size());
-	}
-
-	/**
-	 * Parses ticket list form xml file.
-	 *
-	 * @return List of pased tickets
-	 */
-	private List<Ticket> parseTicketListFromXml() {
-		List<Ticket> tickets = new ArrayList<>();
-		try {
-			tickets = ticketXmlConverter.parseTicketXmlToObject();
-		} catch (IOException e) {
-			logger.warn("Failed to load ticket data.");
-			e.printStackTrace();
-		}
-		return tickets;
-	}
-
-	/**
-	 * Parses ticket list form xml file.
-	 *
-	 * @return List of pased tickets
-	 */
-	private List<User> parseUserListFromXml() {
-		List<User> users = new ArrayList<>();
-		try {
-			users = ticketXmlConverter.parseUserXmlToObject();
-		} catch (IOException e) {
-			logger.warn("Failed to load user data.");
-			e.printStackTrace();
-		}
-		return users;
-	}
-
-	/**
-	 * Parses ticket list form xml file.
-	 *
-	 * @return List of pased tickets
-	 */
-	private List<Event> parseEventListFromXml() {
-		List<Event> events = new ArrayList<>();
-		try {
-			events = ticketXmlConverter.parseEventXmlToObject();
-		} catch (IOException e) {
-			logger.warn("Failed to load event data.");
-			e.printStackTrace();
-		}
-		return events;
+		dataPreloaders.forEach(DataPreloader::preloadData);
 	}
 
 	/**

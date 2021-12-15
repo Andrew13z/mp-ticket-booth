@@ -52,7 +52,7 @@ public class TicketController {
 	public String createTicket(@ModelAttribute Ticket ticket, ModelMap model){
 		var bookedTicket =
 				facade.bookTicket(ticket.getUserId(), ticket.getEventId(), ticket.getCategory(), ticket.getPlace());
-		model.addAttribute("bookedTicket", bookedTicket);
+		model.addAttribute("createdTicket", bookedTicket);
 		return TICKET_VIEW_NAME;
 	}
 
