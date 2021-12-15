@@ -17,6 +17,9 @@ public class Ticket {
 
 	private int place;
 
+	public Ticket() {
+	}
+
 	public Ticket(long id, long userId, long eventId, Category category, int place) {
 		this.id = id;
 		this.userId = userId;

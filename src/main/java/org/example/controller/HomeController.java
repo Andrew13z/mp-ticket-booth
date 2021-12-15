@@ -31,7 +31,7 @@ public class HomeController {
 	 */
 	@ModelAttribute("user")
 	public User getEmptyUser() {
-		return new User(0L, null, null);
+		return new User();
 	}
 
 	/**
@@ -41,7 +41,7 @@ public class HomeController {
 	 */
 	@ModelAttribute("event")
 	public Event getEmptyEvent() {
-		return new Event(0L, null, null);
+		return new Event();
 	}
 
 	/**
@@ -51,6 +51,6 @@ public class HomeController {
 	 */
 	@ModelAttribute("ticket")
 	public Ticket getEmptyTicket() {
-		return new Ticket(0L, 0L, 0L, null, 0);
+		return new Ticket();
 	}
 }

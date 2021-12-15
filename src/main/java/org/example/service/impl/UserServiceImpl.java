@@ -12,8 +12,12 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
+	private final UserRepository repository;
+
 	@Autowired
-	private UserRepository repository;
+	public UserServiceImpl(UserRepository repository) {
+		this.repository = repository;
+	}
 
 	/**
 	 * {@inheritDoc}

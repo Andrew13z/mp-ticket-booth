@@ -1,15 +1,13 @@
 package org.example.facade.impl;
 
-import org.example.config.AppConfig;
 import org.example.model.Event;
 import org.example.model.Ticket;
 import org.example.model.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.time.LocalDate;
 
@@ -18,8 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = AppConfig.class)
-@WebAppConfiguration
+@SpringBootTest
 class BookingFacadeImplTest {
 
 	private final String userName = "Name";

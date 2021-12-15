@@ -9,31 +9,32 @@ import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * Custom exception resolver
  * @author Andrii Krokhta
  */
 @Component
-public class CustomExceptionResolver extends AbstractHandlerExceptionResolver {
+public class CustomExceptionResolver extends AbstractHandlerExceptionResolver { // TODO: try to migrate to ControllerAdvice
 
 	private static final String ERROR_VIEW_NAME = "error";
 	private static final String MESSAGE = "message";
+
+	private final Map<Class<? extends Exception>, Function<Exception, ModelAndView>> exceptionMapping =
+			Map.of(
+					EntityNotFoundException.class, ex -> this.handleEntityNotFoundException((EntityNotFoundException) ex),
+					PdfGenerationException.class, ex -> this.handlePdfGenerationException((PdfGenerationException) ex),
+					IllegalArgumentException.class, ex -> this.handleIllegalArgumentException((IllegalArgumentException) ex));
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
-		if (ex instanceof EntityNotFoundException) {
-			return handleEntityNotFoundException((EntityNotFoundException) ex);
-		} else if (ex instanceof PdfGenerationException) {
-			return handlePdfGenerationException((PdfGenerationException) ex);
-		} else if (ex instanceof IllegalArgumentException){
-			return handleIllegalArgumentException((IllegalArgumentException) ex);
-		} else{
-			return handleException(ex);
-		}
+	protected ModelAndView 
+	doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+		return exceptionMapping.getOrDefault(ex.getClass(), this::handleException).apply(ex);
 	}
 
 	/**

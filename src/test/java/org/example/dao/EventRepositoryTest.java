@@ -17,7 +17,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.assertThrows; // TODO: why assertThrowsExactly was used here?
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -70,7 +70,7 @@ class EventRepositoryTest {
 	void updateEventTestWithNotExistingId() {
 		var newEvent = createEvent(ID_1, TITLE_1, DATE_1);
 
-		assertThrowsExactly(EntityNotFoundException.class,
+		assertThrows(EntityNotFoundException.class,
 				() -> repository.updateEvent(newEvent),
 				"Event not found by id: 1");
 	}

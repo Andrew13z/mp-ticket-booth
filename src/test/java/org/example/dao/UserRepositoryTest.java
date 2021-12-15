@@ -16,7 +16,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -59,7 +59,7 @@ class UserRepositoryTest {
 	void saveTestWithExistingEmail() {
 		var user = createUser(ID_ZERO, NAME_1, EMAIL_1);
 		when(mockStorage.getData()).thenReturn(Map.of(ID_2, createUser(ID_2, NAME_2, EMAIL_1)));
-		assertThrowsExactly(IllegalArgumentException.class,
+		assertThrows(IllegalArgumentException.class,
 							() -> repository.save(user),
 		 					EMAIL_NOT_UNIQUE_MESSAGE);
 	}
@@ -94,7 +94,7 @@ class UserRepositoryTest {
 				ID_2, createUser(ID_2, NAME_2, EMAIL_2)));
 		var newUser = createUser(ID_1, NAME_1, EMAIL_2);
 
-		assertThrowsExactly(IllegalArgumentException.class,
+		assertThrows(IllegalArgumentException.class,
 							() -> repository.update(newUser),
 				EMAIL_NOT_UNIQUE_MESSAGE);
 	}
@@ -103,7 +103,7 @@ class UserRepositoryTest {
 	void updateUserTestWithNotExistingId(){
 		var newUser = createUser(ID_1, NAME_1, EMAIL_1);
 
-		assertThrowsExactly(EntityNotFoundException.class,
+		assertThrows(EntityNotFoundException.class,
 							() -> repository.update(newUser),
 					"User not found by id: 1");
 	}

@@ -9,7 +9,7 @@ import java.util.Map;
 @Component
 public class EventInMemoryStorage extends InMemoryStorage<Event>{
 
-	private Map<Long, Event> events = new HashMap<>();
+	private final Map<Long, Event> events = new HashMap<>();
 
 	/**
 	 * {@inheritDoc}
@@ -18,5 +18,4 @@ public class EventInMemoryStorage extends InMemoryStorage<Event>{
 	public Map<Long, Event> getData() {
 		return events;
 	}
-
 }

@@ -16,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
 class EventServiceImplTest {
 
@@ -43,5 +42,4 @@ class EventServiceImplTest {
 		var exception = assertThrows(EntityNotFoundException.class, () -> eventService.getEventById(ID));//todo
 		assertEquals("Event not found by id: 1", exception.getMessage());
 	}
-
 }

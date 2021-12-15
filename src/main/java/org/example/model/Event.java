@@ -13,6 +13,9 @@ public class Event {
 
 	private String title;
 
+	public Event() {
+	}
+
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate date;
 

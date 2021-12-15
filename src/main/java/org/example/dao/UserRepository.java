@@ -21,9 +21,6 @@ public class UserRepository extends InMemoryRepository<Long, User>{
 
 	private final InMemoryStorage<User> storage;
 
-	@Value("${users.source}")
-	private String usersFile;
-
 	@Autowired
 	public UserRepository(InMemoryStorage<User> storage) {
 		this.storage = storage;

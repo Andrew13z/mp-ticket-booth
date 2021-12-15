@@ -55,5 +55,4 @@ class UserServiceImplTest {
 		var exception = assertThrows(EntityNotFoundException.class, () -> userService.getUserByEmail(EMAIL));
 		assertEquals("User not found by email: email@mail.com", exception.getMessage());
 	}
-
 }

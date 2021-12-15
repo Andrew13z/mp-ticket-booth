@@ -1,6 +1,7 @@
 package org.example.facade.impl;
 
-import org.example.converter.XmlConverter;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.example.converter.XmlMarshaller;
 import org.example.facade.BookingFacade;
 import org.example.model.Event;
 import org.example.model.Ticket;
@@ -11,12 +12,14 @@ import org.example.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -30,14 +33,27 @@ public class BookingFacadeImpl implements BookingFacade {
 
 	private final UserService userService;
 
-	private final XmlConverter ticketXmlConverter;
+	private final XmlMarshaller xmlMarshaller;
 
-	@Autowired
-	public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService, XmlConverter ticketXmlConverter) {
+  @Value("${tickets.source}")
+  private Resource ticketsFile;
+
+  @Value("${users.source}")
+  private Resource usersFile;
+
+  @Value("${events.source}")
+  private Resource eventsFile;
+
+
+  @Autowired
+	public BookingFacadeImpl(EventService eventService,
+													 TicketService ticketService,
+													 UserService userService,
+													 XmlMarshaller xmlMarshaller) {
 		this.eventService = eventService;
 		this.ticketService = ticketService;
 		this.userService = userService;
-		this.ticketXmlConverter = ticketXmlConverter;
+		this.xmlMarshaller = xmlMarshaller;
 	}
 
 	/**
@@ -60,49 +76,43 @@ public class BookingFacadeImpl implements BookingFacade {
 	/**
 	 * Parses ticket list form xml file.
 	 *
-	 * @return List of pased tickets
+	 * @return List of parsed tickets
 	 */
 	private List<Ticket> parseTicketListFromXml() {
-		List<Ticket> tickets = new ArrayList<>();
 		try {
-			tickets = ticketXmlConverter.parseTicketXmlToObject();
+			return xmlMarshaller.parse(ticketsFile, new TypeReference<>() {});
 		} catch (IOException e) {
-			logger.warn("Failed to load ticket data.");
-			e.printStackTrace();
+      logger.warn("Failed to load ticket data: {}", e.getMessage(), e);
+      return Collections.emptyList();
 		}
-		return tickets;
 	}
 
 	/**
-	 * Parses ticket list form xml file.
+	 * Parses user list form xml file.
 	 *
-	 * @return List of pased tickets
+	 * @return List of parsed users
 	 */
 	private List<User> parseUserListFromXml() {
-		List<User> users = new ArrayList<>();
 		try {
-			users = ticketXmlConverter.parseUserXmlToObject();
+			return xmlMarshaller.parse(usersFile, new TypeReference<>() {});
 		} catch (IOException e) {
-			logger.warn("Failed to load user data.");
-			e.printStackTrace();
+      logger.warn("Failed to load user data: {}", e.getMessage(), e);
+      return Collections.emptyList();
 		}
-		return users;
 	}
 
 	/**
-	 * Parses ticket list form xml file.
+	 * Parses event list form xml file.
 	 *
-	 * @return List of pased tickets
+	 * @return List of parsed events
 	 */
 	private List<Event> parseEventListFromXml() {
-		List<Event> events = new ArrayList<>();
 		try {
-			events = ticketXmlConverter.parseEventXmlToObject();
+      return xmlMarshaller.parse(eventsFile, new TypeReference<>() {});
 		} catch (IOException e) {
-			logger.warn("Failed to load event data.");
-			e.printStackTrace();
+			logger.warn("Failed to load event data: {}", e.getMessage(), e);
+      return Collections.emptyList();
 		}
-		return events;
 	}
 
 	/**

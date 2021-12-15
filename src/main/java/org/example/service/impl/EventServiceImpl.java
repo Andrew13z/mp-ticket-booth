@@ -13,8 +13,12 @@ import java.util.List;
 @Service
 public class EventServiceImpl implements EventService {
 
+	private final EventRepository repository;
+
 	@Autowired
-	private EventRepository repository;
+	public EventServiceImpl(EventRepository repository) {
+		this.repository = repository;
+	}
 
 	/**
 	 * {@inheritDoc}

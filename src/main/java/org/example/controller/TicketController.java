@@ -67,9 +67,9 @@ public class TicketController {
 	 */
 	@GetMapping("/byUser")
 	public String getTicketsByUser(@RequestParam("userId") long userId,
-								   @RequestParam("pageSize") int pageSize,
-								   @RequestParam("pageNum") int pageNum,
-								   ModelMap model) {
+																 @RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize,
+																 @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
+																 ModelMap model) {
 		var tickets = facade.getBookedTickets(new User(userId, null, null), pageSize, pageNum);
 		model.addAttribute("ticketsByUser", tickets);
 		return TICKET_VIEW_NAME;
@@ -84,9 +84,10 @@ public class TicketController {
 	 * @return byte[] of pdf with ticket data.
 	 */
 	@GetMapping(value = "/byUser", headers = "Accept=application/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
-	public @ResponseBody byte[] getTicketsByUserPdf(@RequestParam("userId") long userId,
-													@RequestParam("pageSize") int pageSize,
-													@RequestParam("pageNum") int pageNum) {
+	public @ResponseBody byte[] getTicketsByUserPdf(
+			@RequestParam("userId") long userId,
+			@RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize,
+			@RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum) {
 		var tickets = facade.getBookedTickets(new User(userId, null, null), pageSize, pageNum);
 		var generatedFile = DocumentUtil.writeToPdf(tickets);
 		try {
@@ -110,9 +111,9 @@ public class TicketController {
 	 */
 	@GetMapping("/byEvent")
 	public String getTicketsByEvent(@RequestParam("eventId") long eventId,
-									@RequestParam("pageSize") int pageSize,
-									@RequestParam("pageNum") int pageNum,
-								   ModelMap model) {
+																	@RequestParam(value = "pageSize", required = false, defaultValue = "20") int pageSize,
+																	@RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
+																	ModelMap model) {
 		var tickets = facade.getBookedTickets(new Event(eventId, null, null), pageSize, pageNum);
 		model.addAttribute("ticketsByEvent", tickets);
 		return TICKET_VIEW_NAME;

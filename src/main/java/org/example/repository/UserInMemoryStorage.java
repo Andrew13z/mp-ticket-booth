@@ -9,7 +9,7 @@ import java.util.Map;
 @Component
 public class UserInMemoryStorage extends InMemoryStorage<User> {
 
-	private Map<Long, User> users = new HashMap<>();
+	private final Map<Long, User> users = new HashMap<>();
 
 	/**
 	 * {@inheritDoc}
@@ -18,5 +18,4 @@ public class UserInMemoryStorage extends InMemoryStorage<User> {
 	public Map<Long, User> getData() {
 		return users;
 	}
-
 }
