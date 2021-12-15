@@ -38,8 +38,6 @@ public class XmlConverter<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<T> parseXmlToObjectList(InputStream file) throws IOException {
-//		try (FileInputStream inputStream = new StreamSource(file)) {
-			return (List<T>) unmarshaller.unmarshal(new StreamSource(file));
-//		}
+		return (List<T>) unmarshaller.unmarshal(new StreamSource(file));
 	}
 }
