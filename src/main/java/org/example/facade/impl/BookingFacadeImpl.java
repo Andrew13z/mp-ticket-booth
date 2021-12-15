@@ -33,11 +33,12 @@ public class BookingFacadeImpl implements BookingFacade {
 	private final List<DataPreloader<?>> dataPreloaders;
 
 	@Autowired
-	public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService, XmlConverter<Ticket> xmlConverter) {
+	public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService, XmlConverter<Ticket> xmlConverter, List<DataPreloader<?>> dataPreloaders) {
 		this.eventService = eventService;
 		this.ticketService = ticketService;
 		this.userService = userService;
 		this.xmlConverter = xmlConverter;
+		this.dataPreloaders = dataPreloaders;
 	}
 
 	/**
@@ -154,7 +155,7 @@ public class BookingFacadeImpl implements BookingFacade {
 
 	@Override
 	public List<Ticket> batchBookTickets(InputStream stream) throws IOException {
-		var tickets = xmlConverter.parseTicketXmlToObject(stream);
+		var tickets = xmlConverter.parseXmlToObjectList(stream);
 		tickets.forEach(ticket -> bookTicket(ticket.getUserId(), ticket.getEventId(), ticket.getCategory(), ticket.getPlace()));
 		return tickets;
 	}
