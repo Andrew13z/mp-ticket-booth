@@ -4,6 +4,8 @@ import org.example.model.Event;
 import org.example.model.Ticket;
 import org.example.model.User;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -126,6 +128,13 @@ public interface BookingFacade {
 	 * @throws java.lang.IllegalStateException if this place has already been booked.
 	 */
 	Ticket bookTicket(long userId, long eventId, Ticket.Category category, int place);
+
+	/**
+	 * Batch book ticket from the input stream.
+	 *
+	 * @param stream input stream.
+	 */
+	List<Ticket> batchBookTickets(InputStream stream) throws IOException;
 
 	/**
 	 * Get all booked tickets for specified user. Tickets should be sorted by event date in descending order.

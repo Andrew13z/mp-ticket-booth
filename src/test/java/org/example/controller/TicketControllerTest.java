@@ -1,6 +1,5 @@
 package org.example.controller;
 
-import org.example.config.AppConfig;
 import org.example.model.Ticket;
 import org.example.repository.InMemoryStorage;
 import org.junit.jupiter.api.AfterEach;
@@ -8,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -28,9 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {AppConfig.class })
-@WebAppConfiguration
+@SpringBootTest
 class TicketControllerTest {
 
 	private static final long TICKET_ID = 1L;

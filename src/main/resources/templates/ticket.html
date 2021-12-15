@@ -76,6 +76,30 @@
         <p th:text="${ticketDeleted}"></p>
     </div>
 
+    <div th:if="${batchBookedTickets != null}">
+        <p>Batch Booked Tickets:</p>
+        <table>
+            <tr>
+                <th>Id</th>
+                <th>User Id</th>
+                <th>Event Id</th>
+                <th>Category</th>
+                <th>Place</th>
+            </tr>
+            <tbody>
+            <tr th:each="ticket : ${batchBookedTickets}">
+                <td th:text="${ticket.id}"></td>
+                <td th:text="${ticket.userId}"></td>
+                <td th:text="${ticket.eventId}"></td>
+                <td th:text="${ticket.category}"></td>
+                <td th:text="${ticket.place}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
     <form th:action="@{/home}" method="get">
         <button type="submit">Home</button>
     </form>

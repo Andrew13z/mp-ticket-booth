@@ -20,8 +20,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Controller for all operations on Tickets.
@@ -96,6 +98,27 @@ public class TicketController {
 			e.printStackTrace();
 			logger.warn("Failed to generate and load PDF file.");
 			throw new PdfGenerationException("Failed to generate and load PDF file.");
+		}
+	}
+
+	/**
+	 * Uploads a file with ticket data and save the data.
+	 *
+	 * @return byte[] of pdf with ticket data.
+	 */
+	@PostMapping(value = "/batch")
+	public String batchBookTicketsFromFile(@RequestParam("file") MultipartFile file, ModelMap model) {
+		List<Ticket> savedTickets = null;
+		try {
+			savedTickets = facade.batchBookTickets(file.getInputStream());
+		} catch (IOException e) {
+			logger.warn("Failed to load tickets from a file. {}", e.getMessage());
+		}
+		if (savedTickets != null){
+			model.addAttribute("batchBookedTickets", savedTickets);
+			return TICKET_VIEW_NAME;
+		}	else {
+			return "error";
 		}
 	}
 

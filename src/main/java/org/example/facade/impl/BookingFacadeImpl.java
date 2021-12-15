@@ -1,5 +1,6 @@
 package org.example.facade.impl;
 
+import org.example.converter.XmlConverter;
 import org.example.facade.BookingFacade;
 import org.example.model.Event;
 import org.example.model.Ticket;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -25,13 +28,16 @@ public class BookingFacadeImpl implements BookingFacade {
 
 	private final UserService userService;
 
+	private final XmlConverter<Ticket> xmlConverter;
+
 	private final List<DataPreloader<?>> dataPreloaders;
 
 	@Autowired
-	public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService, List<DataPreloader<?>> dataPreloaders) {
+	public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService, XmlConverter<Ticket> xmlConverter, List<DataPreloader<?>> dataPreloaders) {
 		this.eventService = eventService;
 		this.ticketService = ticketService;
 		this.userService = userService;
+		this.xmlConverter = xmlConverter;
 		this.dataPreloaders = dataPreloaders;
 	}
 
@@ -145,6 +151,13 @@ public class BookingFacadeImpl implements BookingFacade {
 	@Override
 	public Ticket bookTicket(long userId, long eventId, Ticket.Category category, int place) {
 		return ticketService.bookTicket(userId, eventId, category, place);
+	}
+
+	@Override
+	public List<Ticket> batchBookTickets(InputStream stream) throws IOException {
+		var tickets = xmlConverter.parseXmlToObjectList(stream);
+		tickets.forEach(ticket -> bookTicket(ticket.getUserId(), ticket.getEventId(), ticket.getCategory(), ticket.getPlace()));
+		return tickets;
 	}
 
 	/**

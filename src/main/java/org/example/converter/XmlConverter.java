@@ -8,6 +8,7 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -29,5 +30,14 @@ public class XmlConverter<T> {
 		try (FileInputStream inputStream = new FileInputStream(file)) {
 			return (List<T>) unmarshaller.unmarshal(new StreamSource(inputStream));
 		}
+	}
+
+	/**
+	 * Converter the xml file with model data to list of models.
+	 * @return List of models.
+	 */
+	@SuppressWarnings("unchecked")
+	public List<T> parseXmlToObjectList(InputStream file) throws IOException {
+		return (List<T>) unmarshaller.unmarshal(new StreamSource(file));
 	}
 }
