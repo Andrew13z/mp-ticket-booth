@@ -97,7 +97,7 @@ public class TicketController {
 			return IOUtils.toByteArray(stream);
 		} catch (IOException e) {
 			e.printStackTrace();
-			logger.warn("Failed to generate and load PDF file.");
+			logger.warn("Failed to generate and load PDF file: {}", e.getMessage());
 			throw new PdfGenerationException("Failed to generate and load PDF file.");
 		}
 	}

@@ -35,7 +35,7 @@ public final class DocumentUtil {
 												.toURI()
 												+ "tickets";
 		} catch (URISyntaxException e) {
-			logger.warn("Failed to parse file location.");
+			logger.warn("Failed to parse file location: {}", e.getMessage());
 			throw new PdfGenerationException("Failed to parse file location.");
 		}
 	}
@@ -73,7 +73,7 @@ public final class DocumentUtil {
 			doc.save(realFile);
 			return realFile.getPath();
 		} catch (IOException | URISyntaxException ex) {
-			logger.warn("Failed to generate and load PDF file.");
+			logger.warn("Failed to generate and load PDF file: {}", ex);
 			ex.printStackTrace();
 			throw new PdfGenerationException("Failed to generate and load PDF file.");
 		}
