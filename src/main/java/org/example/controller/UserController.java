@@ -80,8 +80,8 @@ public class UserController {
 	 */
 	@GetMapping("/byName")
 	public String getUsersByName(@RequestParam("name") String name,
-								 @RequestParam("pageSize") int pageSize,
-								 @RequestParam("pageNum") int pageNum,
+								 @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
+								 @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
 								 ModelMap model) {
 		var users = facade.getUsersByName(name, pageSize, pageNum);
 		model.addAttribute("users", users);
@@ -115,7 +115,4 @@ public class UserController {
 		model.addAttribute("userDeleted", deleteSuccessful);
 		return USER_VIEW_NAME;
 	}
-
-
-
 }

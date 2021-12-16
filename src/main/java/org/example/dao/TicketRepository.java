@@ -22,10 +22,10 @@ public class TicketRepository extends InMemoryRepository<Long, Ticket>{
 
 	private static final Logger logger = LoggerFactory.getLogger(TicketRepository.class);
 
-	private InMemoryStorage<Ticket> storage;
+	private final InMemoryStorage<Ticket> storage;
 
 	@Autowired
-	public void setStorage(InMemoryStorage<Ticket> storage) {
+	public TicketRepository(InMemoryStorage<Ticket> storage) {
 		this.storage = storage;
 	}
 

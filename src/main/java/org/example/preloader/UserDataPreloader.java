@@ -1,6 +1,7 @@
 package org.example.preloader;
 
-import org.example.converter.XmlConverter;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.example.converter.XmlMarshaller;
 import org.example.model.User;
 import org.example.service.UserService;
 import org.slf4j.Logger;
@@ -25,12 +26,12 @@ public class UserDataPreloader implements DataPreloader<User>{
 	@Value("${users.source}")
 	private Resource usersFile;
 
-	private final XmlConverter<User> xmlConverter;
+	private final XmlMarshaller xmlMarshaller;
 	private final UserService userService;
 
 	@Autowired
-	public UserDataPreloader(XmlConverter<User> xmlConverter, UserService userService) {
-		this.xmlConverter = xmlConverter;
+	public UserDataPreloader(XmlMarshaller xmlMarshaller, UserService userService) {
+		this.xmlMarshaller = xmlMarshaller;
 		this.userService = userService;
 	}
 
@@ -41,9 +42,9 @@ public class UserDataPreloader implements DataPreloader<User>{
 	public List<User> preloadData() {
 		List<User> users = new ArrayList<>();
 		try {
-			users = xmlConverter.parseXmlToObjectList(usersFile.getFile());
+			users = xmlMarshaller.parse(usersFile, new TypeReference<>(){});
 		} catch (IOException e) {
-			logger.warn("Failed to load user data.");
+			logger.warn("Failed to load user data: {}", e.getMessage());
 			e.printStackTrace();
 		}
 		users.forEach(userService::createUser);

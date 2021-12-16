@@ -17,6 +17,9 @@ public class Ticket {
 
 	private int place;
 
+	public Ticket() {
+	}
+
 	public Ticket(long id, long userId, long eventId, Category category, int place) {
 		this.id = id;
 		this.userId = userId;
@@ -63,16 +66,5 @@ public class Ticket {
 
 	public void setPlace(int place) {
 		this.place = place;
-	}
-
-	@Override
-	public String toString() {
-		return "Ticket{" +
-				"id=" + id +
-				", userId=" + userId +
-				", eventId=" + eventId +
-				", category=" + category +
-				", place=" + place +
-				'}';
 	}
 }

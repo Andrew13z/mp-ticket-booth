@@ -1,6 +1,7 @@
 package org.example.preloader;
 
-import org.example.converter.XmlConverter;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.example.converter.XmlMarshaller;
 import org.example.model.Ticket;
 import org.example.service.TicketService;
 import org.slf4j.Logger;
@@ -25,12 +26,12 @@ public class TicketDataPreloader implements DataPreloader<Ticket>{
 	@Value("${tickets.source}")
 	private Resource ticketsFile;
 
-	private final XmlConverter<Ticket> xmlConverter;
+	private final XmlMarshaller xmlMarshaller;
 	private final TicketService ticketService;
 
 	@Autowired
-	public TicketDataPreloader(XmlConverter<Ticket> xmlConverter, TicketService ticketService) {
-		this.xmlConverter = xmlConverter;
+	public TicketDataPreloader(XmlMarshaller xmlMarshaller, TicketService ticketService) {
+		this.xmlMarshaller = xmlMarshaller;
 		this.ticketService = ticketService;
 	}
 
@@ -41,9 +42,9 @@ public class TicketDataPreloader implements DataPreloader<Ticket>{
 	public List<Ticket> preloadData() {
 		List<Ticket> tickets = new ArrayList<>();
 		try {
-			tickets = xmlConverter.parseXmlToObjectList(ticketsFile.getFile());
+			tickets = xmlMarshaller.parse(ticketsFile, new TypeReference<>(){});
 		} catch (IOException e) {
-			logger.warn("Failed to load ticket data.");
+			logger.warn("Failed to load ticket data: {}", e.getMessage());
 			e.printStackTrace();
 		}
 		tickets.forEach(ticket -> ticketService.bookTicket(ticket.getUserId(), ticket.getEventId(), ticket.getCategory(), ticket.getPlace()));

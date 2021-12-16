@@ -1,6 +1,7 @@
 package org.example.facade.impl;
 
-import org.example.converter.XmlConverter;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.example.converter.XmlMarshaller;
 import org.example.facade.BookingFacade;
 import org.example.model.Event;
 import org.example.model.Ticket;
@@ -21,23 +22,26 @@ import java.util.List;
 @Component
 public class BookingFacadeImpl implements BookingFacade {
 
-
 	private final EventService eventService;
 
 	private final TicketService ticketService;
 
 	private final UserService userService;
 
-	private final XmlConverter<Ticket> xmlConverter;
+	private final XmlMarshaller xmlMarshaller;
 
 	private final List<DataPreloader<?>> dataPreloaders;
 
 	@Autowired
-	public BookingFacadeImpl(EventService eventService, TicketService ticketService, UserService userService, XmlConverter<Ticket> xmlConverter, List<DataPreloader<?>> dataPreloaders) {
+	public BookingFacadeImpl(EventService eventService,
+							 TicketService ticketService,
+							 UserService userService,
+							 XmlMarshaller xmlMarshaller,
+							 List<DataPreloader<?>> dataPreloaders) {
 		this.eventService = eventService;
 		this.ticketService = ticketService;
 		this.userService = userService;
-		this.xmlConverter = xmlConverter;
+		this.xmlMarshaller = xmlMarshaller;
 		this.dataPreloaders = dataPreloaders;
 	}
 
@@ -155,7 +159,7 @@ public class BookingFacadeImpl implements BookingFacade {
 
 	@Override
 	public List<Ticket> batchBookTickets(InputStream stream) throws IOException {
-		var tickets = xmlConverter.parseXmlToObjectList(stream);
+		var tickets = xmlMarshaller.parse(stream, new TypeReference<List<Ticket>>() {});
 		tickets.forEach(ticket -> bookTicket(ticket.getUserId(), ticket.getEventId(), ticket.getCategory(), ticket.getPlace()));
 		return tickets;
 	}

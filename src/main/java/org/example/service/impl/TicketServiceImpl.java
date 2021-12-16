@@ -13,8 +13,12 @@ import java.util.List;
 @Service
 public class TicketServiceImpl implements TicketService {
 
+	private final TicketRepository repository;
+
 	@Autowired
-	private TicketRepository repository;
+	public TicketServiceImpl(TicketRepository repository) {
+		this.repository = repository;
+	}
 
 	/**
 	 * {@inheritDoc}

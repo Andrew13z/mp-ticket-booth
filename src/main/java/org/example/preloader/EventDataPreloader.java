@@ -1,9 +1,9 @@
 package org.example.preloader;
 
-import org.example.converter.XmlConverter;
+import com.fasterxml.jackson.core.type.TypeReference;
+import org.example.converter.XmlMarshaller;
 import org.example.model.Event;
 import org.example.service.EventService;
-import org.example.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +26,12 @@ public class EventDataPreloader implements DataPreloader<Event>{
 	@Value("${events.source}")
 	private Resource eventsFile;
 
-	private final XmlConverter<Event> xmlConverter;
+	private final XmlMarshaller xmlMarshaller;
 	private final EventService eventService;
 
 	@Autowired
-	public EventDataPreloader(XmlConverter<Event> xmlConverter, EventService eventService) {
-		this.xmlConverter = xmlConverter;
+	public EventDataPreloader(XmlMarshaller xmlMarshaller, EventService eventService) {
+		this.xmlMarshaller = xmlMarshaller;
 		this.eventService = eventService;
 	}
 
@@ -42,9 +42,9 @@ public class EventDataPreloader implements DataPreloader<Event>{
 	public List<Event> preloadData() {
 		List<Event> events = new ArrayList<>();
 		try {
-			events = xmlConverter.parseXmlToObjectList(eventsFile.getFile());
+			events = xmlMarshaller.parse(eventsFile, new TypeReference<>(){});
 		} catch (IOException e) {
-			logger.warn("Failed to load event data.");
+			logger.warn("Failed to load event data: {}", e.getMessage());
 			e.printStackTrace();
 		}
 		events.forEach(eventService::createEvent);

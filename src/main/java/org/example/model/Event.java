@@ -16,6 +16,9 @@ public class Event {
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate date;
 
+	public Event() {
+	}
+
 	public Event(long id, String title, LocalDate date) {
 		this.id = id;
 		this.title = title;
@@ -45,5 +48,4 @@ public class Event {
 	public void setDate(LocalDate date) {
 		this.date = date;
 	}
-
 }

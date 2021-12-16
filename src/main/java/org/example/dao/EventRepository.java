@@ -22,10 +22,10 @@ public class EventRepository extends InMemoryRepository<Long, Event> {
 
 	private static final Logger logger = LoggerFactory.getLogger(EventRepository.class);
 
-	private InMemoryStorage<Event> storage;
+	private final InMemoryStorage<Event> storage;
 
 	@Autowired
-	public void setStorage(InMemoryStorage<Event> storage) {
+	public EventRepository(InMemoryStorage<Event> storage) {
 		this.storage = storage;
 	}
 

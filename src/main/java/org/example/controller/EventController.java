@@ -69,9 +69,9 @@ public class EventController {
 	 */
 	@GetMapping("/byTitle")
 	public String getEventsByTitle(@RequestParam("title") String title,
-								 @RequestParam("pageSize") int pageSize,
-								 @RequestParam("pageNum") int pageNum,
-								 ModelMap model) {
+								   @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
+								   @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
+								   ModelMap model) {
 		var events = facade.getEventsByTitle(title, pageSize, pageNum);
 		model.addAttribute("eventsByTitle", events);
 		return EVENT_VIEW_NAME;
@@ -88,9 +88,9 @@ public class EventController {
 	 */
 	@GetMapping("/byDate")
 	public String getEventsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-								 @RequestParam("pageSize") int pageSize,
-								 @RequestParam("pageNum") int pageNum,
-								 ModelMap model) {
+								  @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
+								  @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
+								  ModelMap model) {
 		var events = facade.getEventsForDay(date, pageSize, pageNum);
 		model.addAttribute("eventsByDate", events);
 		return EVENT_VIEW_NAME;
