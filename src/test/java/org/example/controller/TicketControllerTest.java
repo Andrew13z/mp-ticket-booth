@@ -1,6 +1,8 @@
 package org.example.controller;
 
+import org.example.model.Event;
 import org.example.model.Ticket;
+import org.example.model.User;
 import org.example.repository.InMemoryStorage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +31,9 @@ class TicketControllerTest {
 
 	private static final long TICKET_ID = 1L;
 	private static final long USER_ID = 6L;
+	private static final User USER = new User(USER_ID, null, null);
 	private static final long EVENT_ID = 1L;
+	private static final Event EVENT = new Event(EVENT_ID, null, null);
 	private static final int PLACE = 130;
 
 	private MockMvc mockMvc;
@@ -45,21 +49,21 @@ class TicketControllerTest {
 	@AfterEach
 	void cleanUp() {
 		storage.getData().remove(1L);
-		storage.getData().put(1L, new Ticket (TICKET_ID, USER_ID, EVENT_ID, Ticket.Category.STANDARD, PLACE));
+		storage.getData().put(1L, new Ticket (TICKET_ID, USER, EVENT, Ticket.Category.STANDARD, PLACE));
 	}
 
 	@Test
 	void testCreateEvent() throws Exception{
 		var localDate = LocalDate.now();
 		var result = mockMvc.perform(post("/ticket")
-						.flashAttr("ticket", new Ticket(0L, USER_ID, EVENT_ID, Ticket.Category.BAR, PLACE)))
+						.flashAttr("ticket", new Ticket(0L, USER, EVENT, Ticket.Category.BAR, PLACE)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("createdTicket"))
 				.andReturn();
 		var ticket = (Ticket) result.getModelAndView().getModel().get("createdTicket");
 
-		assertEquals(USER_ID, ticket.getUserId());
-		assertEquals(EVENT_ID, ticket.getEventId());
+		assertEquals(USER_ID, ticket.getUser().getId());
+		assertEquals(EVENT_ID, ticket.getEvent().getId());
 		assertEquals(Ticket.Category.BAR, ticket.getCategory());
 		assertEquals(PLACE, ticket.getPlace());
 	}
@@ -74,7 +78,7 @@ class TicketControllerTest {
 				.andExpect(model().attributeExists("ticketsByUser"))
 				.andReturn();
 		var tickets = (List<Ticket>) result.getModelAndView().getModel().get("ticketsByUser");
-		assertEquals(USER_ID, tickets.get(0).getUserId());
+		assertEquals(USER_ID, tickets.get(0).getUser().getId());
 	}
 
 	@Test
@@ -111,7 +115,7 @@ class TicketControllerTest {
 				.andExpect(model().attributeExists("ticketsByEvent"))
 				.andReturn();
 		var tickets = (List<Ticket>) result.getModelAndView().getModel().get("ticketsByEvent");
-		assertEquals(EVENT_ID, tickets.get(0).getEventId());
+		assertEquals(EVENT_ID, tickets.get(0).getEvent().getId());
 	}
 
 	@Test

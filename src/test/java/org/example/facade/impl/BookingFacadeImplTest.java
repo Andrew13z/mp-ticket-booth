@@ -48,20 +48,20 @@ class BookingFacadeImplTest {
 		//Creating ticket
 		var ticket = facade.bookTicket(savedUser.getId(), savedEvent.getId(), Ticket.Category.STANDARD, 1);
 
-		assertEquals(savedUser.getId(), ticket.getUserId());
-		assertEquals(savedEvent.getId(), ticket.getEventId());
+		assertEquals(savedUser.getId(), ticket.getUser().getId());
+		assertEquals(savedEvent.getId(), ticket.getEvent().getId());
 
 		//Checking ticket by user
 		var userTickets = facade.getBookedTickets(savedUser, 10, 1);
 
 		assertEquals(1, userTickets.size());
-		assertEquals(savedUser.getId(), userTickets.get(0).getUserId());
+		assertEquals(savedUser.getId(), userTickets.get(0).getUser().getId());
 
 		//Checking ticket by event
 		var eventTickets = facade.getBookedTickets(savedEvent, 10, 1);
 
 		assertEquals(1, eventTickets.size());
-		assertEquals(savedEvent.getId(), eventTickets.get(0).getEventId());
+		assertEquals(savedEvent.getId(), eventTickets.get(0).getEvent().getId());
 
 		//Canceling ticket
 		assertTrue(facade.cancelTicket(ticket.getId()));

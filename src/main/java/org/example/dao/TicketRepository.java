@@ -59,7 +59,7 @@ public class TicketRepository extends InMemoryRepository<Long, Ticket>{
 	 */
 	public List<Ticket> getBookedTickets(User user, int pageSize, int pageNum) {
 		return getAll().stream()
-				.filter(ticket -> ticket.getUserId() == user.getId())
+				.filter(ticket -> ticket.getUser().getId() == user.getId())
 				.skip(pageSize * (pageNum - 1L))
 				.limit(pageSize)
 				.collect(Collectors.toList());
@@ -75,7 +75,7 @@ public class TicketRepository extends InMemoryRepository<Long, Ticket>{
 	 */
 	public List<Ticket> getBookedTickets(Event event, int pageSize, int pageNum) {
 		return getAll().stream()
-				.filter(ticket -> ticket.getEventId() == event.getId())
+				.filter(ticket -> ticket.getEvent().getId() == event.getId())
 				.skip(pageSize * (pageNum - 1L))
 				.limit(pageSize)
 				.collect(Collectors.toList());

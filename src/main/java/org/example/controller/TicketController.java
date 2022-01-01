@@ -53,7 +53,7 @@ public class TicketController {
 	@PostMapping
 	public String createTicket(@ModelAttribute Ticket ticket, ModelMap model){
 		var bookedTicket =
-				facade.bookTicket(ticket.getUserId(), ticket.getEventId(), ticket.getCategory(), ticket.getPlace());
+				facade.bookTicket(ticket.getUser().getId(), ticket.getEvent().getId(), ticket.getCategory(), ticket.getPlace());
 		model.addAttribute("createdTicket", bookedTicket);
 		return TICKET_VIEW_NAME;
 	}

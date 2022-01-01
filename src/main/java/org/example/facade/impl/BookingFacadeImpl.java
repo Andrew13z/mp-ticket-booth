@@ -160,7 +160,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	@Override
 	public List<Ticket> batchBookTickets(InputStream stream) throws IOException {
 		var tickets = xmlMarshaller.parse(stream, new TypeReference<List<Ticket>>() {});
-		tickets.forEach(ticket -> bookTicket(ticket.getUserId(), ticket.getEventId(), ticket.getCategory(), ticket.getPlace()));
+		tickets.forEach(ticket -> bookTicket(ticket.getUser().getId(), ticket.getEvent().getId(), ticket.getCategory(), ticket.getPlace()));
 		return tickets;
 	}
 

@@ -1,15 +1,28 @@
 package org.example.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 /**
  * User entity
  * @author Andrii Krokhta
  */
+@Entity
+@Table(name = "user")
 public class User {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_sequence")
 	private long id;
 
+	@Column(name = "name")
 	private String name;
 
+	@Column(name = "email")
 	private String email;
 
 	public User() {

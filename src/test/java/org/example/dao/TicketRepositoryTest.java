@@ -114,11 +114,11 @@ class TicketRepositoryTest {
 		var ticketListSecondPage = repository.getBookedTickets(user, 2, 2);
 
 		assertEquals(2, ticketListFirstPage.size());
-		assertEquals(USER_ID_1, ticketListFirstPage.get(0).getUserId());
-		assertEquals(USER_ID_1, ticketListFirstPage.get(1).getUserId());
+		assertEquals(USER_ID_1, ticketListFirstPage.get(0).getUser().getId());
+		assertEquals(USER_ID_1, ticketListFirstPage.get(1).getUser().getId());
 
 		assertEquals(1, ticketListSecondPage.size());
-		assertEquals(USER_ID_1, ticketListSecondPage.get(0).getUserId());
+		assertEquals(USER_ID_1, ticketListSecondPage.get(0).getUser().getId());
 	}
 
 	@Test
@@ -137,11 +137,11 @@ class TicketRepositoryTest {
 		var ticketListSecondPage = repository.getBookedTickets(event, 2, 2);
 
 		assertEquals(2, ticketListFirstPage.size());
-		assertEquals(EVENT_ID_1, ticketListFirstPage.get(0).getEventId());
-		assertEquals(EVENT_ID_1, ticketListFirstPage.get(1).getEventId());
+		assertEquals(EVENT_ID_1, ticketListFirstPage.get(0).getEvent().getId());
+		assertEquals(EVENT_ID_1, ticketListFirstPage.get(1).getEvent().getId());
 
 		assertEquals(1, ticketListSecondPage.size());
-		assertEquals(EVENT_ID_1, ticketListSecondPage.get(0).getEventId());
+		assertEquals(EVENT_ID_1, ticketListSecondPage.get(0).getEvent().getId());
 	}
 
 	private Ticket createTicket(long id, long userId, long eventId, Ticket.Category category, int place) {

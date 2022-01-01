@@ -1,29 +1,52 @@
 package org.example.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 /**
  * Ticket entity
  * @author Andrii Krokhta
  */
+@Entity
+@Table(name = "ticket")
 public class Ticket {
+
 	public enum Category {STANDARD, PREMIUM, BAR}
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ticket_id_sequence")
 	private long id;
 
-	private long userId;
+	@ManyToOne
+	@JoinColumn(name = "user")
+	private User user;
 
-	private long eventId;
+	@ManyToOne
+	@JoinColumn(name = "event")
+	private Event event;
 
+	@Column(name = "category")
+	@Enumerated(EnumType.STRING)
 	private Category category;
 
+	@Column(name = "place")
 	private int place;
 
 	public Ticket() {
 	}
 
-	public Ticket(long id, long userId, long eventId, Category category, int place) {
+	public Ticket(long id, User user, Event event, Category category, int place) {
 		this.id = id;
-		this.userId = userId;
-		this.eventId = eventId;
+		this.user = user;
+		this.event = event;
 		this.category = category;
 		this.place = place;
 	}
@@ -36,20 +59,20 @@ public class Ticket {
 		this.id = id;
 	}
 
-	public long getEventId() {
-		return eventId;
+	public Event getEvent() {
+		return event;
 	}
 
-	public long getUserId() {
-		return userId;
+	public User getUser() {
+		return user;
 	}
 
-	public void setUserId(long userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
-	public void setEventId(long eventId) {
-		this.eventId = eventId;
+	public void setEventId(Event event) {
+		this.event = event;
 	}
 
 	public Category getCategory() {

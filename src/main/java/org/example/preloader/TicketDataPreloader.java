@@ -47,7 +47,7 @@ public class TicketDataPreloader implements DataPreloader<Ticket>{
 			logger.warn("Failed to load ticket data: {}", e.getMessage());
 			e.printStackTrace();
 		}
-		tickets.forEach(ticket -> ticketService.bookTicket(ticket.getUserId(), ticket.getEventId(), ticket.getCategory(), ticket.getPlace()));
+		tickets.forEach(ticket -> ticketService.bookTicket(ticket.getUser().getId(), ticket.getEvent().getId(), ticket.getCategory(), ticket.getPlace()));
 		logger.info("Loaded ticket data with {} entries.", tickets.size());
 		return tickets;
 	}
