@@ -1,11 +1,13 @@
 package org.example.facade;
 
+import org.example.model.Account;
 import org.example.model.Event;
 import org.example.model.Ticket;
 import org.example.model.User;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -137,24 +139,24 @@ public interface BookingFacade {
 	List<Ticket> batchBookTickets(InputStream stream) throws IOException;
 
 	/**
-	 * Get all booked tickets for specified user. Tickets should be sorted by event date in descending order.
+	 * Get all booked tickets by specified user id. Tickets should be sorted by event date in descending order.
 	 *
-	 * @param user     User
+	 * @param userId     User id
 	 * @param pageSize Pagination param. Number of tickets to return on a page.
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of Ticket objects.
 	 */
-	List<Ticket> getBookedTickets(User user, int pageSize, int pageNum);
+	List<Ticket> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum);
 
 	/**
-	 * Get all booked tickets for specified event. Tickets should be sorted in by user email in ascending order.
+	 * Get all booked tickets by specified event id. Tickets should be sorted in by user email in ascending order.
 	 *
-	 * @param event    Event
+	 * @param eventId    Event id
 	 * @param pageSize Pagination param. Number of tickets to return on a page.
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of Ticket objects.
 	 */
-	List<Ticket> getBookedTickets(Event event, int pageSize, int pageNum);
+	List<Ticket> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum);
 
 	/**
 	 * Cancel ticket with a specified id.
@@ -163,5 +165,14 @@ public interface BookingFacade {
 	 * @return Flag whether anything has been canceled.
 	 */
 	boolean cancelTicket(long ticketId);
+
+	/**
+	 * Adds the provided refill sum to the specified account by id.
+	 *
+	 * @param accountId Account id.
+	 * @param refillSum Sum to be added to the account.
+	 * @return Flag whether anything has been canceled.
+	 */
+	Account refillAccount(Long accountId, BigInteger refillSum);
 
 }

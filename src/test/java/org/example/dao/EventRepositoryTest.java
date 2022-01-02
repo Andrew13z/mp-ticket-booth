@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +34,7 @@ class EventRepositoryTest {
 	private final LocalDate DATE_2 = LocalDate.of(2022, 2, 2);
 
 	private final long ID_ZERO = 0;
+	private final BigInteger PRICE_ZERO = BigInteger.ZERO;
 
 	@Mock
 	private EventInMemoryStorage mockStorage;
@@ -47,7 +49,7 @@ class EventRepositoryTest {
 		when(mockStorage.getData()).thenReturn(eventMap);
 		when(mockStorage.getIndex()).thenReturn(ID_1);
 
-		var savedEvent = repository.save(createEvent(ID_ZERO, TITLE_1, DATE_1));
+		var savedEvent = repository.save(createEvent(ID_ZERO, TITLE_1, DATE_1, PRICE_ZERO));
 
 		assertEquals(1, eventMap.size());
 		assertEquals(ID_1, savedEvent.getId());
@@ -55,10 +57,10 @@ class EventRepositoryTest {
 
 	@Test
 	void updateEventTestWithExistingId() {
-		var oldEvent = createEvent(ID_1, TITLE_1, DATE_1);
+		var oldEvent = createEvent(ID_1, TITLE_1, DATE_1, PRICE_ZERO);
 		when(mockStorage.getData()).thenReturn(Map.of(ID_1, oldEvent));
 
-		var newEvent = createEvent(ID_1, TITLE_2, DATE_2);
+		var newEvent = createEvent(ID_1, TITLE_2, DATE_2, PRICE_ZERO);
 		var updatedEvent = repository.updateEvent(newEvent);
 
 		assertEquals(ID_1, updatedEvent.getId());
@@ -68,7 +70,7 @@ class EventRepositoryTest {
 
 	@Test
 	void updateEventTestWithNotExistingId() {
-		var newEvent = createEvent(ID_1, TITLE_1, DATE_1);
+		var newEvent = createEvent(ID_1, TITLE_1, DATE_1, PRICE_ZERO);
 
 		assertThrowsExactly(EntityNotFoundException.class,
 				() -> repository.updateEvent(newEvent),
@@ -77,7 +79,7 @@ class EventRepositoryTest {
 
 	@Test
 	void getTestWithExistingId() {
-		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1, PRICE_ZERO)));
 		Optional<Event> event = repository.get(ID_1);
 		assertTrue(event.isPresent());
 		assertEquals(ID_1, event.get().getId());
@@ -85,15 +87,15 @@ class EventRepositoryTest {
 
 	@Test
 	void getTestWithNotExistingId() {
-		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1, PRICE_ZERO)));
 		Optional<Event> event = repository.get(ID_2);
 		assertTrue(event.isEmpty());
 	}
 
 	@Test
 	void getAllTest() {
-		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1),
-				ID_2, createEvent(ID_2, TITLE_2, DATE_2)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1, PRICE_ZERO),
+				ID_2, createEvent(ID_2, TITLE_2, DATE_2, PRICE_ZERO)));
 		var eventList = repository.getAll();
 		assertEquals(2, eventList.size());
 	}
@@ -101,8 +103,8 @@ class EventRepositoryTest {
 	@Test
 	void deleteTestWithExistingId() {
 		var eventMap = new HashMap<Long, Event>();
-		eventMap.put(ID_1, createEvent(ID_1, TITLE_1, DATE_1));
-		eventMap.put(ID_2, createEvent(ID_2, TITLE_2, DATE_2));
+		eventMap.put(ID_1, createEvent(ID_1, TITLE_1, DATE_1, PRICE_ZERO));
+		eventMap.put(ID_2, createEvent(ID_2, TITLE_2, DATE_2, PRICE_ZERO));
 
 		when(mockStorage.getData()).thenReturn(eventMap);
 
@@ -113,7 +115,7 @@ class EventRepositoryTest {
 	@Test
 	void deleteTestWithNotExistingId() {
 		var eventMap = new HashMap<Long, Event>();
-		eventMap.put(ID_2, createEvent(ID_2, TITLE_2, DATE_2));
+		eventMap.put(ID_2, createEvent(ID_2, TITLE_2, DATE_2, PRICE_ZERO));
 
 		when(mockStorage.getData()).thenReturn(eventMap);
 
@@ -123,8 +125,8 @@ class EventRepositoryTest {
 
 	@Test
 	void getEventsByTitleTest() {
-		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1),
-				ID_2, createEvent(ID_2, TITLE_2, DATE_2)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1, PRICE_ZERO),
+				ID_2, createEvent(ID_2, TITLE_2, DATE_2, PRICE_ZERO)));
 		var eventList = repository.getEventsByTitle(TITLE_1, 2, 1);
 
 		assertEquals(1, eventList.size());
@@ -133,10 +135,10 @@ class EventRepositoryTest {
 
 	@Test
 	void getEventsByTitlePaginationTest() {
-		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1),
-				ID_2, createEvent(ID_2, TITLE_2, DATE_2),
-				3L, createEvent(3L, TITLE_1, LocalDate.of(2022, 3, 3)),
-				4L, createEvent(4L, TITLE_1, LocalDate.of(2022, 4, 4))));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1, PRICE_ZERO),
+				ID_2, createEvent(ID_2, TITLE_2, DATE_2, PRICE_ZERO),
+				3L, createEvent(3L, TITLE_1, LocalDate.of(2022, 3, 3), PRICE_ZERO),
+				4L, createEvent(4L, TITLE_1, LocalDate.of(2022, 4, 4), PRICE_ZERO)));
 
 		var eventListFirstPage = repository.getEventsByTitle(TITLE_1, 2, 1);
 		var eventListSecondPage = repository.getEventsByTitle(TITLE_1, 2, 2);
@@ -151,8 +153,8 @@ class EventRepositoryTest {
 
 	@Test
 	void getEventsByDateTest() {
-		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1),
-				ID_2, createEvent(ID_2, TITLE_2, DATE_2)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1, PRICE_ZERO),
+				ID_2, createEvent(ID_2, TITLE_2, DATE_2, PRICE_ZERO)));
 		var eventList = repository.getEventsForDay(DATE_1, 2, 1);
 
 		assertEquals(1, eventList.size());
@@ -161,10 +163,10 @@ class EventRepositoryTest {
 
 	@Test
 	void getEventsByDatePaginationTest() {
-		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1),
-				ID_2, createEvent(ID_2, TITLE_2, DATE_2),
-				3L, createEvent(3L, "Title 3", DATE_1),
-				4L, createEvent(4L, "Title 4", DATE_1)));
+		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createEvent(ID_1, TITLE_1, DATE_1, PRICE_ZERO),
+				ID_2, createEvent(ID_2, TITLE_2, DATE_2, PRICE_ZERO),
+				3L, createEvent(3L, "Title 3", DATE_1, PRICE_ZERO),
+				4L, createEvent(4L, "Title 4", DATE_1, PRICE_ZERO)));
 
 		var eventListFirstPage = repository.getEventsForDay(DATE_1, 2, 1);
 		var eventListSecondPage = repository.getEventsForDay(DATE_1, 2, 2);
@@ -177,7 +179,7 @@ class EventRepositoryTest {
 		assertEquals(DATE_1, eventListSecondPage.get(0).getDate());
 	}
 
-	private Event createEvent(long id, String title, LocalDate date) {
-		return new Event(id, title, date);
+	private Event createEvent(long id, String title, LocalDate date, BigInteger price) {
+		return new Event(id, title, date, price);
 	}
 }

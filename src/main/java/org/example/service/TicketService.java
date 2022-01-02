@@ -1,8 +1,6 @@
 package org.example.service;
 
-import org.example.model.Event;
 import org.example.model.Ticket;
-import org.example.model.User;
 
 import java.util.List;
 
@@ -21,24 +19,24 @@ public interface TicketService {
 	Ticket bookTicket(long userId, long eventId, Ticket.Category category, int place);
 
 	/**
-	 * Get all booked tickets for specified user. Tickets should be sorted by event date in descending order.
+	 * Get all booked tickets by specified user id. Tickets should be sorted by event date in descending order.
 	 *
-	 * @param user     User
+	 * @param userId     User id
 	 * @param pageSize Pagination param. Number of tickets to return on a page.
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of Ticket objects.
 	 */
-	List<Ticket> getBookedTickets(User user, int pageSize, int pageNum);
+	List<Ticket> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum);
 
 	/**
-	 * Get all booked tickets for specified event. Tickets should be sorted in by user email in ascending order.
+	 * Get all booked tickets by specified event id. Tickets should be sorted in by user email in ascending order.
 	 *
-	 * @param event    Event
+	 * @param eventId    Event id
 	 * @param pageSize Pagination param. Number of tickets to return on a page.
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of Ticket objects.
 	 */
-	List<Ticket> getBookedTickets(Event event, int pageSize, int pageNum);
+	List<Ticket> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum);
 
 	/**
 	 * Cancel ticket with a specified id.

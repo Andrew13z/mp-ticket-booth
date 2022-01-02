@@ -3,10 +3,12 @@ package org.example.facade.impl;
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.example.converter.XmlMarshaller;
 import org.example.facade.BookingFacade;
+import org.example.model.Account;
 import org.example.model.Event;
 import org.example.model.Ticket;
 import org.example.model.User;
 import org.example.preloader.DataPreloader;
+import org.example.service.AccountService;
 import org.example.service.EventService;
 import org.example.service.TicketService;
 import org.example.service.UserService;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,6 +31,8 @@ public class BookingFacadeImpl implements BookingFacade {
 
 	private final UserService userService;
 
+	private final AccountService accountService;
+
 	private final XmlMarshaller xmlMarshaller;
 
 	private final List<DataPreloader<?>> dataPreloaders;
@@ -36,11 +41,12 @@ public class BookingFacadeImpl implements BookingFacade {
 	public BookingFacadeImpl(EventService eventService,
 							 TicketService ticketService,
 							 UserService userService,
-							 XmlMarshaller xmlMarshaller,
+							 AccountService accountService, XmlMarshaller xmlMarshaller,
 							 List<DataPreloader<?>> dataPreloaders) {
 		this.eventService = eventService;
 		this.ticketService = ticketService;
 		this.userService = userService;
+		this.accountService = accountService;
 		this.xmlMarshaller = xmlMarshaller;
 		this.dataPreloaders = dataPreloaders;
 	}
@@ -168,16 +174,16 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Ticket> getBookedTickets(User user, int pageSize, int pageNum) {
-		return ticketService.getBookedTickets(user, pageSize, pageNum);
+	public List<Ticket> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum) {
+		return ticketService.getBookedTicketsByUserId(userId, pageSize, pageNum);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Ticket> getBookedTickets(Event event, int pageSize, int pageNum) {
-		return ticketService.getBookedTickets(event, pageSize, pageNum);
+	public List<Ticket> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum) {
+		return ticketService.getBookedTicketsByEventId(eventId, pageSize, pageNum);
 	}
 
 	/**
@@ -186,5 +192,13 @@ public class BookingFacadeImpl implements BookingFacade {
 	@Override
 	public boolean cancelTicket(long ticketId) {
 		return ticketService.cancelTicket(ticketId);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Account refillAccount(Long accountId, BigInteger refillSum) {
+		return accountService.refillAccount(accountId, refillSum);
 	}
 }

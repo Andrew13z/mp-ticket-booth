@@ -25,23 +25,25 @@ public class TicketServiceImpl implements TicketService {
 	 */
 	@Override
 	public Ticket bookTicket(long userId, long eventId, Ticket.Category category, int place) {
-		return repository.save(new Ticket(0, userId, eventId, category, place));
+		return repository.save(new Ticket(0, new User(userId, null, null),
+												new Event(eventId, null, null, null),
+												category, place));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Ticket> getBookedTickets(User user, int pageSize, int pageNum) {
-		return repository.getBookedTickets(user, pageSize, pageNum);
+	public List<Ticket> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum) {
+		return repository.getBookedTicketsByUserId(userId, pageSize, pageNum);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Ticket> getBookedTickets(Event event, int pageSize, int pageNum) {
-		return repository.getBookedTickets(event, pageSize, pageNum);
+	public List<Ticket> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum) {
+		return repository.getBookedTicketsByEventId(eventId, pageSize, pageNum);
 	}
 
 	/**

@@ -39,7 +39,7 @@ public class EventController {
 	 */
 	@PostMapping
 	public String createEvent(@ModelAttribute Event event, ModelMap model){
-		var createdEvent = facade.createEvent(new Event(0L, event.getTitle(), event.getDate()));
+		var createdEvent = facade.createEvent(event);
 		model.addAttribute("createdEvent", createdEvent);
 		return EVENT_VIEW_NAME;
 	}

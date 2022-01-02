@@ -33,7 +33,7 @@ class TicketControllerTest {
 	private static final long USER_ID = 6L;
 	private static final User USER = new User(USER_ID, null, null);
 	private static final long EVENT_ID = 1L;
-	private static final Event EVENT = new Event(EVENT_ID, null, null);
+	private static final Event EVENT = new Event(EVENT_ID, null, null, null);
 	private static final int PLACE = 130;
 
 	private MockMvc mockMvc;

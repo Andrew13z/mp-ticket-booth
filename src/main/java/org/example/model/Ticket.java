@@ -23,7 +23,7 @@ public class Ticket {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ticket_id_sequence")
-	private long id;
+	private Long id;
 
 	@ManyToOne
 	@JoinColumn(name = "user")
@@ -71,7 +71,7 @@ public class Ticket {
 		this.user = user;
 	}
 
-	public void setEventId(Event event) {
+	public void setEvent(Event event) {
 		this.event = event;
 	}
 

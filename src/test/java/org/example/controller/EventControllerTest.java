@@ -1,23 +1,17 @@
 package org.example.controller;
 
-import org.example.Application;
 import org.example.model.Event;
 import org.example.repository.InMemoryStorage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -34,6 +28,7 @@ class EventControllerTest {
 
 	private static final String TITLE = "Matrix Lucky Hand";
 	private static final LocalDate DATE = LocalDate.of(2021, 12, 15);
+	private static final BigInteger PRICE = BigInteger.ZERO;
 
 	private MockMvc mockMvc;
 
@@ -48,14 +43,14 @@ class EventControllerTest {
 	@AfterEach
 	void cleanUp() {
 		storage.getData().remove(1L);
-		storage.getData().put(1L, new Event (1L, TITLE, DATE));
+		storage.getData().put(1L, new Event (1L, TITLE, DATE, PRICE));
 	}
 
 	@Test
 	void testCreateEvent() throws Exception{
 		var localDate = LocalDate.now();
 		var result = mockMvc.perform(post("/event")
-						.flashAttr("event", new Event(0, "New Title", localDate)))
+						.flashAttr("event", new Event(0, "New Title", localDate, PRICE)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("createdEvent"))
 				.andReturn();
@@ -138,7 +133,7 @@ class EventControllerTest {
 	void updateEventTest_WithAllAttributesUpdated() throws Exception{
 		var localDate = LocalDate.now();
 		var result = mockMvc.perform(post("/event/update")
-						.flashAttr("event", new Event(1L, "New Title", localDate)))
+						.flashAttr("event", new Event(1L, "New Title", localDate, PRICE)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedEvent"))
 				.andReturn();
@@ -153,7 +148,7 @@ class EventControllerTest {
 	void updateEventTest_WithoutUpdatedTitle() throws Exception{
 		var localDate = LocalDate.now();
 		var result = mockMvc.perform(post("/event/update")
-						.flashAttr("event", new Event(1L, "", localDate)))
+						.flashAttr("event", new Event(1L, "", localDate, PRICE)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedEvent"))
 				.andReturn();
@@ -168,7 +163,7 @@ class EventControllerTest {
 	void updateEventTest_WithoutUpdatedDate() throws Exception{
 		var localDate = LocalDate.now();
 		var result = mockMvc.perform(post("/event/update")
-						.flashAttr("event", new Event(1L, "New Title", null)))
+						.flashAttr("event", new Event(1L, "New Title", null, PRICE)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedEvent"))
 				.andReturn();
@@ -182,7 +177,7 @@ class EventControllerTest {
 	@Test
 	void updateEventTest_WithNotExistingId() throws Exception{
 		mockMvc.perform(post("/event/update")
-						.flashAttr("event", new Event(100L, "", null)))
+						.flashAttr("event", new Event(100L, "", null, PRICE)))
 				.andExpect(status().isNotFound());
 	}
 

@@ -103,15 +103,13 @@ class TicketRepositoryTest {
 
 	@Test
 	void getDataForUserPaginationTest() {
-		User user = new User(USER_ID_1, null, null);
-
 		when(mockStorage.getData()).thenReturn(Map.of(ID_1, createTicket(ID_1, USER_ID_1, EVENT_ID_1, CATEGORY_1, PLACE_1),
 														ID_2, createTicket(ID_2,USER_ID_2, EVENT_ID_2, CATEGORY_2, PLACE_2),
 														3L, createTicket(3L, USER_ID_1, 3L, Ticket.Category.BAR, 3),
 														4L, createTicket(4L, USER_ID_1, 4L, Ticket.Category.BAR, 4)));
 
-		var ticketListFirstPage = repository.getBookedTickets(user, 2, 1);
-		var ticketListSecondPage = repository.getBookedTickets(user, 2, 2);
+		var ticketListFirstPage = repository.getBookedTicketsByUserId(USER_ID_1, 2, 1);
+		var ticketListSecondPage = repository.getBookedTicketsByUserId(USER_ID_1, 2, 2);
 
 		assertEquals(2, ticketListFirstPage.size());
 		assertEquals(USER_ID_1, ticketListFirstPage.get(0).getUser().getId());
@@ -123,8 +121,6 @@ class TicketRepositoryTest {
 
 	@Test
 	void getDataForEventPaginationTest() {
-		Event event = new Event(EVENT_ID_1, null, null);
-
 		var ticket = createTicket(ID_1, USER_ID_1, EVENT_ID_1, CATEGORY_1, PLACE_1);
 		var ticket3 = createTicket(3L, 3L, EVENT_ID_1, Ticket.Category.BAR, 3);
 		var map = Map.of(ID_1, ticket,
@@ -133,8 +129,8 @@ class TicketRepositoryTest {
 				4L, createTicket(4L, 4L, EVENT_ID_1, Ticket.Category.BAR, 4));
 		when(mockStorage.getData()).thenReturn(map);
 
-		var ticketListFirstPage = repository.getBookedTickets(event, 2, 1);
-		var ticketListSecondPage = repository.getBookedTickets(event, 2, 2);
+		var ticketListFirstPage = repository.getBookedTicketsByEventId(EVENT_ID_1, 2, 1);
+		var ticketListSecondPage = repository.getBookedTicketsByEventId(EVENT_ID_1, 2, 2);
 
 		assertEquals(2, ticketListFirstPage.size());
 		assertEquals(EVENT_ID_1, ticketListFirstPage.get(0).getEvent().getId());

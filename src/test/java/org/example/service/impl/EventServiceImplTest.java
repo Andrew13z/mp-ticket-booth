@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -23,6 +24,7 @@ class EventServiceImplTest {
 	private final long ID = 1L;
 	private final String TITLE = "Event";
 	private final LocalDate DATE = LocalDate.of(2022, 1, 1);
+	private final BigInteger PRICE = BigInteger.ZERO;
 
 	@Mock
 	private EventRepository mockDao;
@@ -32,7 +34,7 @@ class EventServiceImplTest {
 
 	@Test
 	void getEventByIdTestWithExistingId() {
-		when(mockDao.get(ID)).thenReturn(Optional.of(new Event(ID, TITLE, DATE)));
+		when(mockDao.get(ID)).thenReturn(Optional.of(new Event(ID, TITLE, DATE, PRICE)));
 		var eventById = eventService.getEventById(ID);
 		assertEquals(eventById.getId(), ID);
 	}

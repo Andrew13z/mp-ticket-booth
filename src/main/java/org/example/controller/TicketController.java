@@ -3,9 +3,7 @@ package org.example.controller;
 import org.apache.pdfbox.io.IOUtils;
 import org.example.exception.PdfGenerationException;
 import org.example.facade.BookingFacade;
-import org.example.model.Event;
 import org.example.model.Ticket;
-import org.example.model.User;
 import org.example.util.DocumentUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +70,7 @@ public class TicketController {
 								   @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
 								   @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
 								   ModelMap model) {
-		var tickets = facade.getBookedTickets(new User(userId, null, null), pageSize, pageNum);
+		var tickets = facade.getBookedTicketsByUserId(userId, pageSize, pageNum);
 		model.addAttribute("ticketsByUser", tickets);
 		return TICKET_VIEW_NAME;
 	}
@@ -87,10 +85,10 @@ public class TicketController {
 	 */
 	@GetMapping(value = "/byUser", headers = "Accept=application/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
 	public @ResponseBody byte[] getTicketsByUserPdf(
-								@RequestParam("userId") long userId,
+								@RequestParam("userId") Long userId,
 								@RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
 								@RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum) {
-		var tickets = facade.getBookedTickets(new User(userId, null, null), pageSize, pageNum);
+		var tickets = facade.getBookedTicketsByUserId(userId, pageSize, pageNum);
 		var generatedFile = DocumentUtil.writeToPdf(tickets);
 		try {
 			var stream = new FileSystemResource(generatedFile).getInputStream();
@@ -133,11 +131,11 @@ public class TicketController {
 	 * @return Name of the view.
 	 */
 	@GetMapping("/byEvent")
-	public String getTicketsByEvent(@RequestParam("eventId") long eventId,
+	public String getTicketsByEvent(@RequestParam("eventId") Long eventId,
 									@RequestParam("pageSize") int pageSize,
 									@RequestParam("pageNum") int pageNum,
 								   ModelMap model) {
-		var tickets = facade.getBookedTickets(new Event(eventId, null, null), pageSize, pageNum);
+		var tickets = facade.getBookedTicketsByEventId(eventId, pageSize, pageNum);
 		model.addAttribute("ticketsByEvent", tickets);
 		return TICKET_VIEW_NAME;
 	}
@@ -150,7 +148,7 @@ public class TicketController {
 	 * @return Name of the view.
 	 */
 	@PostMapping("/delete")
-	public String deleteTicket(@RequestParam("id") long id, ModelMap model) {
+	public String deleteTicket(@RequestParam("id") Long id, ModelMap model) {
 		var deleteSuccessful = facade.cancelTicket(id);
 		model.addAttribute("ticketDeleted", deleteSuccessful);
 		return TICKET_VIEW_NAME;

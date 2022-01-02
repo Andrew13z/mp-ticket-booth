@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.math.BigInteger;
 import java.time.LocalDate;
 
 /**
@@ -20,7 +21,7 @@ public class Event {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "event_id_sequence")
 	@Column(name = "id")
-	private long id;
+	private Long id;
 
 	@Column(name = "title")
 	private String title;
@@ -29,13 +30,17 @@ public class Event {
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate date;
 
+	@Column(name = "ticket_price")
+	private BigInteger ticketPrice;
+
 	public Event() {
 	}
 
-	public Event(long id, String title, LocalDate date) {
+	public Event(long id, String title, LocalDate date, BigInteger ticketPrice) {
 		this.id = id;
 		this.title = title;
 		this.date = date;
+		this.ticketPrice = ticketPrice;
 	}
 
 	public long getId() {
@@ -60,5 +65,13 @@ public class Event {
 
 	public void setDate(LocalDate date) {
 		this.date = date;
+	}
+
+	public BigInteger getTicketPrice() {
+		return ticketPrice;
+	}
+
+	public void setTicketPrice(BigInteger ticketPrice) {
+		this.ticketPrice = ticketPrice;
 	}
 }
