@@ -8,39 +8,39 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
  * Event entity
  */
 @Entity
-@Table(name = "event")
+@Table(name = "EVENTS")
 public class Event {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "event_id_sequence")
-	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EVENTS_ID_SEQ")
+	@Column(name = "ID")
 	private Long id;
 
-	@Column(name = "title")
+	@Column(name = "TITLE")
 	private String title;
 
-	@Column(name = "date")
+	@Column(name = "DATE_HELD")
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate date;
 
-	@Column(name = "ticket_price")
-	private BigInteger ticketPrice;
+	@Column(name = "TICKET_PRICE")
+	private BigDecimal ticketPrice;
 
 	public Event() {
 	}
 
-	public Event(long id, String title, LocalDate date, BigInteger ticketPrice) {
+	public Event(long id, String title, LocalDate date, BigDecimal ticketPrice) {
 		this.id = id;
 		this.title = title;
 		this.date = date;
-		this.ticketPrice = ticketPrice;
+		this.ticketPrice = ticketPrice.setScale(2);
 	}
 
 	public long getId() {
@@ -67,11 +67,11 @@ public class Event {
 		this.date = date;
 	}
 
-	public BigInteger getTicketPrice() {
+	public BigDecimal getTicketPrice() {
 		return ticketPrice;
 	}
 
-	public void setTicketPrice(BigInteger ticketPrice) {
+	public void setTicketPrice(BigDecimal ticketPrice) {
 		this.ticketPrice = ticketPrice;
 	}
 }

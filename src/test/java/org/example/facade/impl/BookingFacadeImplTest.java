@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 
@@ -42,7 +43,7 @@ class BookingFacadeImplTest {
 
 		//Creating event
 		String eventTitle = "Title";
-		Event event = new Event(0, eventTitle, LocalDate.now(), BigInteger.ZERO);
+		Event event = new Event(0, eventTitle, LocalDate.now(), BigDecimal.ZERO);
 		var savedEvent = facade.createEvent(event);
 		var savedEventId = savedEvent.getId();
 

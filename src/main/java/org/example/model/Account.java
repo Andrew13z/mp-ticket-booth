@@ -2,30 +2,34 @@ package org.example.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 
 @Entity
-@Table(name = "account")
+@Table(name = "ACCOUNTS")
 public class Account {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ACCOUNTS_ID_SEQ")
+	@Column(name = "ID")
 	private Long id;
 
-	@Column(name = "balance")
-	private BigInteger balance;
+	@Column(name = "BALANCE")
+	private BigDecimal balance;
 
 	@ManyToOne
-	@JoinColumn(name = "user")
+	@JoinColumn(name = "USER_ID")
 	private User user;
 
 	public Account() {
 	}
 
-	public Account(Long id, BigInteger balance, User user) {
+	public Account(Long id, BigDecimal balance, User user) {
 		this.id = id;
 		this.balance = balance;
 		this.user = user;
@@ -39,11 +43,11 @@ public class Account {
 		this.id = id;
 	}
 
-	public BigInteger getBalance() {
+	public BigDecimal getBalance() {
 		return balance;
 	}
 
-	public void setBalance(BigInteger balance) {
+	public void setBalance(BigDecimal balance) {
 		this.balance = balance;
 	}
 

@@ -2,7 +2,7 @@ package org.example.service;
 
 import org.example.model.Account;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 
 public interface AccountService {
 
@@ -13,5 +13,5 @@ public interface AccountService {
 	 * @param refillSum Sum to be added to the account.
 	 * @return Flag whether anything has been canceled.
 	 */
-	Account refillAccount(Long accountId, BigInteger refillSum);
+	Account refillAccount(Long accountId, BigDecimal refillSum);
 }

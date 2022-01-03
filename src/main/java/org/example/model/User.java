@@ -12,17 +12,18 @@ import javax.persistence.Table;
  * @author Andrii Krokhta
  */
 @Entity
-@Table(name = "user")
+@Table(name = "USERS")
 public class User {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_sequence")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USERS_ID_SEQ")
+	@Column(name = "ID")
 	private Long id;
 
-	@Column(name = "name")
+	@Column(name = "FULL_NAME")
 	private String name;
 
-	@Column(name = "email")
+	@Column(name = "EMAIL")
 	private String email;
 
 	public User() {

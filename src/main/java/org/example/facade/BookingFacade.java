@@ -7,7 +7,7 @@ import org.example.model.User;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -173,6 +173,6 @@ public interface BookingFacade {
 	 * @param refillSum Sum to be added to the account.
 	 * @return Flag whether anything has been canceled.
 	 */
-	Account refillAccount(Long accountId, BigInteger refillSum);
+	Account refillAccount(Long accountId, BigDecimal refillSum);
 
 }

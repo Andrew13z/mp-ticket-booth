@@ -9,7 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -24,7 +24,7 @@ class EventServiceImplTest {
 	private final long ID = 1L;
 	private final String TITLE = "Event";
 	private final LocalDate DATE = LocalDate.of(2022, 1, 1);
-	private final BigInteger PRICE = BigInteger.ZERO;
+	private final BigDecimal PRICE = BigDecimal.ZERO;
 
 	@Mock
 	private EventRepository mockDao;

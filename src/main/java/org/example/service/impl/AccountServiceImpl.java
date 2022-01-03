@@ -7,7 +7,7 @@ import org.example.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -23,7 +23,7 @@ public class AccountServiceImpl implements AccountService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Account refillAccount(Long accountId, BigInteger refillSum) {
+	public Account refillAccount(Long accountId, BigDecimal refillSum) {
 		var account = repository.findById(accountId)
 				.orElseThrow(() -> new EntityNotFoundException("Account not found by id: " + accountId));
 		account.getBalance().add(refillSum);

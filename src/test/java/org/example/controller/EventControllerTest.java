@@ -11,7 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,7 +28,7 @@ class EventControllerTest {
 
 	private static final String TITLE = "Matrix Lucky Hand";
 	private static final LocalDate DATE = LocalDate.of(2021, 12, 15);
-	private static final BigInteger PRICE = BigInteger.ZERO;
+	private static final BigDecimal PRICE = BigDecimal.ZERO;
 
 	private MockMvc mockMvc;
 

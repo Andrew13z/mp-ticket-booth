@@ -16,28 +16,29 @@ import javax.persistence.Table;
  * @author Andrii Krokhta
  */
 @Entity
-@Table(name = "ticket")
+@Table(name = "TICKETS")
 public class Ticket {
 
 	public enum Category {STANDARD, PREMIUM, BAR}
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ticket_id_sequence")
+	@Column(name = "ID")
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "user")
+	@JoinColumn(name = "USER_ID")
 	private User user;
 
 	@ManyToOne
-	@JoinColumn(name = "event")
+	@JoinColumn(name = "EVENT_ID")
 	private Event event;
 
-	@Column(name = "category")
+	@Column(name = "CATEGORY")
 	@Enumerated(EnumType.STRING)
 	private Category category;
 
-	@Column(name = "place")
+	@Column(name = "PLACE")
 	private int place;
 
 	public Ticket() {

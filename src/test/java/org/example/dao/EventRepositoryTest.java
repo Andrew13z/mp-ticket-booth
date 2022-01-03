@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ class EventRepositoryTest {
 	private final LocalDate DATE_2 = LocalDate.of(2022, 2, 2);
 
 	private final long ID_ZERO = 0;
-	private final BigInteger PRICE_ZERO = BigInteger.ZERO;
+	private final BigDecimal PRICE_ZERO = BigDecimal.ZERO;
 
 	@Mock
 	private EventInMemoryStorage mockStorage;
@@ -179,7 +180,7 @@ class EventRepositoryTest {
 		assertEquals(DATE_1, eventListSecondPage.get(0).getDate());
 	}
 
-	private Event createEvent(long id, String title, LocalDate date, BigInteger price) {
+	private Event createEvent(long id, String title, LocalDate date, BigDecimal price) {
 		return new Event(id, title, date, price);
 	}
 }

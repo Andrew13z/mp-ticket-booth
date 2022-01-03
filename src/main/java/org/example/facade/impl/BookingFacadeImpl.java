@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -198,7 +198,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Account refillAccount(Long accountId, BigInteger refillSum) {
+	public Account refillAccount(Long accountId, BigDecimal refillSum) {
 		return accountService.refillAccount(accountId, refillSum);
 	}
 }
