@@ -31,7 +31,9 @@ public class HomeController {
 	 */
 	@ModelAttribute("user")
 	public User getEmptyUser() {
-		return new User();
+		var user = new User();
+		user.setId(0L);
+		return user;
 	}
 
 	/**

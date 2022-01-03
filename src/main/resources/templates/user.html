@@ -53,11 +53,9 @@
         </table>
     </div>
 
-    <div th:if="${userDeleted != null}">
-        <p>User deleted:</p>
-        <p th:text="${userDeleted}"></p>
+    <div th:if="${deleteUserId != null}">
+        <p>User with id <span th:text="${deleteUserId}"></span> was marked for deletion.</p>
     </div>
-
 
     <form th:action="@{/home}" method="get">
         <button type="submit">Home</button>

@@ -22,7 +22,7 @@ public interface BookingFacade {
 	 *
 	 * @return Event.
 	 */
-	Event getEventById(long eventId);
+	Event getEventById(Long eventId);
 
 	/**
 	 * Get list of events by matching title. Title is matched using 'contains' approach.
@@ -66,16 +66,15 @@ public interface BookingFacade {
 	 * Deletes event by its id.
 	 *
 	 * @param eventId Event id.
-	 * @return Flag that shows whether event has been deleted.
 	 */
-	boolean deleteEvent(long eventId);
+	void deleteEvent(Long eventId);
 
 	/**
 	 * Gets user by its id.
 	 *
 	 * @return User.
 	 */
-	User getUserById(long userId);
+	User getUserById(Long userId);
 
 	/**
 	 * Gets user by its email. Email is strictly matched.
@@ -115,9 +114,8 @@ public interface BookingFacade {
 	 * Deletes user by its id.
 	 *
 	 * @param userId User id.
-	 * @return Flag that shows whether user has been deleted.
 	 */
-	boolean deleteUser(long userId);
+	void deleteUser(Long userId);
 
 	/**
 	 * Book ticket for a specified event on behalf of specified user.
@@ -129,7 +127,7 @@ public interface BookingFacade {
 	 * @return Booked ticket object.
 	 * @throws java.lang.IllegalStateException if this place has already been booked.
 	 */
-	Ticket bookTicket(long userId, long eventId, Ticket.Category category, int place);
+	Ticket bookTicket(Long userId, Long eventId, Ticket.Category category, int place);
 
 	/**
 	 * Batch book ticket from the input stream.
@@ -164,15 +162,39 @@ public interface BookingFacade {
 	 * @param ticketId Ticket id.
 	 * @return Flag whether anything has been canceled.
 	 */
-	boolean cancelTicket(long ticketId);
+	void cancelTicket(Long ticketId);
+
+	/**
+	 * Creates and account for user id.
+	 *
+	 * @param userId User id.
+	 * @return created account.
+	 */
+	Account createAccount(Long userId);
 
 	/**
 	 * Adds the provided refill sum to the specified account by id.
 	 *
 	 * @param accountId Account id.
-	 * @param refillSum Sum to be added to the account.
-	 * @return Flag whether anything has been canceled.
+	 * @param refillSum Amount to be added to the account.
+	 * @return updated account.
 	 */
 	Account refillAccount(Long accountId, BigDecimal refillSum);
+
+	/**
+	 * Subtracts the provided ticket price from the specified account by id.
+	 *
+	 * @param accountId Account id.
+	 * @param ticketPrice Amount to be subtracted from the account.
+	 * @return updated account.
+	 */
+	Account chargeAccountForTicket(Long accountId, BigDecimal ticketPrice);
+
+	/**
+	 * Deletes account by its id.
+	 *
+	 * @param accountId Account id.
+	 */
+	void deleteAccount(Long accountId);
 
 }

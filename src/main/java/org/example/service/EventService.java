@@ -58,5 +58,5 @@ public interface EventService {
 	 * @param eventId Event id.
 	 * @return Flag that shows whether event has been deleted.
 	 */
-	boolean deleteEvent(long eventId);
+	void deleteEvent(long eventId);
 }

@@ -53,5 +53,5 @@ public interface UserService {
 	 * @param userId User id.
 	 * @return Flag that shows whether user has been deleted.
 	 */
-	boolean deleteUser(long userId);
+	void deleteUser(long userId);
 }

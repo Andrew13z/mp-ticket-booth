@@ -24,18 +24,10 @@ class BookingFacadeImplTest {
 	private BookingFacadeImpl facade;
 
 	@Test
-	void dataInitializedTest(){
-		assertNotNull(facade.getUserById(10));
-		var event = facade.getEventById(4);
-		assertNotNull(event);
-		assertNotNull(facade.getBookedTicketsByEventId(event.getId(), 2, 1));
-	}
-
-	@Test
 	void endToEndTest(){
 		//Creating user
 		String userName = "Name";
-		User user = new User(0, userName, "email@mail.com");
+		User user = new User(0L, userName, "email@mail.com");
 		var savedUser = facade.createUser(user);
 		var savedUserId = savedUser.getId();
 
@@ -43,31 +35,33 @@ class BookingFacadeImplTest {
 
 		//Creating event
 		String eventTitle = "Title";
-		Event event = new Event(0, eventTitle, LocalDate.now(), BigDecimal.ZERO);
+		Event event = new Event(0L, eventTitle, LocalDate.now(), BigDecimal.ZERO);
 		var savedEvent = facade.createEvent(event);
 		var savedEventId = savedEvent.getId();
 
 		assertEquals(eventTitle, savedEvent.getTitle());
 
 		//Creating ticket
-		var ticket = facade.bookTicket(savedUserId, savedEventId, Ticket.Category.STANDARD, 1);
+		var ticket = facade.bookTicket(savedUserId, savedEventId, Ticket.Category.STANDARD, 0);
 
 		assertEquals(savedUserId, ticket.getUser().getId());
 		assertEquals(savedEventId, ticket.getEvent().getId());
 
 		//Checking ticket by user
-		var userTickets = facade.getBookedTicketsByUserId(savedUserId, 10, 1);
+		var userTickets = facade.getBookedTicketsByUserId(savedUserId, 10, 0);
 
 		assertEquals(1, userTickets.size());
 		assertEquals(savedUserId, userTickets.get(0).getUser().getId());
 
 		//Checking ticket by event
-		var eventTickets = facade.getBookedTicketsByEventId(savedEventId, 10, 1);
+		var eventTickets = facade.getBookedTicketsByEventId(savedEventId, 10, 0);
 
 		assertEquals(1, eventTickets.size());
 		assertEquals(savedEventId, eventTickets.get(0).getEvent().getId());
 
 		//Canceling ticket
-		assertTrue(facade.cancelTicket(ticket.getId()));
+		facade.cancelTicket(ticket.getId());
+		//Checking that ticket doesn't exist
+		assertEquals(0, facade.getBookedTicketsByEventId(savedEventId, 10, 0).size());
 	}
 }

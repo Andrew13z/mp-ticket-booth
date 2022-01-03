@@ -7,7 +7,6 @@ import org.example.model.Account;
 import org.example.model.Event;
 import org.example.model.Ticket;
 import org.example.model.User;
-import org.example.preloader.DataPreloader;
 import org.example.service.AccountService;
 import org.example.service.EventService;
 import org.example.service.TicketService;
@@ -15,7 +14,6 @@ import org.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -35,35 +33,23 @@ public class BookingFacadeImpl implements BookingFacade {
 
 	private final XmlMarshaller xmlMarshaller;
 
-	private final List<DataPreloader<?>> dataPreloaders;
-
 	@Autowired
 	public BookingFacadeImpl(EventService eventService,
 							 TicketService ticketService,
 							 UserService userService,
-							 AccountService accountService, XmlMarshaller xmlMarshaller,
-							 List<DataPreloader<?>> dataPreloaders) {
+							 AccountService accountService, XmlMarshaller xmlMarshaller) {
 		this.eventService = eventService;
 		this.ticketService = ticketService;
 		this.userService = userService;
 		this.accountService = accountService;
 		this.xmlMarshaller = xmlMarshaller;
-		this.dataPreloaders = dataPreloaders;
-	}
-
-	/**
-	 * Preloads data from xml files.
-	 */
-	@PostConstruct
-	private void preloadData() {
-		dataPreloaders.forEach(DataPreloader::preloadData);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Event getEventById(long eventId) {
+	public Event getEventById(Long eventId) {
 		return eventService.getEventById(eventId);
 	}
 
@@ -103,15 +89,15 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean deleteEvent(long eventId) {
-		return eventService.deleteEvent(eventId);
+	public void deleteEvent(Long eventId) {
+		eventService.deleteEvent(eventId);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public User getUserById(long userId) {
+	public User getUserById(Long userId) {
 		return userService.getUserById(userId);
 	}
 
@@ -151,21 +137,22 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean deleteUser(long userId) {
-		return userService.deleteUser(userId);
+	public void deleteUser(Long userId) {
+		userService.deleteUser(userId);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Ticket bookTicket(long userId, long eventId, Ticket.Category category, int place) {
+	public Ticket bookTicket(Long userId, Long eventId, Ticket.Category category, int place) {
 		return ticketService.bookTicket(userId, eventId, category, place);
 	}
 
 	@Override
 	public List<Ticket> batchBookTickets(InputStream stream) throws IOException {
-		var tickets = xmlMarshaller.parse(stream, new TypeReference<List<Ticket>>() {});
+		var tickets = xmlMarshaller.parse(stream, new TypeReference<List<Ticket>>() {
+		});
 		tickets.forEach(ticket -> bookTicket(ticket.getUser().getId(), ticket.getEvent().getId(), ticket.getCategory(), ticket.getPlace()));
 		return tickets;
 	}
@@ -190,8 +177,14 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean cancelTicket(long ticketId) {
-		return ticketService.cancelTicket(ticketId);
+	public void cancelTicket(Long ticketId) {
+		ticketService.cancelTicket(ticketId);
+	}
+
+
+	@Override
+	public Account createAccount(Long userId) {
+		return accountService.createAccount(userId);
 	}
 
 	/**
@@ -200,5 +193,21 @@ public class BookingFacadeImpl implements BookingFacade {
 	@Override
 	public Account refillAccount(Long accountId, BigDecimal refillSum) {
 		return accountService.refillAccount(accountId, refillSum);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Account chargeAccountForTicket(Long accountId, BigDecimal ticketPrice) {
+		return accountService.chargeForTicket(accountId, ticketPrice);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void deleteAccount(Long accountId) {
+		accountService.deleteById(accountId);
 	}
 }

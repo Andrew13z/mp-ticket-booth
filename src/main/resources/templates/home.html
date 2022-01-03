@@ -21,12 +21,14 @@
 
     <h3>Get User By Id</h3>
     <form th:action="@{/user}" method="get">
+        <label>Id</label>
         <input type="number" th:name="id"/>
         <input type="submit"/>
     </form>
 
     <h3>Get User By Email</h3>
     <form th:action="@{/user/byEmail}" method="get">
+        <label>Email</label>
         <input type="text" th:name="email"/>
         <input type="submit"/>
     </form>
@@ -37,21 +39,25 @@
         <input type="text" th:name="name"/>
         <label>Page size</label>
         <input type="number" min="1" th:name="pageSize"/>
-        <label>Page number</label>
-        <input type="number" min="1" th:name="pageNum"/>
+        <label>Page number (starts at 0)</label>
+        <input type="number" min="0" th:name="pageNum"/>
         <input type="submit"/>
     </form>
 
     <h3>Update User</h3>
     <form th:action="@{/user/update}" th:object="${user}" method="post">
+        <label>Id</label>
         <input type="number" th:field="*{id}"/>
+        <label>Name (leave blank to not change)</label>
         <input type="text" th:field="*{name}"/>
+        <label>Email (leave blank to not change)</label>
         <input type="text" th:field="*{email}"/>
         <input type="submit"/>
     </form>
 
     <h3>Delete user:</h3>
     <form th:action="@{/user/delete}" method="post">
+        <label>Id</label>
         <input type="number" th:name="id"/>
         <input type="submit"/>
     </form>
@@ -60,12 +66,13 @@
 
     <h3>Create Event</h3>
     <form th:action="@{/event}" th:object="${event}" method="post">
-        <label>Id</label>
-        <input type="number" th:field="*{id}"/>
+        <input type="hidden" th:field="*{id}"/>
         <label>Title</label>
         <input type="text" th:field="*{title}"/>
         <label>Date</label>
         <input type="date" th:field="*{date}"/>
+        <label>Ticket price</label>
+        <input type="number" th:field="*{ticketPrice}"/>
         <input type="submit"/>
     </form>
 
@@ -76,25 +83,25 @@
         <input type="submit"/>
     </form>
 
-    <h3>Get Event By Title</h3>
+    <h3>Get Events By Title</h3>
     <form th:action="@{/event/byTitle}" method="get">
         <label>Title</label>
         <input type="text" th:name="title"/>
         <label>Page size</label>
         <input type="number" min="1" th:name="pageSize"/>
-        <label>Page number</label>
-        <input type="number" min="1" th:name="pageNum"/>
+        <label>Page number (starts at 0)</label>
+        <input type="number" min="0" th:name="pageNum"/>
         <input type="submit"/>
     </form>
 
-    <h3>Get Event By Date</h3>
+    <h3>Get Events By Date</h3>
     <form th:action="@{/event/byDate}" method="get">
         <label>Title</label>
         <input type="date" th:name="date"/>
         <label>Page size</label>
         <input type="number" min="1" th:name="pageSize"/>
-        <label>Page number</label>
-        <input type="number" min="1" th:name="pageNum"/>
+        <label>Page number (starts at 0)</label>
+        <input type="number" min="0" th:name="pageNum"/>
         <input type="submit"/>
     </form>
 
@@ -106,6 +113,8 @@
         <input type="text" th:field="*{title}"/>
         <label>New Date (leave blank to not change)</label>
         <input type="date" th:field="*{date}"/>
+        <label>Ticket Price (leave blank to not change)</label>
+        <input type="number" th:field="*{ticketPrice}" min="0"/>
         <input type="submit"/>
     </form>
 
@@ -120,12 +129,11 @@
 
     <h3>Book ticket</h3>
     <form th:action="@{/ticket}" th:object="${ticket}" method="post">
-        <label>Id</label>
         <input type="hidden" th:field="*{id}"/>
         <label>User Id</label>
-        <input type="number" th:field="*{userId}"/>
+        <input type="number" th:field="*{user.id}"/>
         <label>Event Id</label>
-        <input type="number" th:field="*{eventId}"/>
+        <input type="number" th:field="*{event.id}"/>
         <label>Category</label>
         <select th:field="*{category}">
             <option th:each="categoryOpt : ${T(org.example.model.Ticket.Category).values()}"
@@ -142,25 +150,25 @@
         <button type="submit" class="btn btn-primary">Upload File</button>
     </form>
 
-    <h3>Get Ticket By User</h3>
+    <h3>Get Tickets By User</h3>
     <form th:action="@{/ticket/byUser}" method="get">
         <label>User Id</label>
         <input type="number" min="1" th:name="userId"/>
         <label>Page size</label>
         <input type="number" min="1" th:name="pageSize"/>
-        <label>Page number</label>
-        <input type="number" min="1" th:name="pageNum"/>
+        <label>Page number (starts at 0)</label>
+        <input type="number" min="0" th:name="pageNum"/>
         <input type="submit"/>
     </form>
 
-    <h3>Get Ticket By Event</h3>
+    <h3>Get Tickets By Event</h3>
     <form th:action="@{/ticket/byEvent}" method="get">
         <label>Event Id</label>
         <input type="number" min="1" th:name="eventId"/>
         <label>Page size</label>
         <input type="number" min="1" th:name="pageSize"/>
-        <label>Page number</label>
-        <input type="number" min="1" th:name="pageNum"/>
+        <label>Page number (starts at 0)</label>
+        <input type="number" min="0" th:name="pageNum"/>
         <input type="submit"/>
     </form>
 

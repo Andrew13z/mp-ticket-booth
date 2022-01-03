@@ -1,6 +1,6 @@
 package org.example.service.impl;
 
-import org.example.dao.EventRepository;
+import org.example.repository.EventRepository;
 import org.example.exception.EntityNotFoundException;
 import org.example.model.Event;
 import org.junit.jupiter.api.Test;
@@ -34,14 +34,14 @@ class EventServiceImplTest {
 
 	@Test
 	void getEventByIdTestWithExistingId() {
-		when(mockDao.get(ID)).thenReturn(Optional.of(new Event(ID, TITLE, DATE, PRICE)));
+		when(mockDao.findById(ID)).thenReturn(Optional.of(new Event(ID, TITLE, DATE, PRICE)));
 		var eventById = eventService.getEventById(ID);
 		assertEquals(eventById.getId(), ID);
 	}
 
 	@Test
 	void getEventByIdTestWithNonExistingId() {
-		when(mockDao.get(ID)).thenReturn(Optional.empty());
+		when(mockDao.findById(ID)).thenReturn(Optional.empty());
 		var exception = assertThrows(EntityNotFoundException.class, () -> eventService.getEventById(ID));//todo
 		assertEquals("Event not found by id: 1", exception.getMessage());
 	}

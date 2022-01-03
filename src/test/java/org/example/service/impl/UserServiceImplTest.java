@@ -1,6 +1,6 @@
 package org.example.service.impl;
 
-import org.example.dao.UserRepository;
+import org.example.repository.UserRepository;
 import org.example.exception.EntityNotFoundException;
 import org.example.model.User;
 import org.junit.jupiter.api.Test;
@@ -30,28 +30,28 @@ class UserServiceImplTest {
 
 	@Test
 	void getUserByIdTestWithExistingId() {
-		when(mockRepository.get(ID)).thenReturn(Optional.of(new User(ID, NAME, EMAIL)));
+		when(mockRepository.findById(ID)).thenReturn(Optional.of(new User(ID, NAME, EMAIL)));
 		var user = userService.getUserById(ID);
 		assertEquals(user.getId(), ID);
 	}
 
 	@Test
 	void getUserByIdTestWithNonExistingId() {
-		when(mockRepository.get(ID)).thenReturn(Optional.empty());
+		when(mockRepository.findById(ID)).thenReturn(Optional.empty());
 		var exception = assertThrows(EntityNotFoundException.class, () -> userService.getUserById(ID));
 		assertEquals("User not found by id: 1", exception.getMessage());
 	}
 
 	@Test
 	void getUserByEmailTestWithExistingId() {
-		when(mockRepository.getUserByEmail(EMAIL)).thenReturn(Optional.of(new User(ID, NAME, EMAIL)));
+		when(mockRepository.findByEmail(EMAIL)).thenReturn(Optional.of(new User(ID, NAME, EMAIL)));
 		var user = userService.getUserByEmail(EMAIL);
 		assertEquals(user.getEmail(), EMAIL);
 	}
 
 	@Test
 	void getUserByEmailTestWithNonExistingId() {
-		when(mockRepository.getUserByEmail(EMAIL)).thenReturn(Optional.empty());
+		when(mockRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 		var exception = assertThrows(EntityNotFoundException.class, () -> userService.getUserByEmail(EMAIL));
 		assertEquals("User not found by email: email@mail.com", exception.getMessage());
 	}

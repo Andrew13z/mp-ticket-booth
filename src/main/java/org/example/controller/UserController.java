@@ -4,6 +4,7 @@ import org.example.facade.BookingFacade;
 import org.example.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Controller for all operations on Users.
+ *
  * @author Andrii Krokhta
  */
 @Controller
@@ -30,13 +32,14 @@ public class UserController {
 	/**
 	 * Creates a new user and adds to it model data.
 	 *
-	 * @param user New user data.
+	 * @param user  New user data.
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
 	@PostMapping
-	public String createUser(@ModelAttribute User user, ModelMap model){
+	public String createUser(@ModelAttribute User user, ModelMap model) {
 		var createdUser = facade.createUser(new User(0L, user.getName(), user.getEmail()));
+		facade.createAccount(createdUser.getId());
 		model.addAttribute("createdUser", createdUser);
 		return USER_VIEW_NAME;
 	}
@@ -44,7 +47,7 @@ public class UserController {
 	/**
 	 * Gets a user by id and adds it to model data.
 	 *
-	 * @param id User id.
+	 * @param id    User id.
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
@@ -72,10 +75,10 @@ public class UserController {
 	/**
 	 * Gets a list of user by name and adds it to model data. Name is matched using 'contains' approach.
 	 *
-	 * @param name User name.
+	 * @param name     User name.
 	 * @param pageSize Number of ticket entries per page.
-	 * @param pageNum Number of page to display.
-	 * @param model Model data.
+	 * @param pageNum  Number of page to display.
+	 * @param model    Model data.
 	 * @return Name of the view.
 	 */
 	@GetMapping("/byName")
@@ -91,12 +94,12 @@ public class UserController {
 	/**
 	 * Updates a user by user id and adds the updated object to model data.
 	 *
-	 * @param user Updated user with the same id.
+	 * @param user  Updated user with the same id.
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
 	@PostMapping("/update")
-	public String updateUser (@ModelAttribute User user, ModelMap model) {
+	public String updateUser(@ModelAttribute User user, ModelMap model) {
 		var updatedUser = facade.updateUser(user);
 		model.addAttribute("updatedUser", updatedUser);
 		return USER_VIEW_NAME;
@@ -105,14 +108,16 @@ public class UserController {
 	/**
 	 * Deletes a user by id. Adds a boolean to model data with information if deletion was successful or not.
 	 *
-	 * @param id Id of the user to be deleted.
+	 * @param id    Id of the user to be deleted.
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
 	@PostMapping("/delete")
-	public String deleteUser(@RequestParam("id") long id, ModelMap model) {
-		var deleteSuccessful = facade.deleteUser(id);
-		model.addAttribute("userDeleted", deleteSuccessful);
+	@Transactional
+	public String deleteUser(@RequestParam("id") Long id, ModelMap model) {
+		facade.deleteUser(id);
+		facade.deleteAccount(id);
+		model.addAttribute("deleteUserId", id);
 		return USER_VIEW_NAME;
 	}
 }

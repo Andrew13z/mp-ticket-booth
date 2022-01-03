@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
@@ -22,7 +23,8 @@ public class Ticket {
 	public enum Category {STANDARD, PREMIUM, BAR}
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ticket_id_sequence")
+	@SequenceGenerator(name = "TICKETS_ID_SEQ", sequenceName = "TICKETS_ID_SEQ", allocationSize = 1)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TICKETS_ID_SEQ")
 	@Column(name = "ID")
 	private Long id;
 
@@ -44,7 +46,7 @@ public class Ticket {
 	public Ticket() {
 	}
 
-	public Ticket(long id, User user, Event event, Category category, int place) {
+	public Ticket(Long id, User user, Event event, Category category, int place) {
 		this.id = id;
 		this.user = user;
 		this.event = event;
@@ -52,11 +54,11 @@ public class Ticket {
 		this.place = place;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

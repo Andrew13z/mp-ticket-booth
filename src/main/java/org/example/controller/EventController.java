@@ -16,6 +16,7 @@ import java.time.LocalDate;
 
 /**
  * Controller for all operations on Events.
+ *
  * @author Andrii Krokhta
  */
 @Controller
@@ -38,7 +39,7 @@ public class EventController {
 	 * @return Name of the view.
 	 */
 	@PostMapping
-	public String createEvent(@ModelAttribute Event event, ModelMap model){
+	public String createEvent(@ModelAttribute Event event, ModelMap model) {
 		var createdEvent = facade.createEvent(event);
 		model.addAttribute("createdEvent", createdEvent);
 		return EVENT_VIEW_NAME;
@@ -47,7 +48,7 @@ public class EventController {
 	/**
 	 * Gets an event by id and adds it to model data.
 	 *
-	 * @param id Event id.
+	 * @param id    Event id.
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
@@ -61,10 +62,10 @@ public class EventController {
 	/**
 	 * Gets a list of events by title and adds it to model data.
 	 *
-	 * @param title Event title.
+	 * @param title    Event title.
 	 * @param pageSize Number of ticket entries per page.
-	 * @param pageNum Number of page to display.
-	 * @param model Model data.
+	 * @param pageNum  Number of page to display.
+	 * @param model    Model data.
 	 * @return Name of the view.
 	 */
 	@GetMapping("/byTitle")
@@ -80,10 +81,10 @@ public class EventController {
 	/**
 	 * Gets a list of events by date and adds it to model data.
 	 *
-	 * @param date Event date.
+	 * @param date     Event date.
 	 * @param pageSize Number of ticket entries per page.
-	 * @param pageNum Number of page to display.
-	 * @param model Model data.
+	 * @param pageNum  Number of page to display.
+	 * @param model    Model data.
 	 * @return Name of the view.
 	 */
 	@GetMapping("/byDate")
@@ -104,7 +105,7 @@ public class EventController {
 	 * @return Name of the view.
 	 */
 	@PostMapping("/update")
-	public String updateEvent (@ModelAttribute Event event, ModelMap model) {
+	public String updateEvent(@ModelAttribute Event event, ModelMap model) {
 		var updatedEvent = facade.updateEvent(event);
 		model.addAttribute("updatedEvent", updatedEvent);
 		return EVENT_VIEW_NAME;
@@ -113,14 +114,14 @@ public class EventController {
 	/**
 	 * Deletes an event by id. Adds a boolean to model data with information if deletion was successful or not.
 	 *
-	 * @param id Id of the event to be deleted.
+	 * @param id    Id of the event to be deleted.
 	 * @param model Model data.
 	 * @return Name of the view.
 	 */
 	@PostMapping("/delete")
 	public String deleteEvent(@RequestParam("id") long id, ModelMap model) {
-		var deleteSuccessful = facade.deleteEvent(id);
-		model.addAttribute("eventDeleted", deleteSuccessful);
+		facade.deleteEvent(id);
+		model.addAttribute("deleteEventId", id);
 		return EVENT_VIEW_NAME;
 	}
 }

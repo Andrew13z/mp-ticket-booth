@@ -1,5 +1,6 @@
 package org.example.exception.handler;
 
+import org.example.exception.AccountBalanceException;
 import org.example.exception.EntityNotFoundException;
 import org.example.exception.PdfGenerationException;
 import org.example.exception.UnmarshallingException;
@@ -52,6 +53,16 @@ public class ApplicationExceptionHandler {
 	 */
 	@ExceptionHandler(UnmarshallingException.class)
 	private ModelAndView handleUnmarshallingException(UnmarshallingException ex) {
+		return setUpModelWithBadRequest(ex);
+	}
+
+	/**
+	 * Creates ModelAndView with BAD_REQUEST response status and exception information
+	 *
+	 * @param ex thrown Exception
+	 * @return model with view name, response status, and message
+	 */
+	private ModelAndView setUpModelWithBadRequest(Exception ex) {
 		var modelAndView = new ModelAndView();
 		modelAndView.setViewName(ERROR_VIEW_NAME);
 		modelAndView.setStatus(HttpStatus.BAD_REQUEST);
@@ -67,11 +78,18 @@ public class ApplicationExceptionHandler {
 	 */
 	@ExceptionHandler(IllegalArgumentException.class)
 	private ModelAndView handleIllegalArgumentException(IllegalArgumentException ex) {
-		var modelAndView = new ModelAndView();
-		modelAndView.setViewName(ERROR_VIEW_NAME);
-		modelAndView.setStatus(HttpStatus.BAD_REQUEST);
-		modelAndView.addObject(MESSAGE, ex.getMessage());
-		return modelAndView;
+		return setUpModelWithBadRequest(ex);
+	}
+
+	/**
+	 * Handles Exception
+	 *
+	 * @param ex thrown Exception
+	 * @return model with view name, response status, and message
+	 */
+	@ExceptionHandler(AccountBalanceException.class)
+	public ModelAndView handleAccountBalanceException(Exception ex) {
+		return setUpModelWithBadRequest(ex);
 	}
 
 	/**

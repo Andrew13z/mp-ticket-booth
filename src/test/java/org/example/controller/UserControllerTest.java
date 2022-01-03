@@ -1,16 +1,10 @@
 package org.example.controller;
 
 import org.example.model.User;
-import org.example.repository.InMemoryStorage;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -18,13 +12,13 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Sql(value = { "classpath:drop-tables.sql" })
+@Sql(value = { "classpath:init-user.sql" })
 @SpringBootTest
 class UserControllerTest {
 
@@ -33,24 +27,17 @@ class UserControllerTest {
 
 	private MockMvc mockMvc;
 
-	@Autowired
-	private InMemoryStorage<User> storage;
-
 	@BeforeEach
 	void setUp(WebApplicationContext wac){
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 	}
 
-	@AfterEach
-	void cleanUp() {
-		storage.getData().remove(1L);
-		storage.getData().put(1L, new User (1L, USER_NAME, USER_EMAIL));
-	}
-
+	@Sql(value = { "classpath:drop-tables.sql" })
+	@Sql(value = { "classpath:init-user-without-data.sql" })
 	@Test
 	void testCreateUser_WithUniqueEmail() throws Exception{
 		var result = mockMvc.perform(post("/user")
-						.flashAttr("user", new User(0, USER_NAME, "uniquemail@mail.com")))
+						.flashAttr("user", new User(0L, USER_NAME, "uniquemail@mail.com")))
 						.andExpect(status().isOk())
 						.andExpect(model().attributeExists("createdUser"))
 						.andReturn();
@@ -61,7 +48,7 @@ class UserControllerTest {
 	@Test
 	void testCreateUser_WithExistingEmail() throws Exception{
 		mockMvc.perform(post("/user")
-						.flashAttr("user", new User(0, USER_NAME, USER_EMAIL)))
+						.flashAttr("user", new User(0L, USER_NAME, USER_EMAIL)))
 				.andExpect(status().isBadRequest());
 	}
 
@@ -106,7 +93,7 @@ class UserControllerTest {
 		var result = mockMvc.perform(get("/user/byName")
 						.param("name", USER_NAME)
 						.param("pageSize", "1")
-						.param("pageNum", "1"))
+						.param("pageNum", "0"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("users"))
 				.andReturn();
@@ -119,7 +106,7 @@ class UserControllerTest {
 		var result = mockMvc.perform(get("/user/byName")
 						.param("name", "Not a name")
 						.param("pageSize", "1")
-						.param("pageNum", "1"))
+						.param("pageNum", "0"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("users"))
 				.andReturn();
@@ -188,22 +175,17 @@ class UserControllerTest {
 		var result = mockMvc.perform(post("/user/delete")
 						.param("id", "1"))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("userDeleted"))
+				.andExpect(model().attributeExists("deleteUserId"))
 				.andReturn();
 
-		var userDeleted = (boolean) result.getModelAndView().getModel().get("userDeleted");
-		assertTrue(userDeleted);
+		var deletedUserId = (Long) result.getModelAndView().getModel().get("deleteUserId");
+		assertEquals(1L, deletedUserId);
 	}
 
 	@Test
 	void deleteUserTest_WithNotExistingId() throws Exception{
-		var result = mockMvc.perform(post("/user/delete")
+		mockMvc.perform(post("/user/delete")
 						.param("id", "100"))
-				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("userDeleted"))
-				.andReturn();
-
-		var userDeleted = (boolean) result.getModelAndView().getModel().get("userDeleted");
-		assertFalse(userDeleted);
+				.andExpect(status().isInternalServerError());
 	}
 }

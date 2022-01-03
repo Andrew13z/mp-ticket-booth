@@ -16,7 +16,7 @@ public interface TicketService {
 	 * @return Booked ticket object.
 	 * @throws java.lang.IllegalStateException if this place has already been booked.
 	 */
-	Ticket bookTicket(long userId, long eventId, Ticket.Category category, int place);
+	Ticket bookTicket(Long userId, Long eventId, Ticket.Category category, int place);
 
 	/**
 	 * Get all booked tickets by specified user id. Tickets should be sorted by event date in descending order.
@@ -44,5 +44,5 @@ public interface TicketService {
 	 * @param ticketId Ticket id.
 	 * @return Flag whether anything has been canceled.
 	 */
-	boolean cancelTicket(long ticketId);
+	void cancelTicket(Long ticketId);
 }

@@ -12,6 +12,7 @@
         <p th:text="${createdEvent.id}"></p>
         <p th:text="${createdEvent.title}"></p>
         <p th:text="${createdEvent.date}"></p>
+        <p th:text="${createdEvent.ticketPrice}"></p>
     </div>
 
     <div th:if="${updatedEvent != null}">
@@ -19,6 +20,7 @@
         <p th:text="${updatedEvent.id}"></p>
         <p th:text="${updatedEvent.title}"></p>
         <p th:text="${updatedEvent.date}"></p>
+        <p th:text="${updatedEvent.ticketPrice}"></p>
     </div>
 
     <div th:if="${eventById != null}">
@@ -26,6 +28,7 @@
         <p th:text="${eventById.id}"></p>
         <p th:text="${eventById.title}"></p>
         <p th:text="${eventById.date}"></p>
+        <p th:text="${eventById.ticketPrice}"></p>
     </div>
 
     <div th:if="${eventsByTitle != null}">
@@ -35,12 +38,14 @@
                 <th>Id</th>
                 <th>Title</th>
                 <th>Date</th>
+                <th>Ticket price</th>
             </tr>
             <tbody>
             <tr th:each="event : ${eventsByTitle}">
                 <td th:text="${event.id}"></td>
                 <td th:text="${event.title}"></td>
                 <td th:text="${event.date}"></td>
+                <td th:text="${event.ticketPrice}"></td>
             </tr>
             </tbody>
         </table>
@@ -53,20 +58,21 @@
                 <th>Id</th>
                 <th>Title</th>
                 <th>Date</th>
+                <th>Ticket price</th>
             </tr>
             <tbody>
             <tr th:each="event : ${eventsByDate}">
                 <td th:text="${event.id}"></td>
                 <td th:text="${event.title}"></td>
                 <td th:text="${event.date}"></td>
+                <td th:text="${event.ticketPrice}"></td>
             </tr>
             </tbody>
         </table>
     </div>
 
-    <div th:if="${eventDeleted != null}">
-        <p>Event deleted:</p>
-        <p th:text="${eventDeleted}"></p>
+    <div th:if="${deleteEventId != null}">
+        <p>Event with id <span th:text="${deleteEventId}"></span> was marked for deletion.</p>
     </div>
 
     <form th:action="@{/home}" method="get">

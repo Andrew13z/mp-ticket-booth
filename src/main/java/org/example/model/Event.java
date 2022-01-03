@@ -7,8 +7,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 /**
@@ -19,6 +21,7 @@ import java.time.LocalDate;
 public class Event {
 
 	@Id
+	@SequenceGenerator(name = "EVENTS_ID_SEQ", sequenceName = "EVENTS_ID_SEQ", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EVENTS_ID_SEQ")
 	@Column(name = "ID")
 	private Long id;
@@ -36,18 +39,18 @@ public class Event {
 	public Event() {
 	}
 
-	public Event(long id, String title, LocalDate date, BigDecimal ticketPrice) {
+	public Event(Long id, String title, LocalDate date, BigDecimal ticketPrice) {
 		this.id = id;
 		this.title = title;
 		this.date = date;
-		this.ticketPrice = ticketPrice.setScale(2);
+		this.ticketPrice = ticketPrice.setScale(2, RoundingMode.HALF_UP);
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

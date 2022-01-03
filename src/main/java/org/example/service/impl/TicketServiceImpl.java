@@ -1,11 +1,11 @@
 package org.example.service.impl;
 
-import org.example.dao.TicketRepository;
-import org.example.model.Event;
 import org.example.model.Ticket;
-import org.example.model.User;
+import org.example.model.TicketBuilder;
+import org.example.repository.TicketRepository;
 import org.example.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,21 +13,23 @@ import java.util.List;
 @Service
 public class TicketServiceImpl implements TicketService {
 
-	private final TicketRepository repository;
+	private final TicketRepository ticketRepository;
 
 	@Autowired
 	public TicketServiceImpl(TicketRepository repository) {
-		this.repository = repository;
+		this.ticketRepository = repository;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Ticket bookTicket(long userId, long eventId, Ticket.Category category, int place) {
-		return repository.save(new Ticket(0, new User(userId, null, null),
-												new Event(eventId, null, null, null),
-												category, place));
+	public Ticket bookTicket(Long userId, Long eventId, Ticket.Category category, int place) {
+		return ticketRepository.save(new TicketBuilder().setUserId(userId)
+													.setEventId(eventId)
+													.setCategory(category)
+													.setPlace(place)
+													.createTicket());
 	}
 
 	/**
@@ -35,7 +37,7 @@ public class TicketServiceImpl implements TicketService {
 	 */
 	@Override
 	public List<Ticket> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum) {
-		return repository.getBookedTicketsByUserId(userId, pageSize, pageNum);
+		return ticketRepository.findByUserId(userId, PageRequest.of(pageNum, pageSize));
 	}
 
 	/**
@@ -43,14 +45,14 @@ public class TicketServiceImpl implements TicketService {
 	 */
 	@Override
 	public List<Ticket> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum) {
-		return repository.getBookedTicketsByEventId(eventId, pageSize, pageNum);
+		return ticketRepository.findByEventId(eventId, PageRequest.of(pageNum, pageSize));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean cancelTicket(long ticketId) {
-		return repository.delete(ticketId);
+	public void cancelTicket(Long ticketId) {
+		ticketRepository.deleteById(ticketId);
 	}
 }

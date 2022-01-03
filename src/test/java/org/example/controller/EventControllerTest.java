@@ -1,12 +1,10 @@
 package org.example.controller;
 
 import org.example.model.Event;
-import org.example.repository.InMemoryStorage;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -16,13 +14,13 @@ import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Sql(value = { "classpath:drop-tables.sql" })
+@Sql(value = { "classpath:init-event.sql" })
 @SpringBootTest
 class EventControllerTest {
 
@@ -32,31 +30,25 @@ class EventControllerTest {
 
 	private MockMvc mockMvc;
 
-	@Autowired
-	private InMemoryStorage<Event> storage;
-
 	@BeforeEach
 	void setUp(WebApplicationContext wac){
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 	}
 
-	@AfterEach
-	void cleanUp() {
-		storage.getData().remove(1L);
-		storage.getData().put(1L, new Event (1L, TITLE, DATE, PRICE));
-	}
-
+	@Sql({ "classpath:init-event-without-data.sql" })
+	@Sql(value = { "classpath:drop-tables.sql" }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 	@Test
 	void testCreateEvent() throws Exception{
 		var localDate = LocalDate.now();
 		var result = mockMvc.perform(post("/event")
-						.flashAttr("event", new Event(0, "New Title", localDate, PRICE)))
+						.flashAttr("event", new Event(0L, "New Title", localDate, PRICE)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("createdEvent"))
 				.andReturn();
 		var event = (Event) result.getModelAndView().getModel().get("createdEvent");
 		assertEquals("New Title", event.getTitle());
 		assertEquals(localDate, event.getDate());
+		assertEquals(0, PRICE.compareTo(event.getTicketPrice()));
 	}
 
 	@Test
@@ -82,7 +74,7 @@ class EventControllerTest {
 		var result = mockMvc.perform(get("/event/byTitle")
 						.param("title", TITLE)
 						.param("pageSize", "1")
-						.param("pageNum", "1"))
+						.param("pageNum", "0"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("eventsByTitle"))
 				.andReturn();
@@ -95,7 +87,7 @@ class EventControllerTest {
 		var result = mockMvc.perform(get("/event/byTitle")
 						.param("title", "Not a title")
 						.param("pageSize", "1")
-						.param("pageNum", "1"))
+						.param("pageNum", "0"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("eventsByTitle"))
 				.andReturn();
@@ -108,7 +100,7 @@ class EventControllerTest {
 		var result = mockMvc.perform(get("/event/byDate")
 						.param("date", DATE.toString())
 						.param("pageSize", "1")
-						.param("pageNum", "1"))
+						.param("pageNum", "0"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("eventsByDate"))
 				.andReturn();
@@ -121,7 +113,7 @@ class EventControllerTest {
 		var result = mockMvc.perform(get("/event/byDate")
 						.param("date", LocalDate.of(1000, 1, 1).toString())
 						.param("pageSize", "1")
-						.param("pageNum", "1"))
+						.param("pageNum", "0"))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("eventsByDate"))
 				.andReturn();
@@ -183,25 +175,16 @@ class EventControllerTest {
 
 	@Test
 	void deleteEventTest_WithExistingId() throws Exception{
-		var result = mockMvc.perform(post("/event/delete")
+		mockMvc.perform(post("/event/delete")
 						.param("id", "1"))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("eventDeleted"))
-				.andReturn();
-
-		var eventDeleted = (boolean) result.getModelAndView().getModel().get("eventDeleted");
-		assertTrue(eventDeleted);
+				.andExpect(model().attributeExists("deleteEventId"));
 	}
 
 	@Test
 	void deleteEventTest_WithNotExistingId() throws Exception{
-		var result = mockMvc.perform(post("/event/delete")
+		mockMvc.perform(post("/event/delete")
 						.param("id", "100"))
-				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("eventDeleted"))
-				.andReturn();
-
-		var eventDeleted = (boolean) result.getModelAndView().getModel().get("eventDeleted");
-		assertFalse(eventDeleted);
+				.andExpect(status().isInternalServerError());
 	}
 }

@@ -19,8 +19,8 @@
             </tr>
             <tr>
                 <td th:text="${createdTicket.id}"></td>
-                <td th:text="${createdTicket.userId}"></td>
-                <td th:text="${createdTicket.eventId}"></td>
+                <td th:text="${createdTicket.user.id}"></td>
+                <td th:text="${createdTicket.event.id}"></td>
                 <td th:text="${createdTicket.category}"></td>
                 <td th:text="${createdTicket.place}"></td>
             </tr>
@@ -40,8 +40,8 @@
             <tbody>
                 <tr th:each="ticket : ${ticketsByUser}">
                     <td th:text="${ticket.id}"></td>
-                    <td th:text="${ticket.userId}"></td>
-                    <td th:text="${ticket.eventId}"></td>
+                    <td th:text="${ticket.user.id}"></td>
+                    <td th:text="${ticket.event.id}"></td>
                     <td th:text="${ticket.category}"></td>
                     <td th:text="${ticket.place}"></td>
                 </tr>
@@ -62,18 +62,13 @@
             <tbody>
             <tr th:each="ticket : ${ticketsByEvent}">
                 <td th:text="${ticket.id}"></td>
-                <td th:text="${ticket.userId}"></td>
-                <td th:text="${ticket.eventId}"></td>
+                <td th:text="${ticket.user.id}"></td>
+                <td th:text="${ticket.event.id}"></td>
                 <td th:text="${ticket.category}"></td>
                 <td th:text="${ticket.place}"></td>
             </tr>
             </tbody>
         </table>
-    </div>
-
-    <div th:if="${ticketDeleted != null}">
-        <p>Ticket deleted:</p>
-        <p th:text="${ticketDeleted}"></p>
     </div>
 
     <div th:if="${batchBookedTickets != null}">
@@ -89,8 +84,8 @@
             <tbody>
             <tr th:each="ticket : ${batchBookedTickets}">
                 <td th:text="${ticket.id}"></td>
-                <td th:text="${ticket.userId}"></td>
-                <td th:text="${ticket.eventId}"></td>
+                <td th:text="${ticket.user.id}"></td>
+                <td th:text="${ticket.event.id}"></td>
                 <td th:text="${ticket.category}"></td>
                 <td th:text="${ticket.place}"></td>
             </tr>
@@ -98,7 +93,9 @@
         </table>
     </div>
 
-
+    <div th:if="${deleteTicketId != null}">
+        <p>Ticket with id <span th:text="${deleteTicketId}"></span> was marked for deletion.</p>
+    </div>
 
     <form th:action="@{/home}" method="get">
         <button type="submit">Home</button>
