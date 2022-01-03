@@ -63,17 +63,17 @@ insert into USERS (FULL_NAME, EMAIL)
 			   ('Ron Campbell', 'Ron_Campbell6475@atink.com'),
 			   ('Chad Darcy', 'Chad_Darcy7034@yahoo.com');
 			  
-insert into ACCOUNTS (BALANCE, USER_ID)
-		values 	(100.00, 1),
-				(150.00, 2),
-				(200.00, 3),
-				(60.00, 4),
-				(40.00, 5),
-				(10.00, 6),
-				(0, 7),
-				(100.00, 8),
-				(80.00, 9),
-				(1000.00, 10);
+insert into ACCOUNTS (BALANCE)
+		values 	(100.00),
+				(150.00),
+				(200.00),
+				(60.00),
+				(40.00),
+				(10.00),
+				(0),
+				(100.00),
+				(80.00),
+				(1000.0);
 			
 insert into EVENTS (TITLE, DATE_HELD, TICKET_PRICE)
 		values	('Matrix Lucky Hand', '2021-12-15', 15.00),

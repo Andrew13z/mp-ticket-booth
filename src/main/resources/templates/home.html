@@ -62,6 +62,17 @@
         <input type="submit"/>
     </form>
 
+    <h1>Account</h1>
+
+    <h3>Refill account:</h3>
+    <form th:action="@{/account}" method="post">
+        <label>User id</label>
+        <input type="number" th:name="userId"/>
+        <label>Refill sum</label>
+        <input type="number" th:name="refillSum"/>
+        <input type="submit"/>
+    </form>
+
     <h1>Events</h1>
 
     <h3>Create Event</h3>

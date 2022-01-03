@@ -25,7 +25,7 @@ public class Account {
 	private BigDecimal balance;
 
 	@ManyToOne
-	@JoinColumn(name = "USER_ID")
+	@JoinColumn(name = "ID", insertable = false, updatable = false)
 	private User user;
 
 	public Account() {

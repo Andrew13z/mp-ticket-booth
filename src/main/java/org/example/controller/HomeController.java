@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.model.Account;
 import org.example.model.Event;
 import org.example.model.Ticket;
 import org.example.model.User;
@@ -54,5 +55,15 @@ public class HomeController {
 	@ModelAttribute("ticket")
 	public Ticket getEmptyTicket() {
 		return new Ticket();
+	}
+
+	/**
+	 * Creates a default account instance.
+	 *
+	 * @return Default account instance.
+	 */
+	@ModelAttribute("account")
+	public Account getEmptyAccount() {
+		return new Account();
 	}
 }

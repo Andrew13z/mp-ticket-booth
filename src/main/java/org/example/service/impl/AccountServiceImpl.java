@@ -44,7 +44,7 @@ public class AccountServiceImpl implements AccountService {
 				.orElseThrow(() -> new EntityNotFoundException("Account not found by id: " + accountId));
 		var accountBalance = account.getBalance();
 		account.setBalance(accountBalance.add(refillSum));
-		return account;
+		return repository.save(account);
 	}
 
 	/**
