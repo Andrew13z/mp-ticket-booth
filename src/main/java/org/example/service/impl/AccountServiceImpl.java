@@ -43,6 +43,7 @@ public class AccountServiceImpl implements AccountService {
 				.orElseThrow(() -> new EntityNotFoundException("Account not found by id: " + accountId));
 		var accountBalance = account.getBalance();
 		account.setBalance(accountBalance.add(refillSum));
+		logger.info("Refilled account (id: {}) by {}.", accountId, refillSum);
 		return repository.save(account);
 	}
 
@@ -60,9 +61,13 @@ public class AccountServiceImpl implements AccountService {
 			throw new AccountBalanceException("Account has insufficient funds.");
 		}
 		account.setBalance(accountBalance.subtract(ticketPrice));
+		logger.info("Charged account (id: {}) for {}.", accountId, ticketPrice);
 		return repository.save(account);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void deleteById(Long accountId) {
 		repository.deleteById(accountId);

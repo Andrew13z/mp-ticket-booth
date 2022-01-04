@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
-	private final long ID = 1L;
+	private final Long ID = 1L;
 	private final String NAME = "Name";
 	private final String EMAIL = "email@mail.com";
 
