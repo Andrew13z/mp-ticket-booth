@@ -19,6 +19,14 @@ public interface TicketService {
 	Ticket bookTicket(Long userId, Long eventId, Ticket.Category category, int place);
 
 	/**
+	 * Book tickets from the collection.
+	 *
+	 * @param tickets   Collection of tikets.
+	 * @return List of booked tickets.
+	 */
+	Iterable<Ticket> bookTickets(List<Ticket> tickets);
+
+	/**
 	 * Get all booked tickets by specified user id. Tickets should be sorted by event date in descending order.
 	 *
 	 * @param userId     User id

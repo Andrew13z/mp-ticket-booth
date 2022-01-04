@@ -43,7 +43,7 @@ class TicketControllerTest {
 	}
 
 	@Sql(value = {"classpath:drop-tables.sql"})
-	@Sql(value = {"classpath:init-ticket-without-data.sql"})
+	@Sql(value = {"classpath:init-create-ticket.sql"})
 	@Test
 	void testCreateTicket() throws Exception {
 		var localDate = LocalDate.now();

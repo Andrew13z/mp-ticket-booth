@@ -5,7 +5,6 @@ drop table if exists TICKETS;
 drop sequence if exists TICKETS_ID_SEQ;
 
 drop table if exists ACCOUNTS;
-drop sequence if exists ACCOUNTS_ID_SEQ;
 
 drop table if exists EVENTS;
 drop sequence if exists EVENTS_ID_SEQ;
@@ -30,13 +29,10 @@ create table EVENTS (
 	TICKET_PRICE	numeric (10,2)
 );
 
-create sequence ACCOUNTS_ID_SEQ no maxvalue start with 1 increment by 1;
-
 create table ACCOUNTS (
-	ID				bigint primary key default nextval('ACCOUNTS_ID_SEQ'),
+	ID				bigint primary key,
 	BALANCE	numeric (10,2) default 0,
-	USER_ID bigint,
-	constraint USERS_FK foreign key (USER_ID) references USERS (ID)
+	constraint USERS_FK foreign key (ID) references USERS (ID)
 );
 
 create sequence TICKETS_ID_SEQ no maxvalue start with 1 increment by 1;
@@ -63,17 +59,17 @@ insert into USERS (FULL_NAME, EMAIL)
 			   ('Ron Campbell', 'Ron_Campbell6475@atink.com'),
 			   ('Chad Darcy', 'Chad_Darcy7034@yahoo.com');
 			  
-insert into ACCOUNTS (BALANCE)
-		values 	(100.00),
-				(150.00),
-				(200.00),
-				(60.00),
-				(40.00),
-				(10.00),
-				(0),
-				(100.00),
-				(80.00),
-				(1000.0);
+insert into ACCOUNTS 
+		values 	(1, 100.00),
+				(2, 150.00),
+				(3, 200.00),
+				(4, 60.00),
+				(5, 40.00),
+				(6, 10.00),
+				(7, 0),
+				(8, 100.00),
+				(9, 80.00),
+				(10, 1000.0);
 			
 insert into EVENTS (TITLE, DATE_HELD, TICKET_PRICE)
 		values	('Matrix Lucky Hand', '2021-12-15', 15.00),

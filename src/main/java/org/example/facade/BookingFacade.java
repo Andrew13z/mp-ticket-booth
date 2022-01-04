@@ -134,7 +134,7 @@ public interface BookingFacade {
 	 *
 	 * @param stream input stream.
 	 */
-	List<Ticket> batchBookTickets(InputStream stream) throws IOException;
+	Iterable<Ticket> batchBookTickets(InputStream stream) throws IOException;
 
 	/**
 	 * Get all booked tickets by specified user id. Tickets should be sorted by event date in descending order.

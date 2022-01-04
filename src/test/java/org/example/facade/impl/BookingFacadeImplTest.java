@@ -6,6 +6,7 @@ import org.example.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -14,7 +15,8 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+@Sql(value = {"classpath:drop-tables.sql"})
+@Sql(value = {"classpath:create-tables.sql"})
 @SpringBootTest
 class BookingFacadeImplTest {
 

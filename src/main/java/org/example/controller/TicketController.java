@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Controller for all operations on Tickets.
@@ -116,7 +115,7 @@ public class TicketController {
 	@PostMapping(value = "/batch")
 	@Transactional
 	public String batchBookTicketsFromFile(@RequestParam("file") MultipartFile file, ModelMap model) {
-		List<Ticket> savedTickets = null;
+		Iterable<Ticket> savedTickets = null;
 		try {
 			savedTickets = facade.batchBookTickets(file.getInputStream());
 		} catch (IOException e) {

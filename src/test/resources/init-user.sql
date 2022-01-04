@@ -23,14 +23,14 @@ insert into USERS (ID, FULL_NAME, EMAIL)
 			   (9, 'Ron Campbell', 'Ron_Campbell6475@atink.com'),
 			   (10, 'Chad Darcy', 'Chad_Darcy7034@yahoo.com');
 
-insert into ACCOUNTS (ID, BALANCE, USER_ID)
-    values 	(1, 100.00, 1),
-            (2, 150.00, 2),
-            (3, 200.00, 3),
-            (4, 60.00, 4),
-            (5, 40.00, 5),
-            (6, 10.00, 6),
-            (7, 0, 7),
-            (8, 100.00, 8),
-            (9, 80.00, 9),
-            (10, 1000.00, 10);
+insert into ACCOUNTS (ID, BALANCE)
+    values 	(1, 100.00),
+            (2, 150.00),
+            (3, 200.00),
+            (4, 60.00),
+            (5, 40.00),
+            (6, 10.00),
+            (7, 0),
+            (8, 100.00),
+            (9, 80.00),
+            (10, 1000.00);

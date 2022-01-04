@@ -33,7 +33,7 @@ class UserControllerTest {
 	}
 
 	@Sql(value = { "classpath:drop-tables.sql" })
-	@Sql(value = { "classpath:init-user-without-data.sql" })
+	@Sql(value = { "classpath:create-tables.sql" })
 	@Test
 	void testCreateUser_WithUniqueEmail() throws Exception{
 		var result = mockMvc.perform(post("/user")

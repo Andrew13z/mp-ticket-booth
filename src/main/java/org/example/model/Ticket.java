@@ -23,7 +23,7 @@ public class Ticket {
 	public enum Category {STANDARD, PREMIUM, BAR}
 
 	@Id
-	@SequenceGenerator(name = "TICKETS_ID_SEQ", sequenceName = "TICKETS_ID_SEQ", allocationSize = 1)
+	@SequenceGenerator(name = "TICKETS_ID_SEQ", sequenceName = "TICKETS_ID_SEQ", allocationSize = 10)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TICKETS_ID_SEQ")
 	@Column(name = "ID")
 	private Long id;

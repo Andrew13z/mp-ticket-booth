@@ -36,6 +36,14 @@ public class TicketServiceImpl implements TicketService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public Iterable<Ticket> bookTickets(List<Ticket> tickets) {
+		return ticketRepository.saveAll(tickets);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public List<Ticket> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum) {
 		return ticketRepository.findByUserId(userId, PageRequest.of(pageNum, pageSize));
 	}

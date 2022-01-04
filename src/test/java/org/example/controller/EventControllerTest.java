@@ -35,8 +35,8 @@ class EventControllerTest {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 	}
 
-	@Sql({ "classpath:init-event-without-data.sql" })
-	@Sql(value = { "classpath:drop-tables.sql" }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+	@Sql(value = { "classpath:drop-tables.sql" })
+	@Sql({ "classpath:create-tables.sql" })
 	@Test
 	void testCreateEvent() throws Exception{
 		var localDate = LocalDate.now();

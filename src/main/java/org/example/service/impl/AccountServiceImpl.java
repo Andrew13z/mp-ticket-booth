@@ -3,7 +3,6 @@ package org.example.service.impl;
 import org.example.exception.AccountBalanceException;
 import org.example.exception.EntityNotFoundException;
 import org.example.model.Account;
-import org.example.model.User;
 import org.example.repository.AccountRepository;
 import org.example.service.AccountService;
 import org.slf4j.Logger;
@@ -31,7 +30,7 @@ public class AccountServiceImpl implements AccountService {
 	@Override
 	public Account createAccount(Long userId) {
 		var account = new Account();
-		account.setUser(new User(userId, null, null));
+		account.setId(userId);
 		return repository.save(account);
 	}
 
