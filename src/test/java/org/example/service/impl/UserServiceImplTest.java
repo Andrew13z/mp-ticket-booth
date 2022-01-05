@@ -30,14 +30,14 @@ class UserServiceImplTest {
 
 	@Test
 	void getUserByIdTestWithExistingId() {
-		when(mockRepository.findById(ID)).thenReturn(Optional.of(new User(ID, NAME, EMAIL)));
+		when(mockRepository.findByIdWithCache(ID)).thenReturn(Optional.of(new User(ID, NAME, EMAIL)));
 		var user = userService.getUserById(ID);
 		assertEquals(user.getId(), ID);
 	}
 
 	@Test
 	void getUserByIdTestWithNonExistingId() {
-		when(mockRepository.findById(ID)).thenReturn(Optional.empty());
+		when(mockRepository.findByIdWithCache(ID)).thenReturn(Optional.empty());
 		var exception = assertThrows(EntityNotFoundException.class, () -> userService.getUserById(ID));
 		assertEquals("User not found by id: 1", exception.getMessage());
 	}

@@ -34,14 +34,14 @@ class EventServiceImplTest {
 
 	@Test
 	void getEventByIdTestWithExistingId() {
-		when(mockDao.findById(ID)).thenReturn(Optional.of(new Event(ID, TITLE, DATE, PRICE)));
+		when(mockDao.findByIdWithCache(ID)).thenReturn(Optional.of(new Event(ID, TITLE, DATE, PRICE)));
 		var eventById = eventService.getEventById(ID);
 		assertEquals(eventById.getId(), ID);
 	}
 
 	@Test
 	void getEventByIdTestWithNonExistingId() {
-		when(mockDao.findById(ID)).thenReturn(Optional.empty());
+		when(mockDao.findByIdWithCache(ID)).thenReturn(Optional.empty());
 		var exception = assertThrows(EntityNotFoundException.class, () -> eventService.getEventById(ID));//todo
 		assertEquals("Event not found by id: 1", exception.getMessage());
 	}

@@ -7,6 +7,7 @@ import org.example.service.EventService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class EventServiceImpl implements EventService {
 	 */
 	@Override
 	public Event getEventById(long eventId) {
-		return repository.findById(eventId)
+		return repository.findByIdWithCache(eventId)
 				.orElseThrow(() -> new EntityNotFoundException("Event not found by id: " + eventId));
 	}
 

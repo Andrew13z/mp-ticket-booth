@@ -28,8 +28,8 @@ public class UserServiceImpl implements UserService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public User getUserById(long userId) {
-		return repository.findById(userId)
+	public User getUserById(Long userId) {
+		return repository.findByIdWithCache(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found by id: " + userId));
 	}
 
@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void deleteUser(long userId) {
+	public void deleteUser(Long userId) {
 		repository.deleteById(userId);
 	}
 }

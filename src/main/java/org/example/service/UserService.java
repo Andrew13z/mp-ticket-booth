@@ -11,7 +11,7 @@ public interface UserService {
 	 *
 	 * @return User.
 	 */
-	User getUserById(long userId);
+	User getUserById(Long userId);
 
 	/**
 	 * Gets user by its email. Email is strictly matched.
@@ -53,5 +53,5 @@ public interface UserService {
 	 * @param userId User id.
 	 * @return Flag that shows whether user has been deleted.
 	 */
-	void deleteUser(long userId);
+	void deleteUser(Long userId);
 }

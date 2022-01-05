@@ -58,7 +58,8 @@ class AccountServiceImplTest {
 	@Test
 	void chargeForTicketTestWithNotEnoughBalance() {
 		when(mockRepository.findById(ID)).thenReturn(Optional.of(new Account(ID, BALANCE)));
-		assertThrows(AccountBalanceException.class, () -> accountService.chargeForTicket(ID, BALANCE.add(BigDecimal.ONE)));
+		var ticketPrice = BALANCE.add(BigDecimal.ONE);
+		assertThrows(AccountBalanceException.class, () -> accountService.chargeForTicket(ID, ticketPrice));
 	}
 
 	@Test
