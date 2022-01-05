@@ -2,11 +2,12 @@ package org.example.facade.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import org.example.converter.XmlMarshaller;
+import org.example.dto.AccountDto;
+import org.example.dto.EventDto;
+import org.example.dto.TicketDto;
+import org.example.dto.UserDto;
+import org.example.enums.Category;
 import org.example.facade.BookingFacade;
-import org.example.model.Account;
-import org.example.model.Event;
-import org.example.model.Ticket;
-import org.example.model.User;
 import org.example.service.AccountService;
 import org.example.service.EventService;
 import org.example.service.TicketService;
@@ -49,7 +50,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Event getEventById(Long eventId) {
+	public EventDto getEventById(Long eventId) {
 		return eventService.getEventById(eventId);
 	}
 
@@ -57,7 +58,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Event> getEventsByTitle(String title, int pageSize, int pageNum) {
+	public List<EventDto> getEventsByTitle(String title, int pageSize, int pageNum) {
 		return eventService.getEventsByTitle(title, pageSize, pageNum);
 	}
 
@@ -65,7 +66,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Event> getEventsForDay(LocalDate day, int pageSize, int pageNum) {
+	public List<EventDto> getEventsForDay(LocalDate day, int pageSize, int pageNum) {
 		return eventService.getEventsForDay(day, pageSize, pageNum);
 	}
 
@@ -73,7 +74,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Event createEvent(Event event) {
+	public EventDto createEvent(EventDto event) {
 		return eventService.createEvent(event);
 	}
 
@@ -81,7 +82,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Event updateEvent(Event event) {
+	public EventDto updateEvent(EventDto event) {
 		return eventService.updateEvent(event);
 	}
 
@@ -97,7 +98,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public User getUserById(Long userId) {
+	public UserDto getUserById(Long userId) {
 		return userService.getUserById(userId);
 	}
 
@@ -105,7 +106,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public User getUserByEmail(String email) {
+	public UserDto getUserByEmail(String email) {
 		return userService.getUserByEmail(email);
 	}
 
@@ -113,7 +114,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<User> getUsersByName(String name, int pageSize, int pageNum) {
+	public List<UserDto> getUsersByName(String name, int pageSize, int pageNum) {
 		return userService.getUsersByName(name, pageSize, pageNum);
 	}
 
@@ -121,7 +122,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public User createUser(User user) {
+	public UserDto createUser(UserDto user) {
 		return userService.createUser(user);
 	}
 
@@ -129,7 +130,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public User updateUser(User user) {
+	public UserDto updateUser(UserDto user) {
 		return userService.updateUser(user);
 	}
 
@@ -145,13 +146,13 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Ticket bookTicket(Long userId, Long eventId, Ticket.Category category, int place) {
+	public TicketDto bookTicket(Long userId, Long eventId, Category category, int place) {
 		return ticketService.bookTicket(userId, eventId, category, place);
 	}
 
 	@Override
-	public Iterable<Ticket> batchBookTickets(InputStream stream) throws IOException {
-		var tickets = xmlMarshaller.parse(stream, new TypeReference<List<Ticket>>() {});
+	public Iterable<TicketDto> batchBookTickets(InputStream stream) throws IOException {
+		var tickets = xmlMarshaller.parse(stream, new TypeReference<List<TicketDto>>() {});
 		return ticketService.bookTickets(tickets);
 	}
 
@@ -159,7 +160,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Ticket> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum) {
+	public List<TicketDto> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum) {
 		return ticketService.getBookedTicketsByUserId(userId, pageSize, pageNum);
 	}
 
@@ -167,7 +168,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Ticket> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum) {
+	public List<TicketDto> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum) {
 		return ticketService.getBookedTicketsByEventId(eventId, pageSize, pageNum);
 	}
 
@@ -181,7 +182,7 @@ public class BookingFacadeImpl implements BookingFacade {
 
 
 	@Override
-	public Account createAccount(Long userId) {
+	public AccountDto createAccount(Long userId) {
 		return accountService.createAccount(userId);
 	}
 
@@ -189,7 +190,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Account refillAccount(Long accountId, BigDecimal refillSum) {
+	public AccountDto refillAccount(Long accountId, BigDecimal refillSum) {
 		return accountService.refillAccount(accountId, refillSum);
 	}
 
@@ -197,7 +198,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Account chargeAccountForTicket(Long accountId, BigDecimal ticketPrice) {
+	public AccountDto chargeAccountForTicket(Long accountId, BigDecimal ticketPrice) {
 		return accountService.chargeForTicket(accountId, ticketPrice);
 	}
 

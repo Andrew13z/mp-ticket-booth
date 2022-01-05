@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.dto.EventDto;
 import org.example.model.Event;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,11 +42,11 @@ class EventControllerTest {
 	void testCreateEvent() throws Exception{
 		var localDate = LocalDate.now();
 		var result = mockMvc.perform(post("/event")
-						.flashAttr("event", new Event(0L, "New Title", localDate, PRICE)))
+						.flashAttr("event", new EventDto(0L, "New Title", localDate, PRICE)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("createdEvent"))
 				.andReturn();
-		var event = (Event) result.getModelAndView().getModel().get("createdEvent");
+		var event = (EventDto) result.getModelAndView().getModel().get("createdEvent");
 		assertEquals("New Title", event.getTitle());
 		assertEquals(localDate, event.getDate());
 		assertEquals(0, PRICE.compareTo(event.getTicketPrice()));
@@ -58,7 +59,7 @@ class EventControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("eventById"))
 				.andReturn();
-		var event = (Event) result.getModelAndView().getModel().get("eventById");
+		var event = (EventDto) result.getModelAndView().getModel().get("eventById");
 		assertEquals(TITLE, event.getTitle());
 	}
 
@@ -78,7 +79,7 @@ class EventControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("eventsByTitle"))
 				.andReturn();
-		var events = (List<Event>) result.getModelAndView().getModel().get("eventsByTitle");
+		var events = (List<EventDto>) result.getModelAndView().getModel().get("eventsByTitle");
 		assertEquals(TITLE, events.get(0).getTitle());
 	}
 
@@ -91,7 +92,7 @@ class EventControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("eventsByTitle"))
 				.andReturn();
-		var events = (List<Event>) result.getModelAndView().getModel().get("eventsByTitle");
+		var events = (List<EventDto>) result.getModelAndView().getModel().get("eventsByTitle");
 		assertEquals(0, events.size());
 	}
 
@@ -104,7 +105,7 @@ class EventControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("eventsByDate"))
 				.andReturn();
-		var events = (List<Event>) result.getModelAndView().getModel().get("eventsByDate");
+		var events = (List<EventDto>) result.getModelAndView().getModel().get("eventsByDate");
 		assertEquals(DATE, events.get(0).getDate());
 	}
 
@@ -117,7 +118,7 @@ class EventControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("eventsByDate"))
 				.andReturn();
-		var events = (List<Event>) result.getModelAndView().getModel().get("eventsByDate");
+		var events = (List<EventDto>) result.getModelAndView().getModel().get("eventsByDate");
 		assertEquals(0, events.size());
 	}
 
@@ -125,11 +126,11 @@ class EventControllerTest {
 	void updateEventTest_WithAllAttributesUpdated() throws Exception{
 		var localDate = LocalDate.now();
 		var result = mockMvc.perform(post("/event/update")
-						.flashAttr("event", new Event(1L, "New Title", localDate, PRICE)))
+						.flashAttr("event", new EventDto(1L, "New Title", localDate, PRICE)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedEvent"))
 				.andReturn();
-		var event = (Event) result.getModelAndView().getModel().get("updatedEvent");
+		var event = (EventDto) result.getModelAndView().getModel().get("updatedEvent");
 
 		assertEquals(1L, event.getId());
 		assertEquals("New Title", event.getTitle());
@@ -140,11 +141,11 @@ class EventControllerTest {
 	void updateEventTest_WithoutUpdatedTitle() throws Exception{
 		var localDate = LocalDate.now();
 		var result = mockMvc.perform(post("/event/update")
-						.flashAttr("event", new Event(1L, "", localDate, PRICE)))
+						.flashAttr("event", new EventDto(1L, "", localDate, PRICE)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedEvent"))
 				.andReturn();
-		var event = (Event) result.getModelAndView().getModel().get("updatedEvent");
+		var event = (EventDto) result.getModelAndView().getModel().get("updatedEvent");
 
 		assertEquals(1L, event.getId());
 		assertEquals(TITLE, event.getTitle());
@@ -155,11 +156,11 @@ class EventControllerTest {
 	void updateEventTest_WithoutUpdatedDate() throws Exception{
 		var localDate = LocalDate.now();
 		var result = mockMvc.perform(post("/event/update")
-						.flashAttr("event", new Event(1L, "New Title", null, PRICE)))
+						.flashAttr("event", new EventDto(1L, "New Title", null, PRICE)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedEvent"))
 				.andReturn();
-		var event = (Event) result.getModelAndView().getModel().get("updatedEvent");
+		var event = (EventDto) result.getModelAndView().getModel().get("updatedEvent");
 
 		assertEquals(1L, event.getId());
 		assertEquals("New Title", event.getTitle());
@@ -169,7 +170,7 @@ class EventControllerTest {
 	@Test
 	void updateEventTest_WithNotExistingId() throws Exception{
 		mockMvc.perform(post("/event/update")
-						.flashAttr("event", new Event(100L, "", null, PRICE)))
+						.flashAttr("event", new EventDto(100L, "", null, PRICE)))
 				.andExpect(status().isNotFound());
 	}
 

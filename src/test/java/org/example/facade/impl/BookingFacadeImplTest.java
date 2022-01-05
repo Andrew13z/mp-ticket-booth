@@ -1,5 +1,8 @@
 package org.example.facade.impl;
 
+import org.example.dto.EventDto;
+import org.example.dto.UserDto;
+import org.example.enums.Category;
 import org.example.model.Event;
 import org.example.model.Ticket;
 import org.example.model.User;
@@ -29,7 +32,7 @@ class BookingFacadeImplTest {
 	void endToEndTest(){
 		//Creating user
 		String userName = "Name";
-		User user = new User(0L, userName, "email@mail.com");
+		var user = new UserDto(0L, userName, "email@mail.com");
 		var savedUser = facade.createUser(user);
 		var savedUserId = savedUser.getId();
 
@@ -37,14 +40,14 @@ class BookingFacadeImplTest {
 
 		//Creating event
 		String eventTitle = "Title";
-		Event event = new Event(0L, eventTitle, LocalDate.now(), BigDecimal.ZERO);
+		var event = new EventDto(0L, eventTitle, LocalDate.now(), BigDecimal.ZERO);
 		var savedEvent = facade.createEvent(event);
 		var savedEventId = savedEvent.getId();
 
 		assertEquals(eventTitle, savedEvent.getTitle());
 
 		//Creating ticket
-		var ticket = facade.bookTicket(savedUserId, savedEventId, Ticket.Category.STANDARD, 0);
+		var ticket = facade.bookTicket(savedUserId, savedEventId, Category.STANDARD, 0);
 
 		assertEquals(savedUserId, ticket.getUser().getId());
 		assertEquals(savedEventId, ticket.getEvent().getId());

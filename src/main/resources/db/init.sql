@@ -35,7 +35,7 @@ create table ACCOUNTS (
 	constraint USERS_FK foreign key (ID) references USERS (ID)
 );
 
-create sequence TICKETS_ID_SEQ no maxvalue start with 1 increment by 1;
+create sequence TICKETS_ID_SEQ no maxvalue start with 1 increment by 10;
 
 create table TICKETS (
 	ID			bigint primary key default nextval('TICKETS_ID_SEQ'),
@@ -43,8 +43,8 @@ create table TICKETS (
 	EVENT_ID	bigint,
 	CATEGORY	varchar (32),
 	PLACE 		int,
-	constraint USERS_FK foreign key (USER_ID) references USERS (ID),
-	constraint EVENTS_FK foreign key (EVENT_ID) references EVENTS (ID)
+	constraint USERS_FK foreign key (USER_ID) references USERS (ID) on delete cascade,
+	constraint EVENTS_FK foreign key (EVENT_ID) references EVENTS (ID) on delete cascade
 );
 
 insert into USERS (FULL_NAME, EMAIL)
@@ -77,7 +77,14 @@ insert into EVENTS (TITLE, DATE_HELD, TICKET_PRICE)
 				('Associated Spring', '2022-03-07', 50.00),
 				('Tradecraft Parties', '2023-01-14', 100.00);
 			
-insert into TICKETS (USER_ID, EVENT_ID,	CATEGORY, PLACE);
-
-
-
+insert into TICKETS (USER_ID, EVENT_ID,	CATEGORY, PLACE)
+		values	(1, 2, 'STANDARD', 45),
+				(2, 4, 'PREMIUM', 221),
+				(3, 4, 'BAR', 274),
+				(4, 3, 'PREMIUM', 379),
+				(5, 2, 'STANDARD', 304),
+				(6, 2, 'STANDARD', 183),
+				(7, 1, 'BAR', 425),
+				(8, 3, 'BAR', 467),
+				(9, 4, 'STANDARD', 237),
+				(1, 2, 'STANDARD', 18915);

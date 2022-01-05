@@ -1,9 +1,9 @@
 package org.example.controller;
 
 import org.apache.pdfbox.io.IOUtils;
+import org.example.dto.TicketDto;
 import org.example.exception.PdfGenerationException;
 import org.example.facade.BookingFacade;
-import org.example.model.Ticket;
 import org.example.util.DocumentUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class TicketController {
 	 */
 	@PostMapping
 	@Transactional
-	public String createTicket(@ModelAttribute Ticket ticket, ModelMap model) {
+	public String createTicket(@ModelAttribute("ticket") TicketDto ticket, ModelMap model) {
 		var ticketPrice = facade.getEventById(ticket.getEvent().getId()).getTicketPrice();
 		facade.chargeAccountForTicket(ticket.getUser().getId(), ticketPrice);
 		var createdTicket = facade.bookTicket(ticket.getUser().getId(),
@@ -74,7 +74,7 @@ public class TicketController {
 	@GetMapping("/byUser")
 	public String getTicketsByUser(@RequestParam("userId") long userId,
 								   @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
-								   @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
+								   @RequestParam(value = "pageNum", required = false, defaultValue = "0") int pageNum,
 								   ModelMap model) {
 		var tickets = facade.getBookedTicketsByUserId(userId, pageSize, pageNum);
 		model.addAttribute("ticketsByUser", tickets);
@@ -94,7 +94,7 @@ public class TicketController {
 	byte[] getTicketsByUserPdf(
 			@RequestParam("userId") Long userId,
 			@RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
-			@RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum) {
+			@RequestParam(value = "pageNum", required = false, defaultValue = "0") int pageNum) {
 		var tickets = facade.getBookedTicketsByUserId(userId, pageSize, pageNum);
 		var generatedFile = DocumentUtil.writeToPdf(tickets);
 		try {
@@ -115,7 +115,7 @@ public class TicketController {
 	@PostMapping(value = "/batch")
 	@Transactional
 	public String batchBookTicketsFromFile(@RequestParam("file") MultipartFile file, ModelMap model) {
-		Iterable<Ticket> savedTickets = null;
+		Iterable<TicketDto> savedTickets = null;
 		try {
 			savedTickets = facade.batchBookTickets(file.getInputStream());
 		} catch (IOException e) {
@@ -140,8 +140,8 @@ public class TicketController {
 	 */
 	@GetMapping("/byEvent")
 	public String getTicketsByEvent(@RequestParam("eventId") Long eventId,
-									@RequestParam("pageSize") int pageSize,
-									@RequestParam("pageNum") int pageNum,
+									@RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
+									@RequestParam(value = "pageNum", required = false, defaultValue = "0") int pageNum,
 									ModelMap model) {
 		var tickets = facade.getBookedTicketsByEventId(eventId, pageSize, pageNum);
 		model.addAttribute("ticketsByEvent", tickets);

@@ -1,6 +1,6 @@
 package org.example.service;
 
-import org.example.model.User;
+import org.example.dto.UserDto;
 
 import java.util.List;
 
@@ -11,14 +11,14 @@ public interface UserService {
 	 *
 	 * @return User.
 	 */
-	User getUserById(Long userId);
+	UserDto getUserById(Long userId);
 
 	/**
 	 * Gets user by its email. Email is strictly matched.
 	 *
 	 * @return User.
 	 */
-	User getUserByEmail(String email);
+	UserDto getUserByEmail(String email);
 
 	/**
 	 * Get list of users by matching name. Name is matched using 'contains' approach.
@@ -29,7 +29,7 @@ public interface UserService {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of users.
 	 */
-	List<User> getUsersByName(String name, int pageSize, int pageNum);
+	List<UserDto> getUsersByName(String name, int pageSize, int pageNum);
 
 	/**
 	 * Creates new user. User id is be auto-generated.
@@ -37,7 +37,7 @@ public interface UserService {
 	 * @param user User data.
 	 * @return Created User object.
 	 */
-	User createUser(User user);
+	UserDto createUser(UserDto user);
 
 	/**
 	 * Updates user using given data.
@@ -45,7 +45,7 @@ public interface UserService {
 	 * @param user User data for update. Should have id set.
 	 * @return Updated User object.
 	 */
-	User updateUser(User user);
+	UserDto updateUser(UserDto user);
 
 	/**
 	 * Deletes user by its id.

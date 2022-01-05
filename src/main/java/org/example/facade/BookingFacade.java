@@ -1,9 +1,10 @@
 package org.example.facade;
 
-import org.example.model.Account;
-import org.example.model.Event;
-import org.example.model.Ticket;
-import org.example.model.User;
+import org.example.dto.AccountDto;
+import org.example.dto.EventDto;
+import org.example.dto.TicketDto;
+import org.example.dto.UserDto;
+import org.example.enums.Category;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +23,7 @@ public interface BookingFacade {
 	 *
 	 * @return Event.
 	 */
-	Event getEventById(Long eventId);
+	EventDto getEventById(Long eventId);
 
 	/**
 	 * Get list of events by matching title. Title is matched using 'contains' approach.
@@ -33,7 +34,7 @@ public interface BookingFacade {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of events.
 	 */
-	List<Event> getEventsByTitle(String title, int pageSize, int pageNum);
+	List<EventDto> getEventsByTitle(String title, int pageSize, int pageNum);
 
 	/**
 	 * Get list of events for specified day.
@@ -44,7 +45,7 @@ public interface BookingFacade {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of events.
 	 */
-	List<Event> getEventsForDay(LocalDate day, int pageSize, int pageNum);
+	List<EventDto> getEventsForDay(LocalDate day, int pageSize, int pageNum);
 
 	/**
 	 * Creates new event. Event id should be auto-generated.
@@ -52,7 +53,7 @@ public interface BookingFacade {
 	 * @param event Event data.
 	 * @return Created Event object.
 	 */
-	Event createEvent(Event event);
+	EventDto createEvent(EventDto event);
 
 	/**
 	 * Updates event using given data.
@@ -60,7 +61,7 @@ public interface BookingFacade {
 	 * @param event Event data for update. Should have id set.
 	 * @return Updated Event object.
 	 */
-	Event updateEvent(Event event);
+	EventDto updateEvent(EventDto event);
 
 	/**
 	 * Deletes event by its id.
@@ -74,14 +75,14 @@ public interface BookingFacade {
 	 *
 	 * @return User.
 	 */
-	User getUserById(Long userId);
+	UserDto getUserById(Long userId);
 
 	/**
 	 * Gets user by its email. Email is strictly matched.
 	 *
 	 * @return User.
 	 */
-	User getUserByEmail(String email);
+	UserDto getUserByEmail(String email);
 
 	/**
 	 * Get list of users by matching name. Name is matched using 'contains' approach.
@@ -92,7 +93,7 @@ public interface BookingFacade {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of users.
 	 */
-	List<User> getUsersByName(String name, int pageSize, int pageNum);
+	List<UserDto> getUsersByName(String name, int pageSize, int pageNum);
 
 	/**
 	 * Creates new user. User id should be auto-generated.
@@ -100,7 +101,7 @@ public interface BookingFacade {
 	 * @param user User data.
 	 * @return Created User object.
 	 */
-	User createUser(User user);
+	UserDto createUser(UserDto user);
 
 	/**
 	 * Updates user using given data.
@@ -108,7 +109,7 @@ public interface BookingFacade {
 	 * @param user User data for update. Should have id set.
 	 * @return Updated User object.
 	 */
-	User updateUser(User user);
+	UserDto updateUser(UserDto user);
 
 	/**
 	 * Deletes user by its id.
@@ -127,14 +128,14 @@ public interface BookingFacade {
 	 * @return Booked ticket object.
 	 * @throws java.lang.IllegalStateException if this place has already been booked.
 	 */
-	Ticket bookTicket(Long userId, Long eventId, Ticket.Category category, int place);
+	TicketDto bookTicket(Long userId, Long eventId, Category category, int place);
 
 	/**
 	 * Batch book ticket from the input stream.
 	 *
 	 * @param stream input stream.
 	 */
-	Iterable<Ticket> batchBookTickets(InputStream stream) throws IOException;
+	Iterable<TicketDto> batchBookTickets(InputStream stream) throws IOException;
 
 	/**
 	 * Get all booked tickets by specified user id. Tickets should be sorted by event date in descending order.
@@ -144,7 +145,7 @@ public interface BookingFacade {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of Ticket objects.
 	 */
-	List<Ticket> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum);
+	List<TicketDto> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum);
 
 	/**
 	 * Get all booked tickets by specified event id. Tickets should be sorted in by user email in ascending order.
@@ -154,7 +155,7 @@ public interface BookingFacade {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of Ticket objects.
 	 */
-	List<Ticket> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum);
+	List<TicketDto> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum);
 
 	/**
 	 * Cancel ticket with a specified id.
@@ -170,7 +171,7 @@ public interface BookingFacade {
 	 * @param userId User id.
 	 * @return created account.
 	 */
-	Account createAccount(Long userId);
+	AccountDto createAccount(Long userId);
 
 	/**
 	 * Adds the provided refill sum to the specified account by id.
@@ -179,7 +180,7 @@ public interface BookingFacade {
 	 * @param refillSum Amount to be added to the account.
 	 * @return updated account.
 	 */
-	Account refillAccount(Long accountId, BigDecimal refillSum);
+	AccountDto refillAccount(Long accountId, BigDecimal refillSum);
 
 	/**
 	 * Subtracts the provided ticket price from the specified account by id.
@@ -188,7 +189,7 @@ public interface BookingFacade {
 	 * @param ticketPrice Amount to be subtracted from the account.
 	 * @return updated account.
 	 */
-	Account chargeAccountForTicket(Long accountId, BigDecimal ticketPrice);
+	AccountDto chargeAccountForTicket(Long accountId, BigDecimal ticketPrice);
 
 	/**
 	 * Deletes account by its id.

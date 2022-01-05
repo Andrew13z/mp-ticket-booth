@@ -2,7 +2,6 @@ package org.example.model;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
@@ -35,7 +34,6 @@ public class Event {
 	private String title;
 
 	@Column(name = "DATE_HELD")
-	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
 	private LocalDate date;
 
 	@Column(name = "TICKET_PRICE")

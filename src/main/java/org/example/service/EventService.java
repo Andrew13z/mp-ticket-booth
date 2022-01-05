@@ -1,6 +1,6 @@
 package org.example.service;
 
-import org.example.model.Event;
+import org.example.dto.EventDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,7 +12,7 @@ public interface EventService {
 	 *
 	 * @return Event.
 	 */
-	Event getEventById(long eventId);
+	EventDto getEventById(Long eventId);
 
 	/**
 	 * Get list of events by matching title. Title is matched using 'contains' approach.
@@ -23,7 +23,7 @@ public interface EventService {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of events.
 	 */
-	List<Event> getEventsByTitle(String title, int pageSize, int pageNum);
+	List<EventDto> getEventsByTitle(String title, int pageSize, int pageNum);
 
 	/**
 	 * Get list of events for specified day.
@@ -34,7 +34,7 @@ public interface EventService {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of events.
 	 */
-	List<Event> getEventsForDay(LocalDate day, int pageSize, int pageNum);
+	List<EventDto> getEventsForDay(LocalDate day, int pageSize, int pageNum);
 
 	/**
 	 * Creates new event. Event id is be auto-generated.
@@ -42,7 +42,7 @@ public interface EventService {
 	 * @param event Event data.
 	 * @return Created Event object.
 	 */
-	Event createEvent(Event event);
+	EventDto createEvent(EventDto event);
 
 	/**
 	 * Updates event using given data.
@@ -50,7 +50,7 @@ public interface EventService {
 	 * @param event Event data for update. Should have id set.
 	 * @return Updated Event object.
 	 */
-	Event updateEvent(Event event);
+	EventDto updateEvent(EventDto event);
 
 	/**
 	 * Deletes event by its id.

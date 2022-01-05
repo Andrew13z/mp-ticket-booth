@@ -1,13 +1,15 @@
 package org.example.service.impl;
 
+import org.example.dto.EventDto;
 import org.example.exception.EntityNotFoundException;
 import org.example.model.Event;
 import org.example.repository.EventRepository;
 import org.example.service.EventService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -21,49 +23,55 @@ public class EventServiceImpl implements EventService {
 
 	private final EventRepository repository;
 
+	private final ModelMapper mapper;
+
 	@Autowired
-	public EventServiceImpl(EventRepository repository) {
+	public EventServiceImpl(EventRepository repository, ModelMapper mapper) {
 		this.repository = repository;
+		this.mapper = mapper;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Event getEventById(long eventId) {
-		return repository.findByIdWithCache(eventId)
+	public EventDto getEventById(Long eventId) {
+		var event = repository.findByIdWithCache(eventId)
 				.orElseThrow(() -> new EntityNotFoundException("Event not found by id: " + eventId));
+		return mapper.map(event, EventDto.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Event> getEventsByTitle(String title, int pageSize, int pageNum) {
-		return repository.findEventsByTitleContainingIgnoreCase(title, PageRequest.of(pageNum, pageSize));
+	public List<EventDto> getEventsByTitle(String title, int pageSize, int pageNum) {
+		return mapper.map(repository.findEventsByTitleContainingIgnoreCase(title, PageRequest.of(pageNum, pageSize)),
+				new TypeToken<List<EventDto>>(){}.getType());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Event> getEventsForDay(LocalDate day, int pageSize, int pageNum) {
-		return repository.findEventsByDate(day, PageRequest.of(pageNum, pageSize));
+	public List<EventDto> getEventsForDay(LocalDate day, int pageSize, int pageNum) {
+		return mapper.map(repository.findEventsByDate(day, PageRequest.of(pageNum, pageSize)),
+				new TypeToken<List<EventDto>>(){}.getType());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Event createEvent(Event event) {
-		return repository.save(event);
+	public EventDto createEvent(EventDto eventDto) {
+		return mapper.map(repository.save(mapper.map(eventDto, Event.class)), EventDto.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Event updateEvent(Event updatedEvent) {
+	public EventDto updateEvent(EventDto updatedEvent) {
 		var oldEvent = repository.findById(updatedEvent.getId())
 				.orElseThrow(() -> new EntityNotFoundException("Event not found by id: " + updatedEvent.getId()));
 		if (!updatedEvent.getTitle().isEmpty()) {
@@ -76,7 +84,7 @@ public class EventServiceImpl implements EventService {
 			oldEvent.setTicketPrice(updatedEvent.getTicketPrice());
 		}
 		logger.info("Updated event with id {}.", updatedEvent.getId());
-		return repository.save(oldEvent);
+		return mapper.map(repository.save(mapper.map(oldEvent, Event.class)), EventDto.class);
 	}
 
 	/**

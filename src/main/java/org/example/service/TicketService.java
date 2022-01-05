@@ -1,6 +1,7 @@
 package org.example.service;
 
-import org.example.model.Ticket;
+import org.example.dto.TicketDto;
+import org.example.enums.Category;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface TicketService {
 	 * @return Booked ticket object.
 	 * @throws java.lang.IllegalStateException if this place has already been booked.
 	 */
-	Ticket bookTicket(Long userId, Long eventId, Ticket.Category category, int place);
+	TicketDto bookTicket(Long userId, Long eventId, Category category, int place);
 
 	/**
 	 * Book tickets from the collection.
@@ -24,7 +25,7 @@ public interface TicketService {
 	 * @param tickets   Collection of tikets.
 	 * @return List of booked tickets.
 	 */
-	Iterable<Ticket> bookTickets(List<Ticket> tickets);
+	Iterable<TicketDto> bookTickets(List<TicketDto> tickets);
 
 	/**
 	 * Get all booked tickets by specified user id. Tickets should be sorted by event date in descending order.
@@ -34,7 +35,7 @@ public interface TicketService {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of Ticket objects.
 	 */
-	List<Ticket> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum);
+	List<TicketDto> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum);
 
 	/**
 	 * Get all booked tickets by specified event id. Tickets should be sorted in by user email in ascending order.
@@ -44,7 +45,7 @@ public interface TicketService {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of Ticket objects.
 	 */
-	List<Ticket> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum);
+	List<TicketDto> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum);
 
 	/**
 	 * Cancel ticket with a specified id.

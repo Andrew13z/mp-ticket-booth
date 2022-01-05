@@ -2,6 +2,7 @@ package org.example.config;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -14,5 +15,10 @@ public class AppConfig extends WebMvcConfigurationSupport {
 		final var xmlMapper = new XmlMapper();
 		xmlMapper.registerModule(new JavaTimeModule());
 		return xmlMapper;
+	}
+
+	@Bean
+	public ModelMapper modelMapper() {
+		return new ModelMapper();
 	}
 }

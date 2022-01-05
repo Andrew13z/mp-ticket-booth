@@ -1,5 +1,9 @@
 package org.example.controller;
 
+import org.example.dto.EventDto;
+import org.example.dto.TicketDto;
+import org.example.dto.UserDto;
+import org.example.enums.Category;
 import org.example.model.Event;
 import org.example.model.Ticket;
 import org.example.model.User;
@@ -30,9 +34,9 @@ class TicketControllerTest {
 
 	private static final long TICKET_ID = 1L;
 	private static final long USER_ID = 1L;
-	private static final User USER = new User(USER_ID, null, null);
+	private static final UserDto USER = new UserDto(USER_ID, null, null);
 	private static final long EVENT_ID = 1L;
-	private static final Event EVENT = new Event(EVENT_ID, null, null, BigDecimal.ZERO);
+	private static final EventDto EVENT = new EventDto(EVENT_ID, null, null, BigDecimal.ZERO);
 	private static final int PLACE = 130;
 
 	private MockMvc mockMvc;
@@ -46,17 +50,16 @@ class TicketControllerTest {
 	@Sql(value = {"classpath:init-create-ticket.sql"})
 	@Test
 	void testCreateTicket() throws Exception {
-		var localDate = LocalDate.now();
 		var result = mockMvc.perform(post("/ticket")
-						.flashAttr("ticket", new Ticket(0L, USER, EVENT, Ticket.Category.BAR, PLACE)))
+						.flashAttr("ticket", new TicketDto(0L, USER, EVENT, Category.BAR, PLACE)))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("createdTicket"))
 				.andReturn();
-		var ticket = (Ticket) result.getModelAndView().getModel().get("createdTicket");
+		var ticket = (TicketDto) result.getModelAndView().getModel().get("createdTicket");
 
 		assertEquals(USER_ID, ticket.getUser().getId());
 		assertEquals(EVENT_ID, ticket.getEvent().getId());
-		assertEquals(Ticket.Category.BAR, ticket.getCategory());
+		assertEquals(Category.BAR, ticket.getCategory());
 		assertEquals(PLACE, ticket.getPlace());
 	}
 
@@ -69,7 +72,7 @@ class TicketControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("ticketsByUser"))
 				.andReturn();
-		var tickets = (List<Ticket>) result.getModelAndView().getModel().get("ticketsByUser");
+		var tickets = (List<TicketDto>) result.getModelAndView().getModel().get("ticketsByUser");
 		assertEquals(USER_ID, tickets.get(0).getUser().getId());
 	}
 
@@ -82,7 +85,7 @@ class TicketControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("ticketsByUser"))
 				.andReturn();
-		var tickets = (List<Ticket>) result.getModelAndView().getModel().get("ticketsByUser");
+		var tickets = (List<TicketDto>) result.getModelAndView().getModel().get("ticketsByUser");
 		assertEquals(0, tickets.size());
 	}
 
@@ -106,7 +109,7 @@ class TicketControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("ticketsByEvent"))
 				.andReturn();
-		var tickets = (List<Ticket>) result.getModelAndView().getModel().get("ticketsByEvent");
+		var tickets = (List<TicketDto>) result.getModelAndView().getModel().get("ticketsByEvent");
 		assertEquals(EVENT_ID, tickets.get(0).getEvent().getId());
 	}
 
@@ -119,7 +122,7 @@ class TicketControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("ticketsByEvent"))
 				.andReturn();
-		var tickets = (List<Ticket>) result.getModelAndView().getModel().get("ticketsByEvent");
+		var tickets = (List<TicketDto>) result.getModelAndView().getModel().get("ticketsByEvent");
 		assertEquals(0, tickets.size());
 	}
 

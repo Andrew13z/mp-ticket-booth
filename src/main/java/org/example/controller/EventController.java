@@ -1,7 +1,7 @@
 package org.example.controller;
 
+import org.example.dto.EventDto;
 import org.example.facade.BookingFacade;
-import org.example.model.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -39,7 +39,7 @@ public class EventController {
 	 * @return Name of the view.
 	 */
 	@PostMapping
-	public String createEvent(@ModelAttribute Event event, ModelMap model) {
+	public String createEvent(@ModelAttribute("event") EventDto event, ModelMap model) {
 		var createdEvent = facade.createEvent(event);
 		model.addAttribute("createdEvent", createdEvent);
 		return EVENT_VIEW_NAME;
@@ -105,7 +105,7 @@ public class EventController {
 	 * @return Name of the view.
 	 */
 	@PostMapping("/update")
-	public String updateEvent(@ModelAttribute Event event, ModelMap model) {
+	public String updateEvent(@ModelAttribute("event") EventDto event, ModelMap model) {
 		var updatedEvent = facade.updateEvent(event);
 		model.addAttribute("updatedEvent", updatedEvent);
 		return EVENT_VIEW_NAME;

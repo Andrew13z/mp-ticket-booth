@@ -1,9 +1,12 @@
 package org.example.service.impl;
 
+import org.example.dto.UserDto;
 import org.example.exception.EntityNotFoundException;
 import org.example.model.User;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,46 +22,53 @@ public class UserServiceImpl implements UserService {
 
 	private final UserRepository repository;
 
+	private final ModelMapper mapper;
+
 	@Autowired
-	public UserServiceImpl(UserRepository repository) {
+	public UserServiceImpl(UserRepository repository, ModelMapper mapper) {
 		this.repository = repository;
+		this.mapper = mapper;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public User getUserById(Long userId) {
-		return repository.findByIdWithCache(userId)
+	public UserDto getUserById(Long userId) {
+		var user = repository.findByIdWithCache(userId)
 				.orElseThrow(() -> new EntityNotFoundException("User not found by id: " + userId));
+		return mapper.map(user, UserDto.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public User getUserByEmail(String email) {
-		return repository.findByEmail(email)
+	public UserDto getUserByEmail(String email) {
+		var user = repository.findByEmail(email)
 				.orElseThrow(() -> new EntityNotFoundException("User not found by email: " + email));
+		return mapper.map(user, UserDto.class);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<User> getUsersByName(String name, int pageSize, int pageNum) {
-		return repository.findUsersByNameContainingIgnoreCase(name, PageRequest.of(pageNum, pageSize));
+	public List<UserDto> getUsersByName(String name, int pageSize, int pageNum) {
+		var users = repository.findUsersByNameContainingIgnoreCase(name, PageRequest.of(pageNum, pageSize));
+		return mapper.map(users, new TypeToken<List<UserDto>>(){}.getType());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public User createUser(User user) {
-		if (repository.findByEmail(user.getEmail()).isEmpty()) {
-			return repository.save(user);
+	public UserDto createUser(UserDto userDto) {
+		if (repository.findByEmail(userDto.getEmail()).isEmpty()) {
+			var user = mapper.map(userDto, User.class);
+			return mapper.map(repository.save(user), UserDto.class);
 		}
-		logger.error("Failed to create user. User with email: {} already exists.", user.getEmail());
+		logger.error("Failed to create user. User with email: {} already exists.", userDto.getEmail());
 		throw new IllegalArgumentException("User email must be unique");
 	}
 
@@ -66,11 +76,11 @@ public class UserServiceImpl implements UserService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public User updateUser(User updatedUser) {
-		var oldUser = repository.findById(updatedUser.getId())
-				.orElseThrow(() -> new EntityNotFoundException("User not found by id: " + updatedUser.getId()));
+	public UserDto updateUser(UserDto updatedUserDto) {
+		var oldUser = repository.findById(updatedUserDto.getId())
+				.orElseThrow(() -> new EntityNotFoundException("User not found by id: " + updatedUserDto.getId()));
 
-		var email = updatedUser.getEmail();
+		var email = updatedUserDto.getEmail();
 		if (!email.isEmpty() && !oldUser.getEmail().equals(email)) {
 			if (repository.findByEmail(email).isEmpty()) {
 				oldUser.setEmail(email);
@@ -80,13 +90,13 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 
-		if (!updatedUser.getName().isEmpty()) {
-			oldUser.setName(updatedUser.getName());
+		if (!updatedUserDto.getName().isEmpty()) {
+			oldUser.setName(updatedUserDto.getName());
 		}
 
-		logger.info("Updated user with id {}.", updatedUser.getId());
+		logger.info("Updated user with id {}.", updatedUserDto.getId());
 
-		return repository.save(oldUser);
+		return mapper.map(repository.save(oldUser), UserDto.class);
 	}
 
 	/**

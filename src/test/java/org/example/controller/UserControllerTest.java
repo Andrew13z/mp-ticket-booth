@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.dto.UserDto;
 import org.example.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,18 +41,18 @@ class UserControllerTest {
 	@Test
 	void testCreateUser_WithUniqueEmail() throws Exception{
 		var result = mockMvc.perform(post("/user")
-						.flashAttr("user", new User(0L, USER_NAME, "uniquemail@mail.com")))
+						.flashAttr("user", new UserDto(0L, USER_NAME, "uniquemail@mail.com")))
 						.andExpect(status().isOk())
 						.andExpect(model().attributeExists("createdUser"))
 						.andReturn();
-		var user = (User) result.getModelAndView().getModel().get("createdUser");
+		var user = (UserDto) result.getModelAndView().getModel().get("createdUser");
 		assertEquals(USER_NAME, user.getName());
 	}
 
 	@Test
 	void testCreateUser_WithExistingEmail() throws Exception{
 		mockMvc.perform(post("/user")
-						.flashAttr("user", new User(0L, USER_NAME, USER_EMAIL)))
+						.flashAttr("user", new UserDto(0L, USER_NAME, USER_EMAIL)))
 				.andExpect(status().isBadRequest());
 	}
 
@@ -62,7 +63,7 @@ class UserControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("userById"))
 				.andReturn();
-		var user = (User) result.getModelAndView().getModel().get("userById");
+		var user = (UserDto) result.getModelAndView().getModel().get("userById");
 		assertEquals(USER_NAME, user.getName());
 	}
 
@@ -80,7 +81,7 @@ class UserControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("userByEmail"))
 				.andReturn();
-		var user = (User) result.getModelAndView().getModel().get("userByEmail");
+		var user = (UserDto) result.getModelAndView().getModel().get("userByEmail");
 		assertEquals(USER_EMAIL, user.getEmail());
 	}
 
@@ -100,7 +101,7 @@ class UserControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("users"))
 				.andReturn();
-		var users = (List<User>) result.getModelAndView().getModel().get("users");
+		var users = (List<UserDto>) result.getModelAndView().getModel().get("users");
 		assertEquals(USER_NAME, users.get(0).getName());
 	}
 
@@ -113,18 +114,18 @@ class UserControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("users"))
 				.andReturn();
-		var users = (List<User>) result.getModelAndView().getModel().get("users");
+		var users = (List<UserDto>) result.getModelAndView().getModel().get("users");
 		assertEquals(0, users.size());
 	}
 
 	@Test
 	void updateUserTest_WithAllAttributesUpdate() throws Exception{
 		var result = mockMvc.perform(post("/user/update")
-						.flashAttr("user", new User(1L, "New Name", "newmail@mail.com")))
+						.flashAttr("user", new UserDto(1L, "New Name", "newmail@mail.com")))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedUser"))
 				.andReturn();
-		var user = (User) result.getModelAndView().getModel().get("updatedUser");
+		var user = (UserDto) result.getModelAndView().getModel().get("updatedUser");
 
 		assertEquals(1L, user.getId());
 		assertEquals("New Name", user.getName());
@@ -134,11 +135,11 @@ class UserControllerTest {
 	@Test
 	void updateUserTest_WithoutUpdatedName() throws Exception{
 		var result = mockMvc.perform(post("/user/update")
-						.flashAttr("user", new User(1L, "", "newmail@mail.com")))
+						.flashAttr("user", new UserDto(1L, "", "newmail@mail.com")))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedUser"))
 				.andReturn();
-		var user = (User) result.getModelAndView().getModel().get("updatedUser");
+		var user = (UserDto) result.getModelAndView().getModel().get("updatedUser");
 
 		assertEquals(1L, user.getId());
 		assertEquals(USER_NAME, user.getName());
@@ -148,11 +149,11 @@ class UserControllerTest {
 	@Test
 	void updateUserTest_WithoutUpdatedEmail() throws Exception{
 		var result = mockMvc.perform(post("/user/update")
-						.flashAttr("user", new User(1L, "New Name", "")))
+						.flashAttr("user", new UserDto(1L, "New Name", "")))
 				.andExpect(status().isOk())
 				.andExpect(model().attributeExists("updatedUser"))
 				.andReturn();
-		var user = (User) result.getModelAndView().getModel().get("updatedUser");
+		var user = (UserDto) result.getModelAndView().getModel().get("updatedUser");
 
 		assertEquals(1L, user.getId());
 		assertEquals("New Name", user.getName());
@@ -162,14 +163,14 @@ class UserControllerTest {
 	@Test
 	void updateUserTest_WithNotUniqueEmail() throws Exception{
 		mockMvc.perform(post("/user/update")
-						.flashAttr("user", new User(2L, "New Name", USER_EMAIL)))
+						.flashAttr("user", new UserDto(2L, "New Name", USER_EMAIL)))
 				.andExpect(status().isBadRequest());
 	}
 
 	@Test
 	void updateUserTest_WithNotExistingId() throws Exception{
 		mockMvc.perform(post("/user/update")
-						.flashAttr("user", new User(100L, USER_NAME, USER_EMAIL)))
+						.flashAttr("user", new UserDto(100L, USER_NAME, USER_EMAIL)))
 				.andExpect(status().isNotFound());
 	}
 

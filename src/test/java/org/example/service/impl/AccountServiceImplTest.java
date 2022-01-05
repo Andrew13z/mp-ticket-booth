@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import org.example.dto.AccountDto;
 import org.example.exception.AccountBalanceException;
 import org.example.exception.EntityNotFoundException;
 import org.example.model.Account;
@@ -8,7 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -27,6 +31,9 @@ class AccountServiceImplTest {
 
 	@Mock
 	private AccountRepository mockRepository;
+
+	@Spy
+	private ModelMapper mapper;
 
 	@InjectMocks
 	private AccountServiceImpl accountService;

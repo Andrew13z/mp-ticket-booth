@@ -1,5 +1,6 @@
 package org.example.controller;
 
+import org.example.dto.AccountDto;
 import org.example.model.Account;
 import org.example.model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,7 +38,7 @@ class AccountControllerTest {
 				.andExpect(status().isOk())
 				.andReturn();
 
-		var account = (Account) result.getModelAndView().getModel().get("account");
+		var account = (AccountDto) result.getModelAndView().getModel().get("account");
 		assertEquals(0, BigDecimal.valueOf(200).compareTo(account.getBalance()));
 	}
 

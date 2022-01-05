@@ -7,7 +7,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,6 +30,9 @@ class EventServiceImplTest {
 
 	@Mock
 	private EventRepository mockDao;
+
+	@Spy
+	private ModelMapper mapper;
 
 	@InjectMocks
 	private EventServiceImpl eventService;

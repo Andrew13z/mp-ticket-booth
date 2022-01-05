@@ -147,7 +147,7 @@
         <input type="number" th:field="*{event.id}"/>
         <label>Category</label>
         <select th:field="*{category}">
-            <option th:each="categoryOpt : ${T(org.example.model.Ticket.Category).values()}"
+            <option th:each="categoryOpt : ${T(org.example.enums.Category).values()}"
                     th:value="${categoryOpt}" th:text="${categoryOpt}"></option>
         </select>
         <label>Place</label>

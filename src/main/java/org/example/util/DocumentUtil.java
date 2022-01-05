@@ -4,8 +4,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.example.dto.TicketDto;
 import org.example.exception.PdfGenerationException;
-import org.example.model.Ticket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -49,7 +49,7 @@ public final class DocumentUtil {
 	 * @param tickets
 	 * @return String path to the file
 	 */
-	public static String writeToPdf(List<Ticket> tickets) {
+	public static String writeToPdf(List<TicketDto> tickets) {
 		try (PDDocument doc = new PDDocument()) {
 			PDPage page = new PDPage();
 			doc.addPage(page);
@@ -60,7 +60,7 @@ public final class DocumentUtil {
 			int lineNumber = 1;
 			float pageHeight = page.getMediaBox().getHeight();
 
-			for (Ticket ticket : tickets) {
+			for (TicketDto ticket : tickets) {
 				writeLine(contentStream, lineNumber, pageHeight, ticket);
 				lineNumber++;
 				if (lineNumber > MAX_LINES_ON_PAGE) {
@@ -73,7 +73,7 @@ public final class DocumentUtil {
 			doc.save(realFile);
 			return realFile.getPath();
 		} catch (IOException | URISyntaxException ex) {
-			logger.warn("Failed to generate and load PDF file: {}", ex);
+			logger.warn("Failed to generate and load PDF file: ", ex);
 			ex.printStackTrace();
 			throw new PdfGenerationException("Failed to generate and load PDF file.");
 		}
@@ -101,7 +101,7 @@ public final class DocumentUtil {
 	 * @param ticket
 	 * @throws IOException
 	 */
-	private static void writeLine(PDPageContentStream contentStream, int lineNumber, float pageHeight, Ticket ticket) throws IOException {
+	private static void writeLine(PDPageContentStream contentStream, int lineNumber, float pageHeight, TicketDto ticket) throws IOException {
 		contentStream.beginText();
 		contentStream.newLineAtOffset(LINE_OFFSET, pageHeight - LINE_HEIGHT * lineNumber);
 		contentStream.showText(ticket.toString());

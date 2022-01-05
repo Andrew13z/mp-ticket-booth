@@ -1,9 +1,9 @@
 package org.example.controller;
 
-import org.example.model.Account;
-import org.example.model.Event;
-import org.example.model.Ticket;
-import org.example.model.User;
+import org.example.dto.AccountDto;
+import org.example.dto.EventDto;
+import org.example.dto.TicketDto;
+import org.example.dto.UserDto;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -31,8 +31,8 @@ public class HomeController {
 	 * @return Default user instance.
 	 */
 	@ModelAttribute("user")
-	public User getEmptyUser() {
-		var user = new User();
+	public UserDto getEmptyUser() {
+		var user = new UserDto();
 		user.setId(0L);
 		return user;
 	}
@@ -43,8 +43,8 @@ public class HomeController {
 	 * @return Default event instance.
 	 */
 	@ModelAttribute("event")
-	public Event getEmptyEvent() {
-		return new Event();
+	public EventDto getEmptyEvent() {
+		return new EventDto();
 	}
 
 	/**
@@ -53,8 +53,8 @@ public class HomeController {
 	 * @return Default ticket instance.
 	 */
 	@ModelAttribute("ticket")
-	public Ticket getEmptyTicket() {
-		return new Ticket();
+	public TicketDto getEmptyTicket() {
+		return new TicketDto();
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class HomeController {
 	 * @return Default account instance.
 	 */
 	@ModelAttribute("account")
-	public Account getEmptyAccount() {
-		return new Account();
+	public AccountDto getEmptyAccount() {
+		return new AccountDto();
 	}
 }

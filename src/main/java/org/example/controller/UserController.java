@@ -1,7 +1,7 @@
 package org.example.controller;
 
+import org.example.dto.UserDto;
 import org.example.facade.BookingFacade;
-import org.example.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,8 +37,8 @@ public class UserController {
 	 * @return Name of the view.
 	 */
 	@PostMapping
-	public String createUser(@ModelAttribute User user, ModelMap model) {
-		var createdUser = facade.createUser(new User(0L, user.getName(), user.getEmail()));
+	public String createUser(@ModelAttribute("user") UserDto user, ModelMap model) {
+		var createdUser = facade.createUser(new UserDto(0L, user.getName(), user.getEmail()));
 		facade.createAccount(createdUser.getId());
 		model.addAttribute("createdUser", createdUser);
 		return USER_VIEW_NAME;
@@ -99,7 +99,7 @@ public class UserController {
 	 * @return Name of the view.
 	 */
 	@PostMapping("/update")
-	public String updateUser(@ModelAttribute User user, ModelMap model) {
+	public String updateUser(@ModelAttribute("user") UserDto user, ModelMap model) {
 		var updatedUser = facade.updateUser(user);
 		model.addAttribute("updatedUser", updatedUser);
 		return USER_VIEW_NAME;
@@ -115,8 +115,8 @@ public class UserController {
 	@PostMapping("/delete")
 	@Transactional
 	public String deleteUser(@RequestParam("id") Long id, ModelMap model) {
-		facade.deleteUser(id);
 		facade.deleteAccount(id);
+		facade.deleteUser(id);
 		model.addAttribute("deleteUserId", id);
 		return USER_VIEW_NAME;
 	}

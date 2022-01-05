@@ -1,5 +1,7 @@
 package org.example.model;
 
+import org.example.enums.Category;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -19,8 +21,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "TICKETS")
 public class Ticket {
-
-	public enum Category {STANDARD, PREMIUM, BAR}
 
 	@Id
 	@SequenceGenerator(name = "TICKETS_ID_SEQ", sequenceName = "TICKETS_ID_SEQ", allocationSize = 10)

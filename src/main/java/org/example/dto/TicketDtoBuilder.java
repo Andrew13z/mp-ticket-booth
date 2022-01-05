@@ -1,44 +1,44 @@
-package org.example.model;
+package org.example.dto;
 
 import org.example.enums.Category;
 
 /**
  * Bulder for ticket entity.
  */
-public class TicketBuilder {
+public class TicketDtoBuilder {
 	private Long id;
 	private Long userId;
 	private Long eventId;
 	private Category category;
 	private int place;
 
-	public TicketBuilder setId(Long id) {
+	public TicketDtoBuilder setId(Long id) {
 		this.id = id;
 		return this;
 	}
 
-	public TicketBuilder setUserId(Long userId) {
+	public TicketDtoBuilder setUserId(Long userId) {
 		this.userId = userId;
 		return this;
 	}
 
-	public TicketBuilder setEventId(Long eventId) {
+	public TicketDtoBuilder setEventId(Long eventId) {
 		this.eventId = eventId;
 		return this;
 	}
 
-	public TicketBuilder setCategory(Category category) {
+	public TicketDtoBuilder setCategory(Category category) {
 		this.category = category;
 		return this;
 	}
 
-	public TicketBuilder setPlace(int place) {
+	public TicketDtoBuilder setPlace(int place) {
 		this.place = place;
 		return this;
 	}
 
-	public Ticket createTicket() {
-		var ticket = new Ticket();
+	public TicketDto createTicket() {
+		var ticket = new TicketDto();
 		ticket.setId(id);
 		setUserIfNotNull(ticket);
 		setEventIfNotNull(ticket);
@@ -48,17 +48,17 @@ public class TicketBuilder {
 		return ticket;
 	}
 
-	private void setEventIfNotNull(Ticket ticket) {
+	private void setEventIfNotNull(TicketDto ticket) {
 		if (eventId != null) {
-			var event = new Event();
+			var event = new EventDto();
 			event.setId(eventId);
 			ticket.setEvent(event);
 		}
 	}
 
-	private void setUserIfNotNull(Ticket ticket) {
+	private void setUserIfNotNull(TicketDto ticket) {
 		if (userId != null) {
-			var user = new User();
+			var user = new UserDto();
 			user.setId(userId);
 			ticket.setUser(user);
 		}
