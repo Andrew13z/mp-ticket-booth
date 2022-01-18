@@ -3,27 +3,29 @@ package org.example.controller;
 import org.example.dto.EventDto;
 import org.example.facade.BookingFacade;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.List;
 
 /**
- * Controller for all operations on Events.
+ * RestController for all operations on Events.
  *
  * @author Andrii Krokhta
  */
-@Controller
+@RestController
 @RequestMapping("/event")
 public class EventController {
 
-	private static final String EVENT_VIEW_NAME = "event";
 	private final BookingFacade facade;
 
 	@Autowired
@@ -32,96 +34,70 @@ public class EventController {
 	}
 
 	/**
-	 * Creates a new event and adds to it model data.
+	 * Creates a new event.
 	 *
 	 * @param event New event data.
-	 * @param model Model data.
-	 * @return Name of the view.
+	 * @return Created event.
 	 */
 	@PostMapping
-	public String createEvent(@ModelAttribute("event") EventDto event, ModelMap model) {
-		var createdEvent = facade.createEvent(event);
-		model.addAttribute("createdEvent", createdEvent);
-		return EVENT_VIEW_NAME;
+	public EventDto createEvent(@RequestBody EventDto event) {
+		return facade.createEvent(event);
 	}
 
 	/**
-	 * Gets an event by id and adds it to model data.
+	 * Gets an event by id.
 	 *
 	 * @param id    Event id.
-	 * @param model Model data.
-	 * @return Name of the view.
+	 * @return Event found by id, otherwise throws EntityNotFoundException.
 	 */
-	@GetMapping
-	public String getEventById(@RequestParam("id") long id, ModelMap model) {
-		var event = facade.getEventById(id);
-		model.addAttribute("eventById", event);
-		return EVENT_VIEW_NAME;
+	@GetMapping("/id")
+	public EventDto getEventById(@RequestParam("id") Long id) {
+		return facade.getEventById(id);
 	}
 
 	/**
-	 * Gets a list of events by title and adds it to model data.
+	 * Gets a list of events by title.
 	 *
 	 * @param title    Event title.
-	 * @param pageSize Number of ticket entries per page.
-	 * @param pageNum  Number of page to display.
-	 * @param model    Model data.
-	 * @return Name of the view.
+	 * @param pageable Pageable.
+	 * @return List of events, or if none is found, empty list.
 	 */
 	@GetMapping("/byTitle")
-	public String getEventsByTitle(@RequestParam("title") String title,
-								   @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
-								   @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
-								   ModelMap model) {
-		var events = facade.getEventsByTitle(title, pageSize, pageNum);
-		model.addAttribute("eventsByTitle", events);
-		return EVENT_VIEW_NAME;
+	public List<EventDto> getEventsByTitle(@RequestParam("title") String title, Pageable pageable) {
+		return facade.getEventsByTitle(title, pageable);
 	}
 
 	/**
-	 * Gets a list of events by date and adds it to model data.
+	 * Gets a list of events by date.
 	 *
 	 * @param date     Event date.
-	 * @param pageSize Number of ticket entries per page.
-	 * @param pageNum  Number of page to display.
-	 * @param model    Model data.
-	 * @return Name of the view.
+	 * @param pageable Pageable.
+	 * @return List of events, or if none is found, empty list.
 	 */
 	@GetMapping("/byDate")
-	public String getEventsByDate(@RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-								  @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
-								  @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
-								  ModelMap model) {
-		var events = facade.getEventsForDay(date, pageSize, pageNum);
-		model.addAttribute("eventsByDate", events);
-		return EVENT_VIEW_NAME;
+	public List<EventDto> getEventsByDate(@RequestParam("date") /*todo@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)*/ LocalDate date,
+								  Pageable pageable) {
+		return facade.getEventsByDate(date, pageable);
 	}
 
 	/**
-	 * Updates an event by event id and adds the updated object to model data.
+	 * Updates an event by event id.
 	 *
+	 * @param id EventId.
 	 * @param event Updated event with the same id.
-	 * @param model Model data.
-	 * @return Name of the view.
+	 * @return Updated Event.
 	 */
-	@PostMapping("/update")
-	public String updateEvent(@ModelAttribute("event") EventDto event, ModelMap model) {
-		var updatedEvent = facade.updateEvent(event);
-		model.addAttribute("updatedEvent", updatedEvent);
-		return EVENT_VIEW_NAME;
+	@PutMapping("/{id}")
+	public EventDto updateEvent(@PathVariable("id") Long id, @RequestBody EventDto event) {
+		return facade.updateEvent(id, event);
 	}
 
 	/**
-	 * Deletes an event by id. Adds a boolean to model data with information if deletion was successful or not.
-	 *
+	 * Deletes an event by id.
 	 * @param id    Id of the event to be deleted.
-	 * @param model Model data.
-	 * @return Name of the view.
 	 */
-	@PostMapping("/delete")
-	public String deleteEvent(@RequestParam("id") long id, ModelMap model) {
+	@DeleteMapping("/delete")
+	public void deleteEvent(@RequestBody Long id) {
 		facade.deleteEvent(id);
-		model.addAttribute("deleteEventId", id);
-		return EVENT_VIEW_NAME;
 	}
 }

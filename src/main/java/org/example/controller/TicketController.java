@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,24 +17,27 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Controller for all operations on Tickets.
  *
  * @author Andrii Krokhta
  */
-@Controller
+@RestController
 @RequestMapping("/ticket")
 public class TicketController {
 
 	private static final Logger logger = LoggerFactory.getLogger(TicketController.class);
-	public static final String TICKET_VIEW_NAME = "ticket";
 
 	private final BookingFacade facade;
 
@@ -43,60 +47,46 @@ public class TicketController {
 	}
 
 	/**
-	 * Creates a new ticket and adds to it model data.
+	 * Creates a new ticket and charges the ticket price to the user's account.
 	 *
 	 * @param ticket New ticket data.
-	 * @param model  Model data.
-	 * @return Name of the view.
+	 * @return Created ticket.
 	 */
 	@PostMapping
 	@Transactional
-	public String createTicket(@ModelAttribute("ticket") TicketDto ticket, ModelMap model) {
+	public TicketDto createTicket(@RequestBody TicketDto ticket) {
 		var ticketPrice = facade.getEventById(ticket.getEvent().getId()).getTicketPrice();
 		facade.chargeAccountForTicket(ticket.getUser().getId(), ticketPrice);
-		var createdTicket = facade.bookTicket(ticket.getUser().getId(),
-													ticket.getEvent().getId(),
-													ticket.getCategory(),
-													ticket.getPlace());
-		model.addAttribute("createdTicket", createdTicket);
-		return TICKET_VIEW_NAME;
-	}
-
-	/**
-	 * Gets a list of tickets by user and adds it to model data.
-	 *
-	 * @param userId   User id.
-	 * @param pageSize Number of ticket entries per page.
-	 * @param pageNum  Number of page to display.
-	 * @param model    Model data.
-	 * @return Name of the view.
-	 */
-	@GetMapping("/byUser")
-	public String getTicketsByUser(@RequestParam("userId") long userId,
-								   @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
-								   @RequestParam(value = "pageNum", required = false, defaultValue = "0") int pageNum,
-								   ModelMap model) {
-		var tickets = facade.getBookedTicketsByUserId(userId, pageSize, pageNum);
-		model.addAttribute("ticketsByUser", tickets);
-		return TICKET_VIEW_NAME;
+		return facade.bookTicket(ticket.getUser().getId(),
+				ticket.getEvent().getId(),
+				ticket.getCategory(),
+				ticket.getPlace());
 	}
 
 	/**
 	 * Gets a list of tickets by user.
 	 *
 	 * @param userId   User id.
-	 * @param pageSize Number of ticket entries per page.
-	 * @param pageNum  Number of page to display.
+	 * @param pageable Pageable.
+	 * @return List of tickets, or if none is found, empty list.
+	 */
+	@GetMapping("/byUser")
+	public List<TicketDto> getTicketsByUser(@RequestParam("userId") long userId, Pageable pageable) {
+		return facade.getBookedTicketsByUserId(userId, pageable);
+	}
+
+	/**
+	 * Gets a list of tickets by user.
+	 *
+	 * @param userId   User id.
+	 * @param pageable Pageable
 	 * @return byte[] of pdf with ticket data.
 	 */
 	@GetMapping(value = "/byUser", headers = "Accept=application/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
 	public @ResponseBody
-	byte[] getTicketsByUserPdf(
-			@RequestParam("userId") Long userId,
-			@RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
-			@RequestParam(value = "pageNum", required = false, defaultValue = "0") int pageNum) {
-		var tickets = facade.getBookedTicketsByUserId(userId, pageSize, pageNum);
-		var generatedFile = DocumentUtil.writeToPdf(tickets);
+	byte[] getTicketsByUserPdf(@RequestParam("userId") Long userId, Pageable pageable) {
+		var tickets = facade.getBookedTicketsByUserId(userId, pageable);
+		var generatedFile = DocumentUtil.writeToPdf(tickets);//todo extract file generation to another method
 		try {
 			var stream = new FileSystemResource(generatedFile).getInputStream();
 			return IOUtils.toByteArray(stream);
@@ -108,57 +98,40 @@ public class TicketController {
 	}
 
 	/**
-	 * Uploads a file with ticket data and save the data.
+	 * Uploads a file with ticket data and saves the data.
 	 *
-	 * @return byte[] of pdf with ticket data.
+	 * @return List of saved tickets.
 	 */
 	@PostMapping(value = "/batch")
 	@Transactional
-	public String batchBookTicketsFromFile(@RequestParam("file") MultipartFile file, ModelMap model) {
+	public Iterable<TicketDto> batchBookTicketsFromFile(@RequestParam("file") MultipartFile file) {
 		Iterable<TicketDto> savedTickets = null;
-		try {
+		try {//todo make facade method not throw a checked exception
 			savedTickets = facade.batchBookTickets(file.getInputStream());
 		} catch (IOException e) {
 			logger.warn("Failed to load tickets from a file. {}", e.getMessage());
 		}
-		if (savedTickets != null) {
-			model.addAttribute("batchBookedTickets", savedTickets);
-			return TICKET_VIEW_NAME;
-		} else {
-			return "error";
-		}
+		return savedTickets;
 	}
 
 	/**
-	 * Gets a list of tickets by event and adds it to model data.
+	 * Gets a list of tickets by event.
 	 *
 	 * @param eventId  Event id.
-	 * @param pageSize Number of ticket entries per page.
-	 * @param pageNum  Number of page to display.
-	 * @param model    Model data.
-	 * @return Name of the view.
+	 * @param pageable Pageable.
+	 * @return List of tickets, or if none is found, empty list.
 	 */
 	@GetMapping("/byEvent")
-	public String getTicketsByEvent(@RequestParam("eventId") Long eventId,
-									@RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
-									@RequestParam(value = "pageNum", required = false, defaultValue = "0") int pageNum,
-									ModelMap model) {
-		var tickets = facade.getBookedTicketsByEventId(eventId, pageSize, pageNum);
-		model.addAttribute("ticketsByEvent", tickets);
-		return TICKET_VIEW_NAME;
+	public List<TicketDto> getTicketsByEvent(@RequestParam("eventId") Long eventId, Pageable pageable) {
+		return facade.getBookedTicketsByEventId(eventId, pageable);
 	}
 
 	/**
-	 * Deletes a ticket by id. Adds a boolean to model data with information if deletion was successful or not.
-	 *
+	 * Deletes a ticket by id.
 	 * @param id    Id of the ticket to be deleted.
-	 * @param model Model data.
-	 * @return Name of the view.
 	 */
-	@PostMapping("/delete")
-	public String deleteTicket(@RequestParam("id") Long id, ModelMap model) {
+	@PutMapping
+	public void deleteTicket(@RequestBody Long id) {
 		facade.cancelTicket(id);
-		model.addAttribute("deleteTicketId", id);
-		return TICKET_VIEW_NAME;
 	}
 }

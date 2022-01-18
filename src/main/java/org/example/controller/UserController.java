@@ -3,25 +3,30 @@ package org.example.controller;
 import org.example.dto.UserDto;
 import org.example.facade.BookingFacade;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
- * Controller for all operations on Users.
+ * RestController for all operations on Users.
  *
  * @author Andrii Krokhta
  */
-@Controller
+@RestController
 @RequestMapping("/user")
 public class UserController {
 
-	public static final String USER_VIEW_NAME = "user";
 	private final BookingFacade facade;
 
 	@Autowired
@@ -30,94 +35,72 @@ public class UserController {
 	}
 
 	/**
-	 * Creates a new user and adds to it model data.
+	 * Creates a new user.
 	 *
 	 * @param user  New user data.
-	 * @param model Model data.
-	 * @return Name of the view.
+	 * @return Created user.
 	 */
 	@PostMapping
-	public String createUser(@ModelAttribute("user") UserDto user, ModelMap model) {
-		var createdUser = facade.createUser(new UserDto(0L, user.getName(), user.getEmail()));
+	public UserDto createUser(@RequestBody UserDto user) {
+		var createdUser = facade.createUser(user);
 		facade.createAccount(createdUser.getId());
-		model.addAttribute("createdUser", createdUser);
-		return USER_VIEW_NAME;
+		return createdUser;
 	}
 
 	/**
-	 * Gets a user by id and adds it to model data.
+	 * Gets a user by id.
 	 *
 	 * @param id    User id.
-	 * @param model Model data.
-	 * @return Name of the view.
+	 * @return User found by id, otherwise throws EntityNotFoundException.
 	 */
-	@GetMapping
-	public String getUserById(@RequestParam("id") long id, ModelMap model) {
-		var user = facade.getUserById(id);
-		model.addAttribute("userById", user);
-		return USER_VIEW_NAME;
+	@GetMapping("/{id}")
+	public UserDto getUserById(@PathVariable("id") Long id) {
+		return facade.getUserById(id);
 	}
 
 	/**
-	 * Gets a user by email and adds it to model data.
+	 * Gets a user by email.
 	 *
 	 * @param email User email.
-	 * @param model Model data.
-	 * @return Name of the view.
+	 * @return User found by email, otherwise throws EntityNotFoundException.
 	 */
 	@GetMapping("/byEmail")
-	public String getUserByEmail(@RequestParam("email") String email, ModelMap model) {
-		var user = facade.getUserByEmail(email);
-		model.addAttribute("userByEmail", user);
-		return USER_VIEW_NAME;
+	public UserDto getUserByEmail(@RequestParam("email") String email) {
+		return facade.getUserByEmail(email);
 	}
 
 	/**
-	 * Gets a list of user by name and adds it to model data. Name is matched using 'contains' approach.
+	 * Gets a list of users by name. Name is matched using 'contains' approach.
 	 *
 	 * @param name     User name.
-	 * @param pageSize Number of ticket entries per page.
-	 * @param pageNum  Number of page to display.
-	 * @param model    Model data.
-	 * @return Name of the view.
+	 * @param pageable Pageable.
+	 * @return List of users, or if none is found, empty list.
 	 */
 	@GetMapping("/byName")
-	public String getUsersByName(@RequestParam("name") String name,
-								 @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize,
-								 @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
-								 ModelMap model) {
-		var users = facade.getUsersByName(name, pageSize, pageNum);
-		model.addAttribute("users", users);
-		return USER_VIEW_NAME;
+	public List<UserDto> getUsersByName(@RequestParam("name") String name, Pageable pageable) {
+		return facade.getUsersByName(name, pageable)
 	}
 
 	/**
-	 * Updates a user by user id and adds the updated object to model data.
+	 * Updates a user by user id.
 	 *
-	 * @param user  Updated user with the same id.
-	 * @param model Model data.
-	 * @return Name of the view.
+	 * @param id User id.
+	 * @param user  Updated user.
+	 * @return Updated user.
 	 */
-	@PostMapping("/update")
-	public String updateUser(@ModelAttribute("user") UserDto user, ModelMap model) {
-		var updatedUser = facade.updateUser(user);
-		model.addAttribute("updatedUser", updatedUser);
-		return USER_VIEW_NAME;
+	@PutMapping("/{id}")
+	public UserDto updateUser(@PathVariable("id") Long id, @RequestBody UserDto user, ModelMap model) {
+		return facade.updateUser(id, user);
 	}
 
 	/**
-	 * Deletes a user by id. Adds a boolean to model data with information if deletion was successful or not.
-	 *
+	 * Deletes a user by id.
 	 * @param id    Id of the user to be deleted.
-	 * @param model Model data.
-	 * @return Name of the view.
 	 */
-	@PostMapping("/delete")
+	@DeleteMapping
 	@Transactional
-	public String deleteUser(@RequestParam("id") Long id, ModelMap model) {
+	public void deleteUser(@RequestBody Long id) {
 		facade.deleteAccount(id);
 		facade.deleteUser(id);
-		model.addAttribute("deleteUserId", id);
-		return USER_VIEW_NAME;
 	}
 }

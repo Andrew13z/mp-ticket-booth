@@ -1,16 +1,17 @@
 package org.example.controller;
 
+import org.example.dto.AccountDto;
 import org.example.facade.BookingFacade;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 
-@Controller
+@RestController
 @RequestMapping("/account")
 public class AccountController {
 
@@ -21,12 +22,9 @@ public class AccountController {
 		this.facade = facade;
 	}
 
-	@PostMapping
-	public String refillAccount(@RequestParam("userId") Long userId,
-								@RequestParam("refillSum") BigDecimal refillSum,
-								ModelMap model) {
-		var account = facade.refillAccount(userId, refillSum);
-		model.addAttribute("account", account);
-		return "account";
+	@PatchMapping("/userId")
+	public AccountDto refillAccount(@PathVariable("userId") Long userId,
+									@RequestBody BigDecimal refillSum) {
+		return facade.refillAccount(userId, refillSum);
 	}
 }

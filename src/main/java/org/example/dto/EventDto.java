@@ -12,7 +12,7 @@ import java.time.LocalDate;
  */
 public class EventDto {
 
-	private Long id;
+	private Long id;//todo add validation to check that id is null during event creation
 
 	private String title;
 

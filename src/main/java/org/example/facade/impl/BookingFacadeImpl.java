@@ -66,7 +66,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<EventDto> getEventsForDay(LocalDate day, int pageSize, int pageNum) {
+	public List<EventDto> getEventsByDate(LocalDate day, int pageSize, int pageNum) {
 		return eventService.getEventsForDay(day, pageSize, pageNum);
 	}
 

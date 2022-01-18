@@ -34,7 +34,7 @@ public interface BookingFacade {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of events.
 	 */
-	List<EventDto> getEventsByTitle(String title, int pageSize, int pageNum);
+	List<EventDto> getEventsByTitle(String title, int pageSize, int pageNum);//todo insert pageable
 
 	/**
 	 * Get list of events for specified day.
@@ -45,7 +45,7 @@ public interface BookingFacade {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of events.
 	 */
-	List<EventDto> getEventsForDay(LocalDate day, int pageSize, int pageNum);
+	List<EventDto> getEventsByDate(LocalDate day, int pageSize, int pageNum);//todo insert pageable
 
 	/**
 	 * Creates new event. Event id should be auto-generated.
@@ -61,7 +61,7 @@ public interface BookingFacade {
 	 * @param event Event data for update. Should have id set.
 	 * @return Updated Event object.
 	 */
-	EventDto updateEvent(EventDto event);
+	EventDto updateEvent(EventDto event);//todo add Long id as first param
 
 	/**
 	 * Deletes event by its id.
@@ -93,7 +93,7 @@ public interface BookingFacade {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of users.
 	 */
-	List<UserDto> getUsersByName(String name, int pageSize, int pageNum);
+	List<UserDto> getUsersByName(String name, int pageSize, int pageNum);//todo add pageable
 
 	/**
 	 * Creates new user. User id should be auto-generated.
@@ -109,7 +109,7 @@ public interface BookingFacade {
 	 * @param user User data for update. Should have id set.
 	 * @return Updated User object.
 	 */
-	UserDto updateUser(UserDto user);
+	UserDto updateUser(UserDto user);//todo add Long id as first param
 
 	/**
 	 * Deletes user by its id.
@@ -145,7 +145,7 @@ public interface BookingFacade {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of Ticket objects.
 	 */
-	List<TicketDto> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum);
+	List<TicketDto> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum);//todo insert pageable
 
 	/**
 	 * Get all booked tickets by specified event id. Tickets should be sorted in by user email in ascending order.
@@ -155,7 +155,7 @@ public interface BookingFacade {
 	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
 	 * @return List of Ticket objects.
 	 */
-	List<TicketDto> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum);
+	List<TicketDto> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum);//todo insert pageable
 
 	/**
 	 * Cancel ticket with a specified id.

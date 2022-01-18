@@ -6,7 +6,7 @@ package org.example.dto;
  */
 public class UserDto {
 
-	private Long id;
+	private Long id;//todo add validation that id is null when user is created
 
 	private String name;
 
