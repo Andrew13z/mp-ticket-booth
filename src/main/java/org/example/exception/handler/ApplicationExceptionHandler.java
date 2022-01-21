@@ -1,109 +1,126 @@
 package org.example.exception.handler;
 
+import org.example.dto.ErrorDto;
 import org.example.exception.AccountBalanceException;
 import org.example.exception.EntityNotFoundException;
 import org.example.exception.PdfGenerationException;
 import org.example.exception.UnmarshallingException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-@ControllerAdvice
+import java.util.Map;
+import java.util.function.Function;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
+
+@RestControllerAdvice
 public class ApplicationExceptionHandler {
 
-	private static final String ERROR_VIEW_NAME = "error.html";
-	private static final String MESSAGE = "message";
+	private final Map<Class<?>, Function<Exception, ResponseEntity<ErrorDto>>> handlerMap=
+						Map.of(EntityNotFoundException.class, this::handleEntityNotFoundException,
+								PdfGenerationException.class, this::handlePdfGenerationException,
+								UnmarshallingException.class, this::handleUnmarshallingException,
+								IllegalArgumentException.class, this::handleIllegalArgumentException,
+								AccountBalanceException.class, this::handleAccountBalanceException);
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorDto> handleException(Exception ex) {
+		return handlerMap.getOrDefault(ex.getClass(), this::handleDefaultException).apply(ex);
+	}
 
 	/**
 	 * Handles EntityNotFoundException
 	 *
-	 * @param ex thrown EntityNotFoundException
-	 * @return model with view name, response status, and message
+	 * @param exception thrown EntityNotFoundException
+	 * @return ResponseEntity with ErrorDto
 	 */
-	@ExceptionHandler(EntityNotFoundException.class)
-	public ModelAndView handleEntityNotFoundException(EntityNotFoundException ex) {
-		var modelAndView = new ModelAndView();
-		modelAndView.setViewName(ERROR_VIEW_NAME);
-		modelAndView.setStatus(HttpStatus.NOT_FOUND);
-		modelAndView.addObject(MESSAGE, ex.getMessage());
-		return modelAndView;
+	public ResponseEntity<ErrorDto> handleEntityNotFoundException(Exception exception) {
+		return ResponseEntity.status(NOT_FOUND)
+							.contentType(APPLICATION_JSON)
+							.body(createErrorDto(NOT_FOUND, exception.getMessage()));
 	}
 
 	/**
-	 * Handles PdfGenerationException
+	 * Handles EntityNotFoundException
 	 *
-	 * @param ex thrown PdfGenerationException
-	 * @return model with view name, response status, and message
+	 * @param exception thrown EntityNotFoundException
+	 * @return ResponseEntity with ErrorDto
 	 */
-	@ExceptionHandler(PdfGenerationException.class)
-	private ModelAndView handlePdfGenerationException(PdfGenerationException ex) {
-		var modelAndView = new ModelAndView();
-		modelAndView.setViewName(ERROR_VIEW_NAME);
-		modelAndView.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-		modelAndView.addObject(MESSAGE, ex.getMessage());
-		return modelAndView;
+	private ResponseEntity<ErrorDto> handlePdfGenerationException(Exception exception) {
+		return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+							.contentType(APPLICATION_JSON)
+							.body(createErrorDto(INTERNAL_SERVER_ERROR, exception.getMessage()));
 	}
 
 	/**
 	 * Handles UnmarshallingException
 	 *
-	 * @param ex thrown UnmarshallingException
-	 * @return model with view name, response status, and message
+	 * @param exception thrown UnmarshallingException
+	 * @return ResponseEntity with ErrorDto
 	 */
-	@ExceptionHandler(UnmarshallingException.class)
-	private ModelAndView handleUnmarshallingException(UnmarshallingException ex) {
-		return setUpModelWithBadRequest(ex);
-	}
-
-	/**
-	 * Creates ModelAndView with BAD_REQUEST response status and exception information
-	 *
-	 * @param ex thrown Exception
-	 * @return model with view name, response status, and message
-	 */
-	private ModelAndView setUpModelWithBadRequest(Exception ex) {
-		var modelAndView = new ModelAndView();
-		modelAndView.setViewName(ERROR_VIEW_NAME);
-		modelAndView.setStatus(HttpStatus.BAD_REQUEST);
-		modelAndView.addObject(MESSAGE, ex.getMessage());
-		return modelAndView;
+	private ResponseEntity<ErrorDto> handleUnmarshallingException(Exception exception) {
+		return createResponseEntityWithBadRequestStatus(exception.getMessage());
 	}
 
 	/**
 	 * Handles IllegalArgumentException
 	 *
-	 * @param ex thrown IllegalArgumentException
-	 * @return model with view name, response status, and message
+	 * @param exception thrown IllegalArgumentException
+	 * @return ResponseEntity with ErrorDto
 	 */
-	@ExceptionHandler(IllegalArgumentException.class)
-	private ModelAndView handleIllegalArgumentException(IllegalArgumentException ex) {
-		return setUpModelWithBadRequest(ex);
+	private ResponseEntity<ErrorDto> handleIllegalArgumentException(Exception exception) {
+		return createResponseEntityWithBadRequestStatus(exception.getMessage());
 	}
+
+	/**
+	 * Handles AccountBalanceException
+	 *
+	 * @param exception thrown AccountBalanceException
+	 * @return ResponseEntity with ErrorDto
+	 */
+	private ResponseEntity<ErrorDto> handleAccountBalanceException(Exception exception) {
+		return createResponseEntityWithBadRequestStatus(exception.getMessage());
+	}
+
 
 	/**
 	 * Handles Exception
 	 *
-	 * @param ex thrown Exception
-	 * @return model with view name, response status, and message
+	 * @param exception thrown Exception
+	 * @return ResponseEntity with ErrorDto
 	 */
-	@ExceptionHandler(AccountBalanceException.class)
-	public ModelAndView handleAccountBalanceException(Exception ex) {
-		return setUpModelWithBadRequest(ex);
+	private ResponseEntity<ErrorDto> handleDefaultException(Exception exception) {
+		return ResponseEntity.status(INTERNAL_SERVER_ERROR)
+				.contentType(APPLICATION_JSON)
+				.body(createErrorDto(INTERNAL_SERVER_ERROR, exception.getMessage()));
 	}
 
 	/**
-	 * Handles Exception
+	 * Creates an instance of ResponseEntity with status BAD_REQUEST
+	 * and ErrorDto that has BAD_REQUEST status and the provided message
 	 *
-	 * @param ex thrown Exception
-	 * @return model with view name, response status, and message
+	 * @param message message of the exception
+	 * @return ResponseEntity<ErrorDto>
 	 */
-	@ExceptionHandler(Exception.class)
-	public ModelAndView handleGenericException(Exception ex) {
-		var modelAndView = new ModelAndView();
-		modelAndView.setViewName(ERROR_VIEW_NAME);
-		modelAndView.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-		modelAndView.addObject(MESSAGE, ex.getMessage());
-		return modelAndView;
+	private ResponseEntity<ErrorDto> createResponseEntityWithBadRequestStatus(String message) {
+		return ResponseEntity.status(BAD_REQUEST)
+						.contentType(APPLICATION_JSON)
+						.body(createErrorDto(BAD_REQUEST, message));
 	}
+	/**
+	 * Creates an instance of ErrorDto
+	 *
+	 * @param status HttpStatus of the exception
+	 * @param message message of the exception
+	 * @return ErrorDto
+	 */
+	private ErrorDto createErrorDto(HttpStatus status, String message) {
+		return new ErrorDto(status, status.value(), message);
+	}
+
 }
