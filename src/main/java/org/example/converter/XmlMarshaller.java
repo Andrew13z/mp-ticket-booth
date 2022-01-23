@@ -27,7 +27,7 @@ public class XmlMarshaller {
 	}
 
 	/**
-	 * Reads the resource with model dataand transforms it to the target class.
+	 * Reads the resource with model data and transforms it to the target class.
 	 *
 	 * @return List of models.
 	 */
@@ -39,7 +39,7 @@ public class XmlMarshaller {
 	}
 
 	/**
-	 * Reads the resource with model dataand transforms it to the target class.
+	 * Reads the resource with model data and transforms it to the target class.
 	 *
 	 * @return List of models.
 	 */

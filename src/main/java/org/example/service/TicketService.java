@@ -2,6 +2,7 @@ package org.example.service;
 
 import org.example.dto.TicketDto;
 import org.example.enums.Category;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface TicketService {
 	/**
 	 * Book tickets from the collection.
 	 *
-	 * @param tickets   Collection of tikets.
+	 * @param tickets   Collection of tickets.
 	 * @return List of booked tickets.
 	 */
 	Iterable<TicketDto> bookTickets(List<TicketDto> tickets);
@@ -31,21 +32,19 @@ public interface TicketService {
 	 * Get all booked tickets by specified user id. Tickets should be sorted by event date in descending order.
 	 *
 	 * @param userId     User id
-	 * @param pageSize Pagination param. Number of tickets to return on a page.
-	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
+	 * @param pageable Pageable
 	 * @return List of Ticket objects.
 	 */
-	List<TicketDto> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum);
+	List<TicketDto> getBookedTicketsByUserId(Long userId, Pageable pageable);
 
 	/**
 	 * Get all booked tickets by specified event id. Tickets should be sorted in by user email in ascending order.
 	 *
 	 * @param eventId    Event id
-	 * @param pageSize Pagination param. Number of tickets to return on a page.
-	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
+	 * @param pageable Pageable
 	 * @return List of Ticket objects.
 	 */
-	List<TicketDto> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum);
+	List<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable);
 
 	/**
 	 * Cancel ticket with a specified id.

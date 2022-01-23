@@ -3,7 +3,7 @@ package org.example.model;
 import org.example.enums.Category;
 
 /**
- * Bulder for ticket entity.
+ * Builder for ticket entity.
  */
 public class TicketBuilder {
 	private Long id;

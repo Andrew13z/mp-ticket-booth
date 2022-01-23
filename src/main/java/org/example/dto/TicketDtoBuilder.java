@@ -3,7 +3,7 @@ package org.example.dto;
 import org.example.enums.Category;
 
 /**
- * Bulder for ticket entity.
+ * Builder for ticket dto.
  */
 public class TicketDtoBuilder {
 	private Long id;

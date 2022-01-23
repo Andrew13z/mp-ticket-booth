@@ -4,6 +4,7 @@ import org.example.dto.UserDto;
 import org.example.facade.BookingFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -24,7 +26,7 @@ import java.util.List;
  * @author Andrii Krokhta
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
 
 	private final BookingFacade facade;
@@ -41,6 +43,7 @@ public class UserController {
 	 * @return Created user.
 	 */
 	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
 	public UserDto createUser(@RequestBody UserDto user) {
 		var createdUser = facade.createUser(user);
 		facade.createAccount(createdUser.getId());
@@ -78,7 +81,7 @@ public class UserController {
 	 */
 	@GetMapping("/byName")
 	public List<UserDto> getUsersByName(@RequestParam("name") String name, Pageable pageable) {
-		return facade.getUsersByName(name, pageable)
+		return facade.getUsersByName(name, pageable);
 	}
 
 	/**

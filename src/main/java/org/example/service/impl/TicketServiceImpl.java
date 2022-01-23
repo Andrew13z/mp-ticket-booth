@@ -9,7 +9,7 @@ import org.example.service.TicketService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -55,8 +55,8 @@ public class TicketServiceImpl implements TicketService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<TicketDto> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum) {
-		return ticketRepository.findByUserId(userId, PageRequest.of(pageNum, pageSize))
+	public List<TicketDto> getBookedTicketsByUserId(Long userId, Pageable pageable) {
+		return ticketRepository.findByUserId(userId, pageable)
 				.stream()
 				.map(user -> mapper.map(user, TicketDto.class))
 				.collect(Collectors.toList());
@@ -66,8 +66,8 @@ public class TicketServiceImpl implements TicketService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<TicketDto> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum) {
-		return ticketRepository.findByEventId(eventId, PageRequest.of(pageNum, pageSize))
+	public List<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable) {
+		return ticketRepository.findByEventId(eventId, pageable)
 				.stream()
 				.map(user -> mapper.map(user, TicketDto.class))
 				.collect(Collectors.toList());

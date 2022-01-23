@@ -4,6 +4,9 @@ import org.example.dto.EventDto;
 import org.example.facade.BookingFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -23,7 +27,7 @@ import java.util.List;
  * @author Andrii Krokhta
  */
 @RestController
-@RequestMapping("/event")
+@RequestMapping(value = "/events", produces = MediaType.APPLICATION_JSON_VALUE)
 public class EventController {
 
 	private final BookingFacade facade;
@@ -40,6 +44,7 @@ public class EventController {
 	 * @return Created event.
 	 */
 	@PostMapping
+	@ResponseStatus(HttpStatus.CREATED)
 	public EventDto createEvent(@RequestBody EventDto event) {
 		return facade.createEvent(event);
 	}
@@ -50,8 +55,8 @@ public class EventController {
 	 * @param id    Event id.
 	 * @return Event found by id, otherwise throws EntityNotFoundException.
 	 */
-	@GetMapping("/id")
-	public EventDto getEventById(@RequestParam("id") Long id) {
+	@GetMapping("/{id}")
+	public EventDto getEventById(@PathVariable("id") Long id) {
 		return facade.getEventById(id);
 	}
 
@@ -62,22 +67,18 @@ public class EventController {
 	 * @param pageable Pageable.
 	 * @return List of events, or if none is found, empty list.
 	 */
-	@GetMapping("/byTitle")
-	public List<EventDto> getEventsByTitle(@RequestParam("title") String title, Pageable pageable) {
-		return facade.getEventsByTitle(title, pageable);
-	}
-
-	/**
-	 * Gets a list of events by date.
-	 *
-	 * @param date     Event date.
-	 * @param pageable Pageable.
-	 * @return List of events, or if none is found, empty list.
-	 */
-	@GetMapping("/byDate")
-	public List<EventDto> getEventsByDate(@RequestParam("date") /*todo@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)*/ LocalDate date,
-								  Pageable pageable) {
-		return facade.getEventsByDate(date, pageable);
+	@GetMapping
+	public List<EventDto> getEventsByTitle(@RequestParam(value = "title", required = false) String title,
+										   @RequestParam(value = "date", required = false)
+										   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+										   Pageable pageable) {
+		if (title != null) {
+			return facade.getEventsByTitle(title, pageable);
+		}
+		if (date != null) {
+			return facade.getEventsByDate(date, pageable);
+		}
+		throw new IllegalArgumentException("No parameters provided to search by.");
 	}
 
 	/**
@@ -96,7 +97,7 @@ public class EventController {
 	 * Deletes an event by id.
 	 * @param id    Id of the event to be deleted.
 	 */
-	@DeleteMapping("/delete")
+	@DeleteMapping
 	public void deleteEvent(@RequestBody Long id) {
 		facade.deleteEvent(id);
 	}

@@ -10,7 +10,7 @@ import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -54,8 +54,8 @@ public class UserServiceImpl implements UserService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<UserDto> getUsersByName(String name, int pageSize, int pageNum) {
-		var users = repository.findUsersByNameContainingIgnoreCase(name, PageRequest.of(pageNum, pageSize));
+	public List<UserDto> getUsersByName(String name, Pageable pageable) {
+		var users = repository.findUsersByNameContainingIgnoreCase(name, pageable);
 		return mapper.map(users, new TypeToken<List<UserDto>>(){}.getType());
 	}
 
@@ -76,12 +76,12 @@ public class UserServiceImpl implements UserService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public UserDto updateUser(UserDto updatedUserDto) {
-		var oldUser = repository.findById(updatedUserDto.getId())
-				.orElseThrow(() -> new EntityNotFoundException("User not found by id: " + updatedUserDto.getId()));
+	public UserDto updateUser(Long id, UserDto updatedUserDto) {
+		var oldUser = repository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("User not found by id: " + id));
 
 		var email = updatedUserDto.getEmail();
-		if (!email.isEmpty() && !oldUser.getEmail().equals(email)) {
+		if (!oldUser.getEmail().equals(email)) {
 			if (repository.findByEmail(email).isEmpty()) {
 				oldUser.setEmail(email);
 			} else {
@@ -90,12 +90,9 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 
-		if (!updatedUserDto.getName().isEmpty()) {
-			oldUser.setName(updatedUserDto.getName());
-		}
+		oldUser.setName(updatedUserDto.getName());
 
-		logger.info("Updated user with id {}.", updatedUserDto.getId());
-
+		logger.info("Updated user with id {}.", id);
 		return mapper.map(repository.save(oldUser), UserDto.class);
 	}
 

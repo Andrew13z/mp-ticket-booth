@@ -3,24 +3,19 @@ package org.example.facade.impl;
 import org.example.dto.EventDto;
 import org.example.dto.UserDto;
 import org.example.enums.Category;
-import org.example.model.Event;
-import org.example.model.Ticket;
-import org.example.model.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.test.annotation.Rollback;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-@Sql(value = {"classpath:drop-tables.sql"})
-@Sql(value = {"classpath:create-tables.sql"})
+
 @SpringBootTest
+@Rollback
 class BookingFacadeImplTest {
 
 	private final String userName = "Name";
@@ -53,13 +48,13 @@ class BookingFacadeImplTest {
 		assertEquals(savedEventId, ticket.getEvent().getId());
 
 		//Checking ticket by user
-		var userTickets = facade.getBookedTicketsByUserId(savedUserId, 10, 0);
+		var userTickets = facade.getBookedTicketsByUserId(savedUserId, PageRequest.of(0, 10));
 
 		assertEquals(1, userTickets.size());
 		assertEquals(savedUserId, userTickets.get(0).getUser().getId());
 
 		//Checking ticket by event
-		var eventTickets = facade.getBookedTicketsByEventId(savedEventId, 10, 0);
+		var eventTickets = facade.getBookedTicketsByEventId(savedEventId, PageRequest.of(0, 10));
 
 		assertEquals(1, eventTickets.size());
 		assertEquals(savedEventId, eventTickets.get(0).getEvent().getId());
@@ -67,6 +62,6 @@ class BookingFacadeImplTest {
 		//Canceling ticket
 		facade.cancelTicket(ticket.getId());
 		//Checking that ticket doesn't exist
-		assertEquals(0, facade.getBookedTicketsByEventId(savedEventId, 10, 0).size());
+		assertEquals(0, facade.getBookedTicketsByEventId(savedEventId, PageRequest.of(0, 10)).size());
 	}
 }

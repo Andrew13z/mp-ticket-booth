@@ -1,6 +1,7 @@
 package org.example.service;
 
 import org.example.dto.UserDto;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -25,11 +26,10 @@ public interface UserService {
 	 * In case nothing was found, empty list is returned.
 	 *
 	 * @param name     Users name or it's part.
-	 * @param pageSize Pagination param. Number of users to return on a page.
-	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
+	 * @param pageable Pageable
 	 * @return List of users.
 	 */
-	List<UserDto> getUsersByName(String name, int pageSize, int pageNum);
+	List<UserDto> getUsersByName(String name, Pageable pageable);
 
 	/**
 	 * Creates new user. User id is be auto-generated.
@@ -42,10 +42,11 @@ public interface UserService {
 	/**
 	 * Updates user using given data.
 	 *
+	 * @param id Id of the user to be  updated.
 	 * @param user User data for update. Should have id set.
 	 * @return Updated User object.
 	 */
-	UserDto updateUser(UserDto user);
+	UserDto updateUser(Long id, UserDto user);
 
 	/**
 	 * Deletes user by its id.

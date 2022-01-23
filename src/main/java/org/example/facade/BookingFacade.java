@@ -5,6 +5,7 @@ import org.example.dto.EventDto;
 import org.example.dto.TicketDto;
 import org.example.dto.UserDto;
 import org.example.enums.Category;
+import org.springframework.data.domain.Pageable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,22 +31,20 @@ public interface BookingFacade {
 	 * In case nothing was found, empty list is returned.
 	 *
 	 * @param title    Event title or it's part.
-	 * @param pageSize Pagination param. Number of events to return on a page.
-	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
+	 * @param pageable Pageable
 	 * @return List of events.
 	 */
-	List<EventDto> getEventsByTitle(String title, int pageSize, int pageNum);//todo insert pageable
+	List<EventDto> getEventsByTitle(String title, Pageable pageable);
 
 	/**
 	 * Get list of events for specified day.
 	 * In case nothing was found, empty list is returned.
 	 *
 	 * @param day      Date object from which day information is extracted.
-	 * @param pageSize Pagination param. Number of events to return on a page.
-	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
+	 * @param pageable Pageable
 	 * @return List of events.
 	 */
-	List<EventDto> getEventsByDate(LocalDate day, int pageSize, int pageNum);//todo insert pageable
+	List<EventDto> getEventsByDate(LocalDate day, Pageable pageable);
 
 	/**
 	 * Creates new event. Event id should be auto-generated.
@@ -58,10 +57,11 @@ public interface BookingFacade {
 	/**
 	 * Updates event using given data.
 	 *
+	 * @param id Id of the event to be  updated.
 	 * @param event Event data for update. Should have id set.
 	 * @return Updated Event object.
 	 */
-	EventDto updateEvent(EventDto event);//todo add Long id as first param
+	EventDto updateEvent(Long id, EventDto event);
 
 	/**
 	 * Deletes event by its id.
@@ -89,11 +89,10 @@ public interface BookingFacade {
 	 * In case nothing was found, empty list is returned.
 	 *
 	 * @param name     Users name or it's part.
-	 * @param pageSize Pagination param. Number of users to return on a page.
-	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
+	 * @param pageable Pageable
 	 * @return List of users.
 	 */
-	List<UserDto> getUsersByName(String name, int pageSize, int pageNum);//todo add pageable
+	List<UserDto> getUsersByName(String name, Pageable pageable);
 
 	/**
 	 * Creates new user. User id should be auto-generated.
@@ -106,10 +105,11 @@ public interface BookingFacade {
 	/**
 	 * Updates user using given data.
 	 *
+	 * @param id Id of the user to be  updated.
 	 * @param user User data for update. Should have id set.
 	 * @return Updated User object.
 	 */
-	UserDto updateUser(UserDto user);//todo add Long id as first param
+	UserDto updateUser(Long id, UserDto user);
 
 	/**
 	 * Deletes user by its id.
@@ -141,21 +141,19 @@ public interface BookingFacade {
 	 * Get all booked tickets by specified user id. Tickets should be sorted by event date in descending order.
 	 *
 	 * @param userId     User id
-	 * @param pageSize Pagination param. Number of tickets to return on a page.
-	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
+	 * @param pageable Pageable
 	 * @return List of Ticket objects.
 	 */
-	List<TicketDto> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum);//todo insert pageable
+	List<TicketDto> getBookedTicketsByUserId(Long userId, Pageable pageable);
 
 	/**
 	 * Get all booked tickets by specified event id. Tickets should be sorted in by user email in ascending order.
 	 *
 	 * @param eventId    Event id
-	 * @param pageSize Pagination param. Number of tickets to return on a page.
-	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
+	 * @param pageable Pageable
 	 * @return List of Ticket objects.
 	 */
-	List<TicketDto> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum);//todo insert pageable
+	List<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable);
 
 	/**
 	 * Cancel ticket with a specified id.

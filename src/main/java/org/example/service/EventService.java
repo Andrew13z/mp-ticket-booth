@@ -1,6 +1,7 @@
 package org.example.service;
 
 import org.example.dto.EventDto;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -19,22 +20,20 @@ public interface EventService {
 	 * In case nothing was found, empty list is returned.
 	 *
 	 * @param title    Event title or it's part.
-	 * @param pageSize Pagination param. Number of events to return on a page.
-	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
+	 * @param pageable Pageable
 	 * @return List of events.
 	 */
-	List<EventDto> getEventsByTitle(String title, int pageSize, int pageNum);
+	List<EventDto> getEventsByTitle(String title, Pageable pageable);
 
 	/**
 	 * Get list of events for specified day.
 	 * In case nothing was found, empty list is returned.
 	 *
 	 * @param day      Date object from which day information is extracted.
-	 * @param pageSize Pagination param. Number of events to return on a page.
-	 * @param pageNum  Pagination param. Number of the page to return. Starts from 1.
+	 * @param pageable Pageable
 	 * @return List of events.
 	 */
-	List<EventDto> getEventsForDay(LocalDate day, int pageSize, int pageNum);
+	List<EventDto> getEventsForDay(LocalDate day, Pageable pageable);
 
 	/**
 	 * Creates new event. Event id is be auto-generated.
@@ -47,10 +46,11 @@ public interface EventService {
 	/**
 	 * Updates event using given data.
 	 *
+	 * @param id Id of the event to be  updated.
 	 * @param event Event data for update. Should have id set.
 	 * @return Updated Event object.
 	 */
-	EventDto updateEvent(EventDto event);
+	EventDto updateEvent(Long id, EventDto event);
 
 	/**
 	 * Deletes event by its id.

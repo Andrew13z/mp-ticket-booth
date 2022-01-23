@@ -1,20 +1,16 @@
 package org.example.repository.cache.impl;
 
 import org.example.model.Event;
-import org.example.model.User;
 import org.example.repository.EventRepository;
-import org.example.repository.UserRepository;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -23,9 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-@Sql(value = { "classpath:drop-tables.sql" })
-@Sql(value = { "classpath:init-event.sql" })
-@DirtiesContext
+@Transactional
 class EventCacheRepositoryTest {
 
 	@Autowired

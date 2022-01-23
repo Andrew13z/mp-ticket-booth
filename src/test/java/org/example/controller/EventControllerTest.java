@@ -1,191 +1,219 @@
 package org.example.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.config.TestConfig;
 import org.example.dto.EventDto;
-import org.example.model.Event;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.example.util.TestUtils.DEFAULT_EVENT_DATE;
+import static org.example.util.TestUtils.DEFAULT_EVENT_TITLE;
+import static org.example.util.TestUtils.DEFAULT_TICKET_PRICE;
+import static org.example.util.TestUtils.ID_ONE;
+import static org.example.util.TestUtils.NEW_EVENT_DATE;
+import static org.example.util.TestUtils.NEW_EVENT_TITLE;
+import static org.example.util.TestUtils.NEW_TICKET_PRICE;
+import static org.example.util.TestUtils.NOT_EXISTING_EVENT_DATE;
+import static org.example.util.TestUtils.NOT_EXISTING_EVENT_TITLE;
+import static org.example.util.TestUtils.NOT_EXISTING_ID;
+import static org.example.util.TestUtils.SLASH;
+import static org.example.util.TestUtils.createDefaultEventDto;
+import static org.example.util.TestUtils.createEventDtoWithoutId;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Sql(value = { "classpath:drop-tables.sql" })
-@Sql(value = { "classpath:init-event.sql" })
 @SpringBootTest
+@AutoConfigureMockMvc
+@Transactional
+@Import(TestConfig.class)
 class EventControllerTest {
 
-	private static final String TITLE = "Matrix Lucky Hand";
-	private static final LocalDate DATE = LocalDate.of(2021, 12, 15);
-	private static final BigDecimal PRICE = BigDecimal.ZERO;
+	private static final String CONTROLLER_PATH = "/events";
 
+	@Autowired
+	private ObjectMapper mapper;
+
+	@Autowired
 	private MockMvc mockMvc;
 
-	@BeforeEach
-	void setUp(WebApplicationContext wac){
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+	@Test
+	void testCreateEvent() throws Exception {
+		mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createEventDtoWithoutId())))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.id").isNotEmpty())
+				.andExpect(jsonPath("$.title").value(DEFAULT_EVENT_TITLE))
+				.andExpect(jsonPath("$.date").value(DEFAULT_EVENT_DATE.toString()))
+				.andExpect(jsonPath("$.ticketPrice").value(DEFAULT_TICKET_PRICE));
 	}
 
-	@Sql(value = { "classpath:drop-tables.sql" })
-	@Sql({ "classpath:create-tables.sql" })
 	@Test
-	void testCreateEvent() throws Exception{
-		var localDate = LocalDate.now();
-		var result = mockMvc.perform(post("/event")
-						.flashAttr("event", new EventDto(0L, "New Title", localDate, PRICE)))
+	void testGetEventById_WithExistingId() throws Exception {
+		mockMvc.perform(get(CONTROLLER_PATH + SLASH + ID_ONE))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("createdEvent"))
-				.andReturn();
-		var event = (EventDto) result.getModelAndView().getModel().get("createdEvent");
-		assertEquals("New Title", event.getTitle());
-		assertEquals(localDate, event.getDate());
-		assertEquals(0, PRICE.compareTo(event.getTicketPrice()));
+				.andExpect(jsonPath("$.id").exists());
 	}
 
 	@Test
-	void testGetEventById_WithExistingId() throws Exception{
-		var result = mockMvc.perform(get("/event")
-						.param("id", "1"))
-				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("eventById"))
-				.andReturn();
-		var event = (EventDto) result.getModelAndView().getModel().get("eventById");
-		assertEquals(TITLE, event.getTitle());
-	}
-
-	@Test
-	void testGetEventById_WithNotExistingId() throws Exception{
-		mockMvc.perform(get("/event")
-						.param("id", "100"))
+	void testGetEventById_WithNotExistingId() throws Exception {
+		mockMvc.perform(get(CONTROLLER_PATH + SLASH + NOT_EXISTING_ID))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
-	void testGetEventsByTitle_WithExistingTitle() throws Exception{
-		var result = mockMvc.perform(get("/event/byTitle")
-						.param("title", TITLE)
-						.param("pageSize", "1")
-						.param("pageNum", "0"))
+	void testGetEventsByTitle_WithExistingTitle() throws Exception {
+		mockMvc.perform(post(CONTROLLER_PATH)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(createEventDtoWithoutId())));
+		mockMvc.perform(get(CONTROLLER_PATH)
+						.param("title", DEFAULT_EVENT_TITLE))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("eventsByTitle"))
-				.andReturn();
-		var events = (List<EventDto>) result.getModelAndView().getModel().get("eventsByTitle");
-		assertEquals(TITLE, events.get(0).getTitle());
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$", hasSize(1)))
+				.andExpect(jsonPath("$[0].title").value(DEFAULT_EVENT_TITLE));
 	}
 
 	@Test
-	void testGetEventsByTitle_WithNotExistingTitle() throws Exception{
-		var result = mockMvc.perform(get("/event/byTitle")
-						.param("title", "Not a title")
-						.param("pageSize", "1")
-						.param("pageNum", "0"))
+	void testGetEventsByTitle_WithNotExistingTitle() throws Exception {
+		mockMvc.perform(get(CONTROLLER_PATH)
+						.param("title", NOT_EXISTING_EVENT_TITLE))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("eventsByTitle"))
-				.andReturn();
-		var events = (List<EventDto>) result.getModelAndView().getModel().get("eventsByTitle");
-		assertEquals(0, events.size());
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$", hasSize(0)));
 	}
 
 	@Test
-	void testGetEventsByDate_WithExistingDate() throws Exception{
-		var result = mockMvc.perform(get("/event/byDate")
-						.param("date", DATE.toString())
-						.param("pageSize", "1")
-						.param("pageNum", "0"))
+	void testGetEventsByDate_WithExistingDate() throws Exception {
+		mockMvc.perform(post(CONTROLLER_PATH)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(createEventDtoWithoutId())));
+		mockMvc.perform(get(CONTROLLER_PATH)
+						.param("date", DEFAULT_EVENT_DATE.toString()))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("eventsByDate"))
-				.andReturn();
-		var events = (List<EventDto>) result.getModelAndView().getModel().get("eventsByDate");
-		assertEquals(DATE, events.get(0).getDate());
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$", hasSize(1)))
+				.andExpect(jsonPath("$[0].date").value(DEFAULT_EVENT_DATE.toString()));
 	}
 
 	@Test
-	void testGetEventsByDate_WithNotExistingDate() throws Exception{
-		var result = mockMvc.perform(get("/event/byDate")
-						.param("date", LocalDate.of(1000, 1, 1).toString())
-						.param("pageSize", "1")
-						.param("pageNum", "0"))
+	void testGetEventsByDate_WithNotExistingDate() throws Exception {
+		mockMvc.perform(get(CONTROLLER_PATH)
+						.param("date", NOT_EXISTING_EVENT_DATE.toString()))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("eventsByDate"))
-				.andReturn();
-		var events = (List<EventDto>) result.getModelAndView().getModel().get("eventsByDate");
-		assertEquals(0, events.size());
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$", hasSize(0)));
 	}
 
 	@Test
-	void updateEventTest_WithAllAttributesUpdated() throws Exception{
-		var localDate = LocalDate.now();
-		var result = mockMvc.perform(post("/event/update")
-						.flashAttr("event", new EventDto(1L, "New Title", localDate, PRICE)))
-				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("updatedEvent"))
-				.andReturn();
-		var event = (EventDto) result.getModelAndView().getModel().get("updatedEvent");
+	void updateEventTest_WithAllAttributesUpdated() throws Exception {
+		var createdEventDtoJson = mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createEventDtoWithoutId())))
+				.andReturn().getResponse().getContentAsString();
 
-		assertEquals(1L, event.getId());
-		assertEquals("New Title", event.getTitle());
-		assertEquals(localDate, event.getDate());
+		var createdEventDto = mapper.readValue(createdEventDtoJson, EventDto.class);
+		createdEventDto.setTitle(NEW_EVENT_TITLE);
+		createdEventDto.setDate(NEW_EVENT_DATE);
+		createdEventDto.setTicketPrice(NEW_TICKET_PRICE);
+
+		mockMvc.perform(put(CONTROLLER_PATH + SLASH + createdEventDto.getId())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createdEventDto)))
+				.andExpect(jsonPath("$.title").value(NEW_EVENT_TITLE))
+				.andExpect(jsonPath("$.date").value(NEW_EVENT_DATE.toString()))
+				.andExpect(jsonPath("$.ticketPrice").value(NEW_TICKET_PRICE));
 	}
 
 	@Test
-	void updateEventTest_WithoutUpdatedTitle() throws Exception{
-		var localDate = LocalDate.now();
-		var result = mockMvc.perform(post("/event/update")
-						.flashAttr("event", new EventDto(1L, "", localDate, PRICE)))
-				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("updatedEvent"))
-				.andReturn();
-		var event = (EventDto) result.getModelAndView().getModel().get("updatedEvent");
+	void updateEventTest_WithoutUpdatedTitle() throws Exception {
+		var createdEventDtoJson = mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createEventDtoWithoutId())))
+				.andReturn().getResponse().getContentAsString();
 
-		assertEquals(1L, event.getId());
-		assertEquals(TITLE, event.getTitle());
-		assertEquals(localDate, event.getDate());
+		var createdEventDto = mapper.readValue(createdEventDtoJson, EventDto.class);
+		createdEventDto.setDate(NEW_EVENT_DATE);
+		createdEventDto.setTicketPrice(NEW_TICKET_PRICE);
+
+		mockMvc.perform(put(CONTROLLER_PATH + SLASH + createdEventDto.getId())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createdEventDto)))
+				.andExpect(jsonPath("$.title").value(DEFAULT_EVENT_TITLE))
+				.andExpect(jsonPath("$.date").value(NEW_EVENT_DATE.toString()))
+				.andExpect(jsonPath("$.ticketPrice").value(NEW_TICKET_PRICE));
 	}
 
 	@Test
-	void updateEventTest_WithoutUpdatedDate() throws Exception{
-		var localDate = LocalDate.now();
-		var result = mockMvc.perform(post("/event/update")
-						.flashAttr("event", new EventDto(1L, "New Title", null, PRICE)))
-				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("updatedEvent"))
-				.andReturn();
-		var event = (EventDto) result.getModelAndView().getModel().get("updatedEvent");
+	void updateEventTest_WithoutUpdatedDate() throws Exception {
+		var createdEventDtoJson = mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createEventDtoWithoutId())))
+				.andReturn().getResponse().getContentAsString();
 
-		assertEquals(1L, event.getId());
-		assertEquals("New Title", event.getTitle());
-		assertEquals(DATE, event.getDate());
+		var createdEventDto = mapper.readValue(createdEventDtoJson, EventDto.class);
+		createdEventDto.setTitle(NEW_EVENT_TITLE);
+		createdEventDto.setTicketPrice(NEW_TICKET_PRICE);
+
+		mockMvc.perform(put(CONTROLLER_PATH + SLASH + createdEventDto.getId())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createdEventDto)))
+				.andExpect(jsonPath("$.title").value(NEW_EVENT_TITLE))
+				.andExpect(jsonPath("$.date").value(DEFAULT_EVENT_DATE.toString()))
+				.andExpect(jsonPath("$.ticketPrice").value(NEW_TICKET_PRICE));
 	}
 
 	@Test
-	void updateEventTest_WithNotExistingId() throws Exception{
-		mockMvc.perform(post("/event/update")
-						.flashAttr("event", new EventDto(100L, "", null, PRICE)))
+	void updateEventTest_WithoutUpdatedTicketPrice() throws Exception {
+		var createdEventDtoJson = mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createEventDtoWithoutId())))
+				.andReturn().getResponse().getContentAsString();
+
+		var createdEventDto = mapper.readValue(createdEventDtoJson, EventDto.class);
+		createdEventDto.setTitle(NEW_EVENT_TITLE);
+		createdEventDto.setDate(NEW_EVENT_DATE);
+
+		mockMvc.perform(put(CONTROLLER_PATH + SLASH + createdEventDto.getId())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createdEventDto)))
+				.andExpect(jsonPath("$.title").value(NEW_EVENT_TITLE))
+				.andExpect(jsonPath("$.date").value(NEW_EVENT_DATE.toString()))
+				.andExpect(jsonPath("$.ticketPrice").value(DEFAULT_TICKET_PRICE));
+	}
+
+	@Test
+	void updateEventTest_WithNotExistingId() throws Exception {
+		mockMvc.perform(put(CONTROLLER_PATH + SLASH + NOT_EXISTING_ID)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createDefaultEventDto())))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
-	void deleteEventTest_WithExistingId() throws Exception{
-		mockMvc.perform(post("/event/delete")
-						.param("id", "1"))
-				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("deleteEventId"));
+	void deleteEventTest_WithExistingId() throws Exception {
+		mockMvc.perform(delete(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(ID_ONE)))
+				.andExpect(status().isOk());
 	}
 
 	@Test
-	void deleteEventTest_WithNotExistingId() throws Exception{
-		mockMvc.perform(post("/event/delete")
-						.param("id", "100"))
+	void deleteEventTest_WithNotExistingId() throws Exception {
+		mockMvc.perform(delete(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(NOT_EXISTING_ID)))
 				.andExpect(status().isInternalServerError());
 	}
 }

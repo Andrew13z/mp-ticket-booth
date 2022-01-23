@@ -1,6 +1,6 @@
 package org.example.dto;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -16,7 +16,7 @@ public class EventDto {
 
 	private String title;
 
-	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+	@JsonFormat(pattern = "yyyy-MM-dd")
 	private LocalDate date;
 
 	private BigDecimal ticketPrice;

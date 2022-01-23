@@ -10,7 +10,7 @@ import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -45,8 +45,8 @@ public class EventServiceImpl implements EventService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<EventDto> getEventsByTitle(String title, int pageSize, int pageNum) {
-		return mapper.map(repository.findEventsByTitleContainingIgnoreCase(title, PageRequest.of(pageNum, pageSize)),
+	public List<EventDto> getEventsByTitle(String title, Pageable pageable) {
+		return mapper.map(repository.findEventsByTitleContainingIgnoreCase(title, pageable),
 				new TypeToken<List<EventDto>>(){}.getType());
 	}
 
@@ -54,8 +54,8 @@ public class EventServiceImpl implements EventService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<EventDto> getEventsForDay(LocalDate day, int pageSize, int pageNum) {
-		return mapper.map(repository.findEventsByDate(day, PageRequest.of(pageNum, pageSize)),
+	public List<EventDto> getEventsForDay(LocalDate day, Pageable pageable) {
+		return mapper.map(repository.findEventsByDate(day, pageable),
 				new TypeToken<List<EventDto>>(){}.getType());
 	}
 
@@ -71,20 +71,16 @@ public class EventServiceImpl implements EventService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EventDto updateEvent(EventDto updatedEvent) {
-		var oldEvent = repository.findById(updatedEvent.getId())
-				.orElseThrow(() -> new EntityNotFoundException("Event not found by id: " + updatedEvent.getId()));
-		if (!updatedEvent.getTitle().isEmpty()) {
-			oldEvent.setTitle(updatedEvent.getTitle());
-		}
-		if (updatedEvent.getDate() != null) {
-			oldEvent.setDate(updatedEvent.getDate());
-		}
-		if (updatedEvent.getTicketPrice() != null) {
-			oldEvent.setTicketPrice(updatedEvent.getTicketPrice());
-		}
-		logger.info("Updated event with id {}.", updatedEvent.getId());
-		return mapper.map(repository.save(mapper.map(oldEvent, Event.class)), EventDto.class);
+	public EventDto updateEvent(Long id, EventDto updatedEvent) {
+		var oldEvent = repository.findById(id)
+				.orElseThrow(() -> new EntityNotFoundException("Event not found by id: " + id));
+
+		oldEvent.setTitle(updatedEvent.getTitle());
+		oldEvent.setDate(updatedEvent.getDate());
+		oldEvent.setTicketPrice(updatedEvent.getTicketPrice());
+
+		logger.info("Updated event with id {}.", id);
+		return mapper.map(repository.save(oldEvent), EventDto.class);
 	}
 
 	/**

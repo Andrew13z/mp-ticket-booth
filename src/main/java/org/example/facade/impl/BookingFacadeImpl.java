@@ -13,6 +13,7 @@ import org.example.service.EventService;
 import org.example.service.TicketService;
 import org.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -58,16 +59,16 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<EventDto> getEventsByTitle(String title, int pageSize, int pageNum) {
-		return eventService.getEventsByTitle(title, pageSize, pageNum);
+	public List<EventDto> getEventsByTitle(String title, Pageable pageable) {
+		return eventService.getEventsByTitle(title, pageable);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<EventDto> getEventsByDate(LocalDate day, int pageSize, int pageNum) {
-		return eventService.getEventsForDay(day, pageSize, pageNum);
+	public List<EventDto> getEventsByDate(LocalDate day, Pageable pageable) {
+		return eventService.getEventsForDay(day, pageable);
 	}
 
 	/**
@@ -82,8 +83,8 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public EventDto updateEvent(EventDto event) {
-		return eventService.updateEvent(event);
+	public EventDto updateEvent(Long id, EventDto event) {
+		return eventService.updateEvent(id, event);
 	}
 
 	/**
@@ -114,8 +115,8 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<UserDto> getUsersByName(String name, int pageSize, int pageNum) {
-		return userService.getUsersByName(name, pageSize, pageNum);
+	public List<UserDto> getUsersByName(String name, Pageable pageable) {
+		return userService.getUsersByName(name, pageable);
 	}
 
 	/**
@@ -130,8 +131,8 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public UserDto updateUser(UserDto user) {
-		return userService.updateUser(user);
+	public UserDto updateUser(Long id, UserDto user) {
+		return userService.updateUser(id, user);
 	}
 
 	/**
@@ -160,16 +161,16 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<TicketDto> getBookedTicketsByUserId(Long userId, int pageSize, int pageNum) {
-		return ticketService.getBookedTicketsByUserId(userId, pageSize, pageNum);
+	public List<TicketDto> getBookedTicketsByUserId(Long userId, Pageable pageable) {
+		return ticketService.getBookedTicketsByUserId(userId, pageable);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<TicketDto> getBookedTicketsByEventId(Long eventId, int pageSize, int pageNum) {
-		return ticketService.getBookedTicketsByEventId(eventId, pageSize, pageNum);
+	public List<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable) {
+		return ticketService.getBookedTicketsByEventId(eventId, pageable);
 	}
 
 	/**

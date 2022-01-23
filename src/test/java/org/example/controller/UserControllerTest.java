@@ -1,195 +1,212 @@
 package org.example.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.config.TestConfig;
 import org.example.dto.UserDto;
-import org.example.model.User;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
+import static org.example.util.TestUtils.DEFAULT_USER_EMAIL;
+import static org.example.util.TestUtils.DEFAULT_USER_NAME;
+import static org.example.util.TestUtils.ID_ONE;
+import static org.example.util.TestUtils.NEW_USER_EMAIL;
+import static org.example.util.TestUtils.NEW_USER_NAME;
+import static org.example.util.TestUtils.NOT_EXISTING_ID;
+import static org.example.util.TestUtils.PREEXISTING_USER_EMAIL;
+import static org.example.util.TestUtils.PREEXISTING_USER_NAME;
+import static org.example.util.TestUtils.SLASH;
+import static org.example.util.TestUtils.createUserDtoWithoutId;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Sql(scripts = {"classpath:drop-tables.sql", "classpath:init-user.sql"})
 @SpringBootTest
+@AutoConfigureMockMvc
 @Transactional
+@Import(TestConfig.class)
 class UserControllerTest {
 
-	private static final String USER_NAME = "Jules Mcnally";
-	private static final String USER_EMAIL = "Jules_Mcnally8158@extex.org";
+	private static final String CONTROLLER_PATH = "/users";
 
+	@Autowired
+	private ObjectMapper mapper;
+
+	@Autowired
 	private MockMvc mockMvc;
 
-	@BeforeEach
-	void setUp(WebApplicationContext wac){
-		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
-	}
-
-	@Sql(value = { "classpath:drop-tables.sql" })
-	@Sql(value = { "classpath:create-tables.sql" })
 	@Test
-	void testCreateUser_WithUniqueEmail() throws Exception{
-		var result = mockMvc.perform(post("/user")
-						.flashAttr("user", new UserDto(0L, USER_NAME, "uniquemail@mail.com")))
-						.andExpect(status().isOk())
-						.andExpect(model().attributeExists("createdUser"))
-						.andReturn();
-		var user = (UserDto) result.getModelAndView().getModel().get("createdUser");
-		assertEquals(USER_NAME, user.getName());
+	void testCreateUser_WithUniqueEmail() throws Exception {
+		mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createUserDtoWithoutId())))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.id").isNotEmpty())
+				.andExpect(jsonPath("$.name").value(DEFAULT_USER_NAME))
+				.andExpect(jsonPath("$.email").value(DEFAULT_USER_EMAIL));
 	}
 
 	@Test
-	void testCreateUser_WithExistingEmail() throws Exception{
-		mockMvc.perform(post("/user")
-						.flashAttr("user", new UserDto(0L, USER_NAME, USER_EMAIL)))
+	void testCreateUser_WithExistingEmail() throws Exception {
+		var userDto = createUserDtoWithoutId();
+		userDto.setEmail(PREEXISTING_USER_EMAIL);
+
+		mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(userDto)))
 				.andExpect(status().isBadRequest());
 	}
 
 	@Test
-	void testGetUserById_WithExistingId() throws Exception{
-		var result = mockMvc.perform(get("/user")
-						.param("id", "1"))
+	void testGetUserById_WithExistingId() throws Exception {
+		mockMvc.perform(get(CONTROLLER_PATH + SLASH + ID_ONE))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("userById"))
-				.andReturn();
-		var user = (UserDto) result.getModelAndView().getModel().get("userById");
-		assertEquals(USER_NAME, user.getName());
+				.andExpect(jsonPath("$.id").exists());
 	}
 
 	@Test
-	void testGetUserById_WithNotExistingId() throws Exception{
-		mockMvc.perform(get("/user")
-						.param("id", "100"))
+	void testGetUserById_WithNotExistingId() throws Exception {
+		mockMvc.perform(get(CONTROLLER_PATH + SLASH + NOT_EXISTING_ID))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
-	void testGetUserById_WithExistingEmail() throws Exception{
-		var result = mockMvc.perform(get("/user/byEmail")
-						.param("email", USER_EMAIL))
+	void testGetUserByEmail_WithExistingEmail() throws Exception {
+		mockMvc.perform(get(CONTROLLER_PATH + "/byEmail")
+						.param("email", PREEXISTING_USER_EMAIL))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("userByEmail"))
-				.andReturn();
-		var user = (UserDto) result.getModelAndView().getModel().get("userByEmail");
-		assertEquals(USER_EMAIL, user.getEmail());
+				.andExpect(jsonPath("$.id").isNotEmpty())
+				.andExpect(jsonPath("$.name").value(PREEXISTING_USER_NAME))
+				.andExpect(jsonPath("$.email").value(PREEXISTING_USER_EMAIL));
 	}
 
 	@Test
-	void testGetUserById_WithNotExistingEmail() throws Exception{
-		var result = mockMvc.perform(get("/user/byEmail")
-						.param("email", "uniquemail@mail.com"))
+	void testGetUserByEmail_WithNotExistingEmail() throws Exception {
+		mockMvc.perform(get(CONTROLLER_PATH + "/byEmail")
+						.param("email", DEFAULT_USER_EMAIL))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
-	void testGetUsersByName_WithExistingName() throws Exception{
-		var result = mockMvc.perform(get("/user/byName")
-						.param("name", USER_NAME)
-						.param("pageSize", "1")
-						.param("pageNum", "0"))
+	void testGetUsersByName_WithExistingName() throws Exception {
+		mockMvc.perform(get(CONTROLLER_PATH + "/byName")
+						.param("name", PREEXISTING_USER_NAME))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("users"))
-				.andReturn();
-		var users = (List<UserDto>) result.getModelAndView().getModel().get("users");
-		assertEquals(USER_NAME, users.get(0).getName());
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$", hasSize(1)))
+				.andExpect(jsonPath("$[0].name").value(PREEXISTING_USER_NAME));
 	}
 
 	@Test
-	void testGetUsersByName_WithNotExistingName() throws Exception{
-		var result = mockMvc.perform(get("/user/byName")
-						.param("name", "Not a name")
-						.param("pageSize", "1")
-						.param("pageNum", "0"))
+	void testGetUsersByName_WithNotExistingName() throws Exception {
+		mockMvc.perform(get(CONTROLLER_PATH + "/byName")
+						.param("name", DEFAULT_USER_NAME))
 				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("users"))
-				.andReturn();
-		var users = (List<UserDto>) result.getModelAndView().getModel().get("users");
-		assertEquals(0, users.size());
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$", hasSize(0)));
 	}
 
 	@Test
-	void updateUserTest_WithAllAttributesUpdate() throws Exception{
-		var result = mockMvc.perform(post("/user/update")
-						.flashAttr("user", new UserDto(1L, "New Name", "newmail@mail.com")))
-				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("updatedUser"))
-				.andReturn();
-		var user = (UserDto) result.getModelAndView().getModel().get("updatedUser");
+	void updateUserTest_WithAllAttributesUpdate() throws Exception {
+		var createdUserDtoJson = mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createUserDtoWithoutId())))
+				.andReturn().getResponse().getContentAsString();
 
-		assertEquals(1L, user.getId());
-		assertEquals("New Name", user.getName());
-		assertEquals("newmail@mail.com", user.getEmail());
+		var createdUserDto = mapper.readValue(createdUserDtoJson, UserDto.class);
+		createdUserDto.setName(NEW_USER_NAME);
+		createdUserDto.setEmail(NEW_USER_EMAIL);
+
+		mockMvc.perform(put(CONTROLLER_PATH + SLASH + createdUserDto.getId())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createdUserDto)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.name").value(NEW_USER_NAME))
+				.andExpect(jsonPath("$.email").value(NEW_USER_EMAIL));
 	}
 
 	@Test
-	void updateUserTest_WithoutUpdatedName() throws Exception{
-		var result = mockMvc.perform(post("/user/update")
-						.flashAttr("user", new UserDto(1L, "", "newmail@mail.com")))
-				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("updatedUser"))
-				.andReturn();
-		var user = (UserDto) result.getModelAndView().getModel().get("updatedUser");
+	void updateUserTest_WithoutUpdatedName() throws Exception {
+		var createdUserDtoJson = mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createUserDtoWithoutId())))
+				.andReturn().getResponse().getContentAsString();
 
-		assertEquals(1L, user.getId());
-		assertEquals(USER_NAME, user.getName());
-		assertEquals("newmail@mail.com", user.getEmail());
+		var createdUserDto = mapper.readValue(createdUserDtoJson, UserDto.class);
+		createdUserDto.setEmail(NEW_USER_EMAIL);
+
+		mockMvc.perform(put(CONTROLLER_PATH + SLASH + createdUserDto.getId())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createdUserDto)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.name").value(DEFAULT_USER_NAME))
+				.andExpect(jsonPath("$.email").value(NEW_USER_EMAIL));
 	}
 
 	@Test
-	void updateUserTest_WithoutUpdatedEmail() throws Exception{
-		var result = mockMvc.perform(post("/user/update")
-						.flashAttr("user", new UserDto(1L, "New Name", "")))
-				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("updatedUser"))
-				.andReturn();
-		var user = (UserDto) result.getModelAndView().getModel().get("updatedUser");
+	void updateUserTest_WithoutUpdatedEmail() throws Exception {
+		var createdUserDtoJson = mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createUserDtoWithoutId())))
+				.andReturn().getResponse().getContentAsString();
 
-		assertEquals(1L, user.getId());
-		assertEquals("New Name", user.getName());
-		assertEquals(USER_EMAIL, user.getEmail());
+		var createdUserDto = mapper.readValue(createdUserDtoJson, UserDto.class);
+		createdUserDto.setName(NEW_USER_NAME);
+
+		mockMvc.perform(put(CONTROLLER_PATH + SLASH + createdUserDto.getId())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createdUserDto)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.name").value(NEW_USER_NAME))
+				.andExpect(jsonPath("$.email").value(DEFAULT_USER_EMAIL));
 	}
 
 	@Test
-	void updateUserTest_WithNotUniqueEmail() throws Exception{
-		mockMvc.perform(post("/user/update")
-						.flashAttr("user", new UserDto(2L, "New Name", USER_EMAIL)))
+	void updateUserTest_WithNotUniqueEmail() throws Exception {
+		var createdUserDtoJson = mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createUserDtoWithoutId())))
+				.andReturn().getResponse().getContentAsString();
+
+		var createdUserDto = mapper.readValue(createdUserDtoJson, UserDto.class);
+		createdUserDto.setEmail(PREEXISTING_USER_EMAIL);
+
+		mockMvc.perform(put(CONTROLLER_PATH + SLASH + createdUserDto.getId())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createdUserDto)))
 				.andExpect(status().isBadRequest());
 	}
 
 	@Test
-	void updateUserTest_WithNotExistingId() throws Exception{
-		mockMvc.perform(post("/user/update")
-						.flashAttr("user", new UserDto(100L, USER_NAME, USER_EMAIL)))
+	void updateUserTest_WithNotExistingId() throws Exception {
+		mockMvc.perform(put(CONTROLLER_PATH + SLASH + NOT_EXISTING_ID)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createUserDtoWithoutId())))
 				.andExpect(status().isNotFound());
 	}
 
 	@Test
-	void deleteUserTest_WithExistingId() throws Exception{
-		var result = mockMvc.perform(post("/user/delete")
-						.param("id", "1"))
-				.andExpect(status().isOk())
-				.andExpect(model().attributeExists("deleteUserId"))
-				.andReturn();
-
-		var deletedUserId = (Long) result.getModelAndView().getModel().get("deleteUserId");
-		assertEquals(1L, deletedUserId);
+	void deleteUserTest_WithExistingId() throws Exception {
+		mockMvc.perform(delete(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(ID_ONE)))
+				.andExpect(status().isOk());
 	}
 
 	@Test
-	void deleteUserTest_WithNotExistingId() throws Exception{
-		mockMvc.perform(post("/user/delete")
-						.param("id", "100"))
+	void deleteUserTest_WithNotExistingId() throws Exception {
+		mockMvc.perform(delete(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(NOT_EXISTING_ID)))
 				.andExpect(status().isInternalServerError());
 	}
 }

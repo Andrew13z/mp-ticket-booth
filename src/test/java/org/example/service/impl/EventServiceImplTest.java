@@ -47,7 +47,7 @@ class EventServiceImplTest {
 	@Test
 	void getEventByIdTestWithNonExistingId() {
 		when(mockDao.findByIdWithCache(ID)).thenReturn(Optional.empty());
-		var exception = assertThrows(EntityNotFoundException.class, () -> eventService.getEventById(ID));//todo
+		var exception = assertThrows(EntityNotFoundException.class, () -> eventService.getEventById(ID));
 		assertEquals("Event not found by id: 1", exception.getMessage());
 	}
 

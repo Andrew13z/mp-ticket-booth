@@ -1,23 +1,22 @@
 package org.example.controller;
 
+import org.example.config.TestConfig;
 import org.example.dto.EventDto;
 import org.example.dto.TicketDto;
 import org.example.dto.UserDto;
 import org.example.enums.Category;
-import org.example.model.Event;
-import org.example.model.Ticket;
-import org.example.model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -27,9 +26,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Sql(value = {"classpath:drop-tables.sql"})
-@Sql(value = {"classpath:init-ticket.sql"})
 @SpringBootTest
+@AutoConfigureMockMvc
+@Transactional
+@Import(TestConfig.class)
 class TicketControllerTest {
 
 	private static final long TICKET_ID = 1L;
@@ -46,8 +46,6 @@ class TicketControllerTest {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
 	}
 
-	@Sql(value = {"classpath:drop-tables.sql"})
-	@Sql(value = {"classpath:init-create-ticket.sql"})
 	@Test
 	void testCreateTicket() throws Exception {
 		var result = mockMvc.perform(post("/ticket")
