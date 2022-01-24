@@ -1,18 +1,19 @@
 package org.example.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.config.TestConfig;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 
+import static org.example.util.TestUtils.ID_ONE;
+import static org.example.util.TestUtils.NOT_EXISTING_ID;
+import static org.example.util.TestUtils.SLASH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -20,8 +21,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Rollback
-@Import(TestConfig.class)
 class AccountControllerTest {
+
+	private static final String CONTROLLER_PATH = "/accounts";
 
 	@Autowired
 	private ObjectMapper mapper;
@@ -30,8 +32,8 @@ class AccountControllerTest {
 	private MockMvc mockMvc;
 
 	@Test
-	void testRefillAccount_WithExistingUserId() throws Exception{
-		mockMvc.perform(patch("/accounts/1")
+	void testRefillAccount_WithValidDate() throws Exception {
+		mockMvc.perform(patch(CONTROLLER_PATH + SLASH + ID_ONE)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(mapper.writeValueAsString(BigDecimal.TEN)))
 				.andExpect(status().isOk())
@@ -39,10 +41,18 @@ class AccountControllerTest {
 	}
 
 	@Test
-	void testRefillAccount_WithNotExistingUserId() throws Exception{
-		mockMvc.perform(patch("/accounts/1000")
+	void testRefillAccount_WithNotExistingUserId() throws Exception {
+		mockMvc.perform(patch(CONTROLLER_PATH + SLASH + NOT_EXISTING_ID)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(mapper.writeValueAsString(BigDecimal.TEN)))
 				.andExpect(status().isNotFound());
+	}
+
+	@Test
+	void testRefillAccount_WithNegativeRefillSum() throws Exception{
+		mockMvc.perform(patch(CONTROLLER_PATH + SLASH + ID_ONE)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(BigDecimal.valueOf(-1L))))
+				.andExpect(status().isBadRequest());
 	}
 }

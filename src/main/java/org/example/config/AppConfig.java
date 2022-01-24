@@ -1,10 +1,12 @@
 package org.example.config;
 
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -22,6 +24,14 @@ public class AppConfig implements WebMvcConfigurer {
 	}
 
 	@Bean
+	@Primary
+	public JsonMapper jsonMapper() {
+		final var jsonMapper = new JsonMapper();
+		jsonMapper.registerModule(new JavaTimeModule());
+		return jsonMapper;
+	}
+
+	@Bean("xmlMapper")
 	public XmlMapper xmlMapper() {
 		final var xmlMapper = new XmlMapper();
 		xmlMapper.registerModule(new JavaTimeModule());

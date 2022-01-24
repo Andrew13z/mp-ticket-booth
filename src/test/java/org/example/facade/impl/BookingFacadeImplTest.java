@@ -3,6 +3,7 @@ package org.example.facade.impl;
 import org.example.dto.EventDto;
 import org.example.dto.UserDto;
 import org.example.enums.Category;
+import org.example.facade.impl.BookingFacadeImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

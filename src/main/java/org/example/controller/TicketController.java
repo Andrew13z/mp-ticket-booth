@@ -5,6 +5,7 @@ import org.example.dto.TicketDto;
 import org.example.exception.PdfGenerationException;
 import org.example.facade.BookingFacade;
 import org.example.util.DocumentUtil;
+import org.example.validation.group.OnTicketCreate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +13,13 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +32,7 @@ import java.util.List;
  * @author Andrii Krokhta
  */
 @RestController
-@RequestMapping("/tickets")
+@RequestMapping(value = "/tickets", consumes = MediaType.APPLICATION_JSON_VALUE)
 public class TicketController {
 
 	private static final Logger logger = LoggerFactory.getLogger(TicketController.class);
@@ -51,6 +52,7 @@ public class TicketController {
 	 */
 	@PostMapping
 	@Transactional
+	@Validated(OnTicketCreate.class)
 	public TicketDto createTicket(@RequestBody TicketDto ticket) {
 		var ticketPrice = facade.getEventById(ticket.getEvent().getId()).getTicketPrice();
 		facade.chargeAccountForTicket(ticket.getUser().getId(), ticketPrice);
@@ -80,8 +82,7 @@ public class TicketController {
 	 * @return byte[] of pdf with ticket data.
 	 */
 	@GetMapping(value = "/byUser", headers = "Accept=application/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
-	public @ResponseBody
-	byte[] getTicketsByUserPdf(@RequestParam("userId") Long userId, Pageable pageable) {
+	public byte[] getTicketsByUserPdf(@RequestParam("userId") Long userId, Pageable pageable) {
 		var tickets = facade.getBookedTicketsByUserId(userId, pageable);
 		var generatedFile = DocumentUtil.writeToPdf(tickets);//todo extract file generation to another method
 		try {
@@ -102,13 +103,7 @@ public class TicketController {
 	@PostMapping(value = "/batch")
 	@Transactional
 	public Iterable<TicketDto> batchBookTicketsFromFile(@RequestParam("file") MultipartFile file) {
-		Iterable<TicketDto> savedTickets = null;
-		try {//todo make facade method not throw a checked exception
-			savedTickets = facade.batchBookTickets(file.getInputStream());
-		} catch (IOException e) {
-			logger.warn("Failed to load tickets from a file. {}", e.getMessage());
-		}
-		return savedTickets;
+		return facade.batchBookTickets(file);
 	}
 
 	/**

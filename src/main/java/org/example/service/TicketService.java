@@ -3,6 +3,7 @@ package org.example.service;
 import org.example.dto.TicketDto;
 import org.example.enums.Category;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,12 +22,11 @@ public interface TicketService {
 	TicketDto bookTicket(Long userId, Long eventId, Category category, int place);
 
 	/**
-	 * Book tickets from the collection.
+	 * Batch book ticket from the input file.
 	 *
-	 * @param tickets   Collection of tickets.
-	 * @return List of booked tickets.
+	 * @param file input file.
 	 */
-	Iterable<TicketDto> bookTickets(List<TicketDto> tickets);
+	Iterable<TicketDto> batchBookTickets(MultipartFile file);
 
 	/**
 	 * Get all booked tickets by specified user id. Tickets should be sorted by event date in descending order.

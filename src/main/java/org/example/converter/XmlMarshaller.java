@@ -3,6 +3,7 @@ package org.example.converter;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +20,11 @@ import java.util.List;
 @Component
 public class XmlMarshaller {
 
+
 	private final XmlMapper xmlMapper;
 
 	@Autowired
-	public XmlMarshaller(XmlMapper xmlMapper) {
+	public XmlMarshaller(@Qualifier("xmlMapper") XmlMapper xmlMapper) {
 		this.xmlMapper = xmlMapper;
 	}
 

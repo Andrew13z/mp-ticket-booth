@@ -1,16 +1,17 @@
 package org.example.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.config.TestConfig;
 import org.example.dto.EventDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import static org.example.util.TestUtils.DEFAULT_EVENT_DATE;
 import static org.example.util.TestUtils.DEFAULT_EVENT_TITLE;
@@ -36,7 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@Import(TestConfig.class)
 class EventControllerTest {
 
 	private static final String CONTROLLER_PATH = "/events";
@@ -48,7 +48,7 @@ class EventControllerTest {
 	private MockMvc mockMvc;
 
 	@Test
-	void testCreateEvent() throws Exception {
+	void testCreateEvent_WithValidData() throws Exception {
 		mockMvc.perform(post(CONTROLLER_PATH)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(mapper.writeValueAsString(createEventDtoWithoutId())))
@@ -58,6 +58,55 @@ class EventControllerTest {
 				.andExpect(jsonPath("$.date").value(DEFAULT_EVENT_DATE.toString()))
 				.andExpect(jsonPath("$.ticketPrice").value(DEFAULT_TICKET_PRICE));
 	}
+
+	@Test
+	void testCreateEvent_WithEventIdNotNull() throws Exception {
+		mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createDefaultEventDto())))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void testCreateEvent_WithBlankEventTitle() throws Exception {
+		var eventDto = createEventDtoWithoutId();
+		eventDto.setTitle("");
+		mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(eventDto)))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void testCreateEvent_WithNullDate() throws Exception {
+		var eventDto = createEventDtoWithoutId();
+		eventDto.setDate(null);
+		mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(eventDto)))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void testCreateEvent_WithDateInThePast() throws Exception {
+		var eventDto = createEventDtoWithoutId();
+		eventDto.setDate(LocalDate.now().minusDays(1));
+		mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(eventDto)))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void testCreateEvent_WithNegativeTicketPrice() throws Exception {
+		var eventDto = createEventDtoWithoutId();
+		eventDto.setTicketPrice(BigDecimal.valueOf(-1L));
+		mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(eventDto)))
+				.andExpect(status().isBadRequest());
+	}
+
 
 	@Test
 	void testGetEventById_WithExistingId() throws Exception {

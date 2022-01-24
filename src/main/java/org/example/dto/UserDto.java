@@ -1,15 +1,28 @@
 package org.example.dto;
 
+import org.example.validation.group.OnCreate;
+import org.example.validation.group.OnTicketCreate;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+
 /**
  * User DTO
  * @author Andrii Krokhta
  */
 public class UserDto {
 
-	private Long id;//todo add validation that id is null when user is created
+	@Null(groups = OnCreate.class)
+	@NotNull(groups = OnTicketCreate.class)
+	private Long id;
 
+	@NotBlank(groups = OnCreate.class)
 	private String name;
 
+	@Email
+	@NotBlank(groups = OnCreate.class)
 	private String email;
 
 	public UserDto() {

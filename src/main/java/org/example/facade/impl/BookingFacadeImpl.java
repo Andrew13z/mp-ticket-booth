@@ -1,7 +1,5 @@
 package org.example.facade.impl;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import org.example.converter.XmlMarshaller;
 import org.example.dto.AccountDto;
 import org.example.dto.EventDto;
 import org.example.dto.TicketDto;
@@ -15,9 +13,8 @@ import org.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -33,18 +30,15 @@ public class BookingFacadeImpl implements BookingFacade {
 
 	private final AccountService accountService;
 
-	private final XmlMarshaller xmlMarshaller;
-
 	@Autowired
 	public BookingFacadeImpl(EventService eventService,
 							 TicketService ticketService,
 							 UserService userService,
-							 AccountService accountService, XmlMarshaller xmlMarshaller) {
+							 AccountService accountService) {
 		this.eventService = eventService;
 		this.ticketService = ticketService;
 		this.userService = userService;
 		this.accountService = accountService;
-		this.xmlMarshaller = xmlMarshaller;
 	}
 
 	/**
@@ -152,9 +146,8 @@ public class BookingFacadeImpl implements BookingFacade {
 	}
 
 	@Override
-	public Iterable<TicketDto> batchBookTickets(InputStream stream) throws IOException {
-		var tickets = xmlMarshaller.parse(stream, new TypeReference<List<TicketDto>>() {});
-		return ticketService.bookTickets(tickets);
+	public Iterable<TicketDto> batchBookTickets(MultipartFile file) {
+		return ticketService.batchBookTickets(file);
 	}
 
 	/**

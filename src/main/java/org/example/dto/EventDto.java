@@ -1,7 +1,14 @@
 package org.example.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.example.validation.group.OnCreate;
+import org.example.validation.group.OnTicketCreate;
 
+import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -12,13 +19,19 @@ import java.time.LocalDate;
  */
 public class EventDto {
 
-	private Long id;//todo add validation to check that id is null during event creation
+	@Null(groups = OnCreate.class)
+	@NotNull(groups = OnTicketCreate.class)
+	private Long id;
 
+	@NotBlank(groups = OnCreate.class)
 	private String title;
 
 	@JsonFormat(pattern = "yyyy-MM-dd")
+	@NotNull(groups = OnCreate.class)
+	@FutureOrPresent
 	private LocalDate date;
 
+	@Min(0)
 	private BigDecimal ticketPrice;
 
 	public EventDto() {

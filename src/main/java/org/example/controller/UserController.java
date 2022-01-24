@@ -2,11 +2,12 @@ package org.example.controller;
 
 import org.example.dto.UserDto;
 import org.example.facade.BookingFacade;
+import org.example.validation.group.OnCreate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -26,7 +28,8 @@ import java.util.List;
  * @author Andrii Krokhta
  */
 @RestController
-@RequestMapping("/users")
+@RequestMapping(value = "/users")
+@Validated
 public class UserController {
 
 	private final BookingFacade facade;
@@ -44,7 +47,8 @@ public class UserController {
 	 */
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public UserDto createUser(@RequestBody UserDto user) {
+	@Validated(OnCreate.class)
+	public UserDto createUser(@RequestBody @Valid UserDto user) {
 		var createdUser = facade.createUser(user);
 		facade.createAccount(createdUser.getId());
 		return createdUser;
@@ -92,7 +96,7 @@ public class UserController {
 	 * @return Updated user.
 	 */
 	@PutMapping("/{id}")
-	public UserDto updateUser(@PathVariable("id") Long id, @RequestBody UserDto user, ModelMap model) {
+	public UserDto updateUser(@PathVariable("id") Long id, @RequestBody @Valid UserDto user) {
 		return facade.updateUser(id, user);
 	}
 

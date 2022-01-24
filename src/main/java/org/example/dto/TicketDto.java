@@ -1,6 +1,9 @@
 package org.example.dto;
 
 import org.example.enums.Category;
+import org.example.validation.group.OnCreate;
+
+import javax.validation.constraints.Null;
 
 /**
  * Ticket DTO
@@ -8,6 +11,7 @@ import org.example.enums.Category;
  */
 public class TicketDto {
 
+	@Null(groups = OnCreate.class)
 	private Long id;
 
 	private UserDto user;

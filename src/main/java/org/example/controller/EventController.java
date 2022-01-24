@@ -2,11 +2,12 @@ package org.example.controller;
 
 import org.example.dto.EventDto;
 import org.example.facade.BookingFacade;
+import org.example.validation.group.OnCreate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -27,7 +29,8 @@ import java.util.List;
  * @author Andrii Krokhta
  */
 @RestController
-@RequestMapping(value = "/events", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/events")
+@Validated
 public class EventController {
 
 	private final BookingFacade facade;
@@ -45,7 +48,8 @@ public class EventController {
 	 */
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public EventDto createEvent(@RequestBody EventDto event) {
+	@Validated(OnCreate.class)
+	public EventDto createEvent(@RequestBody @Valid EventDto event) {
 		return facade.createEvent(event);
 	}
 

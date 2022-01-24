@@ -6,9 +6,8 @@ import org.example.dto.TicketDto;
 import org.example.dto.UserDto;
 import org.example.enums.Category;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -131,11 +130,11 @@ public interface BookingFacade {
 	TicketDto bookTicket(Long userId, Long eventId, Category category, int place);
 
 	/**
-	 * Batch book ticket from the input stream.
+	 * Batch book ticket from the input file.
 	 *
-	 * @param stream input stream.
+	 * @param file input file.
 	 */
-	Iterable<TicketDto> batchBookTickets(InputStream stream) throws IOException;
+	Iterable<TicketDto> batchBookTickets(MultipartFile file);
 
 	/**
 	 * Get all booked tickets by specified user id. Tickets should be sorted by event date in descending order.

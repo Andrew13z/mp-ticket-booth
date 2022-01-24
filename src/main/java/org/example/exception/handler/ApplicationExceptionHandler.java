@@ -7,9 +7,11 @@ import org.example.exception.PdfGenerationException;
 import org.example.exception.UnmarshallingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -26,7 +28,9 @@ public class ApplicationExceptionHandler {
 								PdfGenerationException.class, this::handlePdfGenerationException,
 								UnmarshallingException.class, this::handleUnmarshallingException,
 								IllegalArgumentException.class, this::handleIllegalArgumentException,
-								AccountBalanceException.class, this::handleAccountBalanceException);
+								AccountBalanceException.class, this::handleAccountBalanceException,
+								ConstraintViolationException.class, this::handleConstraintViolationException,
+								MethodArgumentNotValidException.class, this::handleMethodArgumentNotValidException);
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorDto> handleException(Exception ex) {
@@ -87,13 +91,32 @@ public class ApplicationExceptionHandler {
 		return createResponseEntityWithBadRequestStatus(exception.getMessage());
 	}
 
-
 	/**
-	 * Handles Exception
+	 * Handles ConstraintViolationException
 	 *
-	 * @param exception thrown Exception
+	 * @param exception thrown ConstraintViolationException
 	 * @return ResponseEntity with ErrorDto
 	 */
+	private ResponseEntity<ErrorDto> handleConstraintViolationException(Exception exception) {
+		return createResponseEntityWithBadRequestStatus(exception.getMessage());
+	}
+
+	/**
+	 * Handles MethodArgumentNotValidException
+	 *
+	 * @param exception thrown MethodArgumentNotValidException
+	 * @return ResponseEntity with ErrorDto
+	 */
+	private ResponseEntity<ErrorDto> handleMethodArgumentNotValidException(Exception exception) {
+		return createResponseEntityWithBadRequestStatus(exception.getMessage());
+	}
+
+		/**
+		 * Handles Exception
+		 *
+		 * @param exception thrown Exception
+		 * @return ResponseEntity with ErrorDto
+		 */
 	private ResponseEntity<ErrorDto> handleDefaultException(Exception exception) {
 		return ResponseEntity.status(INTERNAL_SERVER_ERROR)
 				.contentType(APPLICATION_JSON)

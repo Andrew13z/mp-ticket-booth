@@ -1,13 +1,11 @@
 package org.example.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.config.TestConfig;
 import org.example.dto.UserDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +19,7 @@ import static org.example.util.TestUtils.NOT_EXISTING_ID;
 import static org.example.util.TestUtils.PREEXISTING_USER_EMAIL;
 import static org.example.util.TestUtils.PREEXISTING_USER_NAME;
 import static org.example.util.TestUtils.SLASH;
+import static org.example.util.TestUtils.createDefaultUserDto;
 import static org.example.util.TestUtils.createUserDtoWithoutId;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -33,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@Import(TestConfig.class)
 class UserControllerTest {
 
 	private static final String CONTROLLER_PATH = "/users";
@@ -60,6 +58,34 @@ class UserControllerTest {
 		var userDto = createUserDtoWithoutId();
 		userDto.setEmail(PREEXISTING_USER_EMAIL);
 
+		mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(userDto)))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void testCreateUser_WithUserIdNotNull() throws Exception {
+		mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createDefaultUserDto())))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void testCreateUser_WithBlankUserName() throws Exception {
+		var userDto = createUserDtoWithoutId();
+		userDto.setName("");
+		mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(userDto)))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void testCreateUser_WithInvalidEmail() throws Exception {
+		var userDto = createUserDtoWithoutId();
+		userDto.setEmail("not-email");
 		mockMvc.perform(post(CONTROLLER_PATH)
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(mapper.writeValueAsString(userDto)))
@@ -179,6 +205,22 @@ class UserControllerTest {
 
 		var createdUserDto = mapper.readValue(createdUserDtoJson, UserDto.class);
 		createdUserDto.setEmail(PREEXISTING_USER_EMAIL);
+
+		mockMvc.perform(put(CONTROLLER_PATH + SLASH + createdUserDto.getId())
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createdUserDto)))
+				.andExpect(status().isBadRequest());
+	}
+
+	@Test
+	void updateUserTest_WithInvalidEmail() throws Exception {
+		var createdUserDtoJson = mockMvc.perform(post(CONTROLLER_PATH)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(mapper.writeValueAsString(createUserDtoWithoutId())))
+				.andReturn().getResponse().getContentAsString();
+
+		var createdUserDto = mapper.readValue(createdUserDtoJson, UserDto.class);
+		createdUserDto.setEmail("not-email");
 
 		mockMvc.perform(put(CONTROLLER_PATH + SLASH + createdUserDto.getId())
 						.contentType(MediaType.APPLICATION_JSON)

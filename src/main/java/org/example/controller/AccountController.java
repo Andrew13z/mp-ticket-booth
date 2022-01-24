@@ -3,17 +3,19 @@ package org.example.controller;
 import org.example.dto.AccountDto;
 import org.example.facade.BookingFacade;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 
 @RestController
-@RequestMapping(value = "/accounts", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/accounts")
+@Validated
 public class AccountController {
 
 	private final BookingFacade facade;
@@ -23,9 +25,9 @@ public class AccountController {
 		this.facade = facade;
 	}
 
-	@PatchMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PatchMapping(value = "/{id}")
 	public AccountDto refillAccount(@PathVariable("id") Long id,
-									@RequestBody BigDecimal refillSum) {
+									@RequestBody @Min(0) BigDecimal refillSum) {
 		return facade.refillAccount(id, refillSum);
 	}
 }

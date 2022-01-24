@@ -87,7 +87,7 @@ public class EventServiceImpl implements EventService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void deleteEvent(long eventId) {
-		repository.deleteById(eventId);
+	public void deleteEvent(Long eventId) {
+		repository.deleteById(eventId);//todo is event lookup required to check if event exists
 	}
 }
