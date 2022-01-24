@@ -1,19 +1,23 @@
 package org.example.service.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.pdfbox.io.IOUtils;
 import org.example.converter.XmlMarshaller;
 import org.example.dto.TicketDto;
 import org.example.enums.Category;
+import org.example.exception.PdfGenerationException;
 import org.example.exception.UnmarshallingException;
 import org.example.model.Ticket;
 import org.example.model.TicketBuilder;
 import org.example.repository.TicketRepository;
 import org.example.service.TicketService;
+import org.example.util.DocumentUtil;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,12 +34,17 @@ public class TicketServiceImpl implements TicketService {
 	private final TicketRepository ticketRepository;
 	private final ModelMapper mapper;
 	private final XmlMarshaller xmlMarshaller;
+	private final DocumentUtil<TicketDto> documentUtil;
 
 	@Autowired
-	public TicketServiceImpl(TicketRepository repository, ModelMapper mapper, XmlMarshaller xmlMarshaller) {
+	public TicketServiceImpl(TicketRepository repository,
+							 ModelMapper mapper,
+							 XmlMarshaller xmlMarshaller,
+							 DocumentUtil<TicketDto> documentUtil) {
 		this.ticketRepository = repository;
 		this.mapper = mapper;
 		this.xmlMarshaller = xmlMarshaller;
+		this.documentUtil = documentUtil;
 	}
 
 	/**
@@ -58,7 +67,7 @@ public class TicketServiceImpl implements TicketService {
 	@Override
 	public Iterable<TicketDto> batchBookTickets(MultipartFile file) {
 		try {
-			return xmlMarshaller.parse(file.getInputStream(), new TypeReference<List<TicketDto>>() {});
+			return xmlMarshaller.parse(file.getInputStream(), new TypeReference<List<TicketDto>>() {});//todo fix this method
 		} catch (IOException e) {
 			logger.warn("Failed to parse xml file.");
 			throw new UnmarshallingException("Failed to parse xml file.", e);
@@ -85,6 +94,21 @@ public class TicketServiceImpl implements TicketService {
 				.stream()
 				.map(user -> mapper.map(user, TicketDto.class))
 				.collect(Collectors.toList());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public byte[] getBookedTicketsByUserIdAsPdf(Long userId) {
+		var ticketsByUserId = getBookedTicketsByUserId(userId, Pageable.ofSize(100));
+		var generatedFile = documentUtil.writeToPdf(ticketsByUserId);
+		try {
+			var stream = new FileSystemResource(generatedFile).getInputStream();
+			return IOUtils.toByteArray(stream);
+		} catch (IOException e) {
+			throw new PdfGenerationException("Failed to get generate PDF file.", e);
+		}
 	}
 
 	/**

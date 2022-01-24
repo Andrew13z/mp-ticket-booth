@@ -4,7 +4,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.example.dto.TicketDto;
 import org.example.exception.PdfGenerationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,39 +16,24 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 @Component
-public final class DocumentUtil {
+public final class DocumentUtil<T> {
 
 	private static final Logger logger = LoggerFactory.getLogger(DocumentUtil.class);
 	private static final int LINE_OFFSET = 10;
 	private static final int LINE_HEIGHT = 50;
-	public static final PDType1Font DOCUMENT_FONT = PDType1Font.HELVETICA;
-	public static final int MAX_LINES_ON_PAGE = 10;
-
-	private static final String FILE_PATH_PREFIX;
-
-	static {
-		try {
-			FILE_PATH_PREFIX = DocumentUtil.class.getProtectionDomain()
-												.getCodeSource()
-												.getLocation()
-												.toURI()
-												+ "tickets";
-		} catch (URISyntaxException e) {
-			logger.warn("Failed to parse file location: {}", e.getMessage());
-			throw new PdfGenerationException("Failed to parse file location.");
-		}
-	}
-
-	private DocumentUtil(){
-		//private constructor
-	}
+	private static final PDType1Font DOCUMENT_FONT = PDType1Font.HELVETICA;
+	private static final int MAX_LINES_ON_PAGE = 10;
+	private static final String FILE_PATH_PREFIX = DocumentUtil.class.getProtectionDomain()
+																		.getCodeSource()
+																		.getLocation()
+																		.toString();
 
 	/**
-	 * Writes a list of tickets to pdf file.
-	 * @param tickets
+	 * Writes a list of models to pdf file.
+	 * @param models
 	 * @return String path to the file
 	 */
-	public static String writeToPdf(List<TicketDto> tickets) {
+	public String writeToPdf(List<T> models) {
 		try (PDDocument doc = new PDDocument()) {
 			PDPage page = new PDPage();
 			doc.addPage(page);
@@ -60,8 +44,8 @@ public final class DocumentUtil {
 			int lineNumber = 1;
 			float pageHeight = page.getMediaBox().getHeight();
 
-			for (TicketDto ticket : tickets) {
-				writeLine(contentStream, lineNumber, pageHeight, ticket);
+			for (T model : models) {
+				writeLine(contentStream, lineNumber, pageHeight, model);
 				lineNumber++;
 				if (lineNumber > MAX_LINES_ON_PAGE) {
 					addNextPage(doc, contentStream);
@@ -73,9 +57,7 @@ public final class DocumentUtil {
 			doc.save(realFile);
 			return realFile.getPath();
 		} catch (IOException | URISyntaxException ex) {
-			logger.warn("Failed to generate and load PDF file: ", ex);
-			ex.printStackTrace();
-			throw new PdfGenerationException("Failed to generate and load PDF file.");
+			throw new PdfGenerationException("Failed to generate and load PDF file.", ex);
 		}
 	}
 
@@ -85,7 +67,7 @@ public final class DocumentUtil {
 	 * @param contentStream Content stream
 	 * @throws IOException
 	 */
-	private static void addNextPage(PDDocument doc, PDPageContentStream contentStream) throws IOException{
+	private void addNextPage(PDDocument doc, PDPageContentStream contentStream) throws IOException{
 		PDPage page2 = new PDPage();
 		doc.addPage(page2);
 		contentStream.close();
@@ -98,13 +80,16 @@ public final class DocumentUtil {
 	 * @param contentStream
 	 * @param lineNumber
 	 * @param pageHeight
-	 * @param ticket
+	 * @param model model to print
 	 * @throws IOException
 	 */
-	private static void writeLine(PDPageContentStream contentStream, int lineNumber, float pageHeight, TicketDto ticket) throws IOException {
+	private void writeLine(PDPageContentStream contentStream,
+								  int lineNumber,
+								  float pageHeight,
+								  T model) throws IOException {
 		contentStream.beginText();
 		contentStream.newLineAtOffset(LINE_OFFSET, pageHeight - LINE_HEIGHT * lineNumber);
-		contentStream.showText(ticket.toString());
+		contentStream.showText(model.toString());
 		contentStream.endText();
 	}
 
@@ -114,11 +99,11 @@ public final class DocumentUtil {
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
-	private static File createFile() throws IOException, URISyntaxException {
-		var mainPath = FILE_PATH_PREFIX + (System.currentTimeMillis() + ".pdf");
-		File file = new File(new URI(mainPath));
-		var fileCreated = file.createNewFile();
-		logger.info("File with tickets created: {}.", fileCreated);
+	private File createFile() throws IOException, URISyntaxException {
+		var filePath = FILE_PATH_PREFIX + (System.currentTimeMillis() + ".pdf");
+		File file = new File(new URI(filePath));
+		file.createNewFile();
+		logger.info("File created at {}.", file.getPath());
 		return file;
 	}
 }

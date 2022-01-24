@@ -72,4 +72,15 @@ public class TicketDto {
 	public void setPlace(int place) {
 		this.place = place;
 	}
+
+	@Override
+	public String toString() {
+		return "TicketDto{" +
+				"id=" + id +
+				", user name=" + user.getName() +
+				", event title=" + event.getTitle() +
+				", category=" + category +
+				", place=" + place +
+				'}';
+	}
 }

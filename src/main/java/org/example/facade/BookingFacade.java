@@ -146,6 +146,14 @@ public interface BookingFacade {
 	List<TicketDto> getBookedTicketsByUserId(Long userId, Pageable pageable);
 
 	/**
+	 * Gets a list of tickets by user id in pdf format.
+	 *
+	 * @param userId   User id.
+	 * @return byte[] of pdf with ticket data.
+	 */
+	byte[] getBookedTicketsByUserIdAsPdf(Long userId);
+
+	/**
 	 * Get all booked tickets by specified event id. Tickets should be sorted in by user email in ascending order.
 	 *
 	 * @param eventId    Event id

@@ -162,6 +162,14 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public byte[] getBookedTicketsByUserIdAsPdf(Long userId) {
+		return ticketService.getBookedTicketsByUserIdAsPdf(userId);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public List<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable) {
 		return ticketService.getBookedTicketsByEventId(eventId, pageable);
 	}
