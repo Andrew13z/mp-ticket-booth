@@ -9,13 +9,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.jms.ConnectionFactory;
 import java.util.List;
 
 @Configuration
 @EnableSpringDataWebSupport
+@EnableJms
 public class AppConfig implements WebMvcConfigurer {
 
 	@Override
@@ -41,5 +45,14 @@ public class AppConfig implements WebMvcConfigurer {
 	@Bean
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
+	}
+
+	@Bean
+	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(ConnectionFactory connectionFactory) {
+		DefaultJmsListenerContainerFactory jmsListenerContainerFactory = new DefaultJmsListenerContainerFactory();
+		jmsListenerContainerFactory.setConnectionFactory(connectionFactory);
+		jmsListenerContainerFactory.setConcurrency("2-5");
+
+		return jmsListenerContainerFactory;
 	}
 }
