@@ -55,7 +55,7 @@ public interface TicketService {
 	List<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable);
 
 	/**
-	 * Cancel ticket with a specified id.
+	 * Cancel ticket with a specified id. And refunds the ticket price to the account.
 	 *
 	 * @param ticketId Ticket id.
 	 * @return Flag whether anything has been canceled.

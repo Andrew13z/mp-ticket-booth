@@ -200,14 +200,6 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public AccountDto chargeAccountForTicket(Long accountId, BigDecimal ticketPrice) {
-		return accountService.chargeForTicket(accountId, ticketPrice);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
 	public void deleteAccount(Long accountId) {
 		accountService.deleteById(accountId);
 	}

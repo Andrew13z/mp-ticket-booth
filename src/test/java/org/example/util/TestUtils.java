@@ -1,7 +1,10 @@
 package org.example.util;
 
 import org.example.dto.EventDto;
+import org.example.dto.TicketDto;
 import org.example.dto.UserDto;
+import org.example.enums.Category;
+import org.example.model.TicketBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -27,9 +30,13 @@ public class TestUtils {
 
 	public static final String PREEXISTING_USER_NAME = "Danny Dempsey";
 	public static final String PREEXISTING_USER_EMAIL = "Danny_Dempsey454@mafthy.com";
+	public static final String PREEXISTING_USER_ACCOUNT_BALANCE = "Danny_Dempsey454@mafthy.com";
 
 	public static final String NEW_USER_NAME = "Dolores Croft";
 	public static final String NEW_USER_EMAIL = "dan.jax@gamil.com";
+
+	public static final Category DEFAULT_TICKET_CATEGORY = Category.STANDARD;
+	public static final int DEFAULT_TICKET_PLACE = 1;
 
 
 	public static final String SLASH = "/";
@@ -48,5 +55,13 @@ public class TestUtils {
 
 	public static UserDto createUserDtoWithoutId() {
 		return new UserDto(null, DEFAULT_USER_NAME, DEFAULT_USER_EMAIL);
+	}
+
+	public static TicketDto createTicketDtoFotTicketCreateOperation(){
+		return new TicketDto(null,
+				new UserDto(ID_ONE, null, null),
+				new EventDto(ID_ONE, null, null, BigDecimal.ZERO),
+				DEFAULT_TICKET_CATEGORY,
+				DEFAULT_TICKET_PLACE);
 	}
 }

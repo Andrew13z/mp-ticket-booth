@@ -5,18 +5,21 @@ import org.example.facade.BookingFacade;
 import org.example.validation.group.OnTicketCreate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -26,6 +29,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/tickets")
+@Validated
 public class TicketController {
 
 	private final BookingFacade facade;
@@ -43,14 +47,13 @@ public class TicketController {
 	 */
 	@PostMapping
 	@Transactional
+	@ResponseStatus(HttpStatus.CREATED)
 	@Validated(OnTicketCreate.class)
-	public TicketDto createTicket(@RequestBody TicketDto ticket) {
-		var ticketPrice = facade.getEventById(ticket.getEvent().getId()).getTicketPrice();
-		facade.chargeAccountForTicket(ticket.getUser().getId(), ticketPrice);
+	public TicketDto createTicket(@RequestBody @Valid TicketDto ticket) {
 		return facade.bookTicket(ticket.getUser().getId(),
-				ticket.getEvent().getId(),
-				ticket.getCategory(),
-				ticket.getPlace());
+								ticket.getEvent().getId(),
+								ticket.getCategory(),
+								ticket.getPlace());
 	}
 
 	/**
@@ -60,9 +63,17 @@ public class TicketController {
 	 * @param pageable Pageable.
 	 * @return List of tickets, or if none is found, empty list.
 	 */
-	@GetMapping("/byUser")
-	public List<TicketDto> getTicketsByUser(@RequestParam("userId") long userId, Pageable pageable) {
-		return facade.getBookedTicketsByUserId(userId, pageable);
+	@GetMapping
+	public List<TicketDto> getTicketsByUser(@RequestParam(value = "userId", required = false) Long userId,
+											@RequestParam(value = "eventId", required = false) Long eventId,
+											Pageable pageable) {
+		if (userId != null) {
+			return facade.getBookedTicketsByUserId(userId, pageable);
+		}
+		if (eventId != null) {
+			return facade.getBookedTicketsByEventId(eventId, pageable);
+		}
+		throw new IllegalArgumentException("No parameters provided to search by.");
 	}
 
 	/**
@@ -83,27 +94,17 @@ public class TicketController {
 	 */
 	@PostMapping(value = "/batch")
 	@Transactional
+	@ResponseStatus(HttpStatus.CREATED)
 	public Iterable<TicketDto> batchBookTicketsFromFile(@RequestParam("file") MultipartFile file) {
 		return facade.batchBookTickets(file);
-	}
-
-	/**
-	 * Gets a list of tickets by event.
-	 *
-	 * @param eventId  Event id.
-	 * @param pageable Pageable.
-	 * @return List of tickets, or if none is found, empty list.
-	 */
-	@GetMapping("/byEvent")
-	public List<TicketDto> getTicketsByEvent(@RequestParam("eventId") Long eventId, Pageable pageable) {
-		return facade.getBookedTicketsByEventId(eventId, pageable);
 	}
 
 	/**
 	 * Deletes a ticket by id.
 	 * @param id    Id of the ticket to be deleted.
 	 */
-	@PutMapping
+	@DeleteMapping
+	@Transactional
 	public void deleteTicket(@RequestBody Long id) {
 		facade.cancelTicket(id);
 	}

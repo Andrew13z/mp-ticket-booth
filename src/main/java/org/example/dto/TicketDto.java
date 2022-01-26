@@ -1,8 +1,10 @@
 package org.example.dto;
 
 import org.example.enums.Category;
-import org.example.validation.group.OnCreate;
+import org.example.validation.group.OnTicketCreate;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 
 /**
@@ -11,13 +13,18 @@ import javax.validation.constraints.Null;
  */
 public class TicketDto {
 
-	@Null(groups = OnCreate.class)
+	@Null(groups = OnTicketCreate.class)
 	private Long id;
 
+	@Valid
+	@NotNull(groups = OnTicketCreate.class)
 	private UserDto user;
 
+	@Valid
+	@NotNull(groups = OnTicketCreate.class)
 	private EventDto event;
 
+	@NotNull(groups = OnTicketCreate.class)
 	private Category category;
 
 	private int place;

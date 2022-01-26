@@ -188,15 +188,6 @@ public interface BookingFacade {
 	AccountDto refillAccount(Long accountId, BigDecimal refillSum);
 
 	/**
-	 * Subtracts the provided ticket price from the specified account by id.
-	 *
-	 * @param accountId Account id.
-	 * @param ticketPrice Amount to be subtracted from the account.
-	 * @return updated account.
-	 */
-	AccountDto chargeAccountForTicket(Long accountId, BigDecimal ticketPrice);
-
-	/**
 	 * Deletes account by its id.
 	 *
 	 * @param accountId Account id.
