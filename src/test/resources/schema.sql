@@ -1,10 +1,10 @@
+drop table if exists TICKETS;
+drop sequence if exists TICKETS_ID_SEQ;
 drop table if exists ACCOUNTS;
 drop table if exists USERS;
 drop sequence if exists USERS_ID_SEQ;
 drop table if exists EVENTS;
 drop sequence if exists EVENTS_ID_SEQ;
-drop table if exists TICKETS;
-drop sequence if exists TICKETS_ID_SEQ;
 
 create sequence USERS_ID_SEQ;
 

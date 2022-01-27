@@ -1,6 +1,7 @@
 package org.example.dto;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * Account DTO
@@ -13,11 +14,12 @@ public class AccountDto {
 	private BigDecimal balance;
 
 	public AccountDto() {
+		this.balance = BigDecimal.ZERO;
 	}
 
 	public AccountDto(Long id, BigDecimal balance) {
 		this.id = id;
-		this.balance = balance;
+		this.balance = balance != null ? balance.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
 	}
 
 	public Long getId() {
@@ -33,7 +35,7 @@ public class AccountDto {
 	}
 
 	public void setBalance(BigDecimal balance) {
-		this.balance = balance;
+		this.balance = balance != null ? balance.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
 	}
 
 }

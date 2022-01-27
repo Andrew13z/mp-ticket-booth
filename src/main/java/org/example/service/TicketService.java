@@ -10,7 +10,7 @@ import java.util.List;
 public interface TicketService {
 
 	/**
-	 * Book ticket for a specified event on behalf of specified user.
+	 * Book ticket for a specified event on behalf of specified user and charge the ticket price to the user's account.
 	 *
 	 * @param userId   User Id.
 	 * @param eventId  Event Id.

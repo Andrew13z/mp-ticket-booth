@@ -35,6 +35,7 @@ public class EventDto {
 	private BigDecimal ticketPrice;
 
 	public EventDto() {
+		this.ticketPrice = BigDecimal.ZERO;
 	}
 
 	public EventDto(Long id, String title, LocalDate date, BigDecimal ticketPrice) {

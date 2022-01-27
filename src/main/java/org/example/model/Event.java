@@ -40,13 +40,14 @@ public class Event {
 	private BigDecimal ticketPrice;
 
 	public Event() {
+		this.ticketPrice = BigDecimal.ZERO;
 	}
 
 	public Event(Long id, String title, LocalDate date, BigDecimal ticketPrice) {
 		this.id = id;
 		this.title = title;
 		this.date = date;
-		this.ticketPrice = ticketPrice.setScale(2, RoundingMode.HALF_UP);
+		this.ticketPrice = ticketPrice != null ? ticketPrice.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
 	}
 
 	public Long getId() {
@@ -78,6 +79,6 @@ public class Event {
 	}
 
 	public void setTicketPrice(BigDecimal ticketPrice) {
-		this.ticketPrice = ticketPrice;
+		this.ticketPrice = ticketPrice != null ? ticketPrice.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
 	}
 }

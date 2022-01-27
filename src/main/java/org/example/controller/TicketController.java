@@ -82,7 +82,7 @@ public class TicketController {
 	 * @param userId   User id.
 	 * @return byte[] of pdf with ticket data.
 	 */
-	@GetMapping(value = "/byUser", headers = "Accept=application/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+	@GetMapping(headers = "Accept=application/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
 	public byte[] getTicketsByUserAsPdf(@RequestParam("userId") Long userId) {
 		return facade.getBookedTicketsByUserIdAsPdf(userId);
 	}

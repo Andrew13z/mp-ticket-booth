@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Entity
 @Table(name = "ACCOUNTS")
@@ -18,11 +19,12 @@ public class Account {
 	private BigDecimal balance;
 
 	public Account() {
+		this.balance = BigDecimal.ZERO;
 	}
 
 	public Account(Long id, BigDecimal balance) {
 		this.id = id;
-		this.balance = balance;
+		this.balance = balance != null ? balance.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
 	}
 
 	public Long getId() {
@@ -38,7 +40,7 @@ public class Account {
 	}
 
 	public void setBalance(BigDecimal balance) {
-		this.balance = balance;
+		this.balance = balance != null ? balance.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
 	}
 
 }

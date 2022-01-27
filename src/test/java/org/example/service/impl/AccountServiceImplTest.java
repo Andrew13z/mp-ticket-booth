@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -42,7 +43,7 @@ class AccountServiceImplTest {
 		when(mockRepository.save(any(Account.class))).then(returnsFirstArg());
 
 		var account = accountService.refillAccount(ID, BigDecimal.TEN);
-		assertEquals(BALANCE.add(BigDecimal.TEN), account.getBalance());
+		assertEquals(BALANCE.add(BigDecimal.TEN).setScale(2, RoundingMode.HALF_UP), account.getBalance());
 	}
 
 	@Test
@@ -57,7 +58,7 @@ class AccountServiceImplTest {
 		when(mockRepository.save(any(Account.class))).then(returnsFirstArg());
 
 		var account = accountService.chargeForTicket(ID, BigDecimal.TEN);
-		assertEquals(BALANCE.subtract(BigDecimal.TEN), account.getBalance());
+		assertEquals(BALANCE.subtract(BigDecimal.TEN).setScale(2, RoundingMode.HALF_UP), account.getBalance());
 	}
 
 	@Test
