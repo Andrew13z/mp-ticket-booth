@@ -10,9 +10,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -25,6 +25,7 @@ import static org.example.util.TestUtils.createUserDtoWithoutId;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -33,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-@ActiveProfiles("test-without-jmslistener")//todo temporary measure because one test is failing in TicketControllerTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 class TicketControllerTest {
 
 	private static final String CONTROLLER_PATH = "/tickets";
@@ -207,7 +208,7 @@ class TicketControllerTest {
 				"    </org.example.model.Ticket>" +
 				"</java.util.ArrayList>";
 		var multipartFile = new MockMultipartFile("tickets.xml", "", MediaType.APPLICATION_XML_VALUE, fileContent.getBytes());
-		mockMvc.perform(MockMvcRequestBuilders.multipart(CONTROLLER_PATH + "/batch")
+		mockMvc.perform(multipart(CONTROLLER_PATH + "/batch")
 						.file("file", multipartFile.getBytes())
 						.characterEncoding("UTF-8"))
 				.andExpect(status().isCreated())

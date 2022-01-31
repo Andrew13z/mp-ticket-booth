@@ -7,13 +7,11 @@ import org.example.facade.BookingFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!test-without-jmslistener")//todo temporary measure because one test is failing in TicketControllerTest
 public class JmsMessageConsumer {
 
 	public static final Logger logger = LoggerFactory.getLogger(JmsMessageConsumer.class);

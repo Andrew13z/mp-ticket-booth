@@ -30,7 +30,6 @@ public class TestUtils {
 
 	public static final String PREEXISTING_USER_NAME = "Danny Dempsey";
 	public static final String PREEXISTING_USER_EMAIL = "Danny_Dempsey454@mafthy.com";
-	public static final String PREEXISTING_USER_ACCOUNT_BALANCE = "Danny_Dempsey454@mafthy.com";
 
 	public static final String NEW_USER_NAME = "Dolores Croft";
 	public static final String NEW_USER_EMAIL = "dan.jax@gamil.com";
@@ -38,6 +37,10 @@ public class TestUtils {
 	public static final Category DEFAULT_TICKET_CATEGORY = Category.STANDARD;
 	public static final int DEFAULT_TICKET_PLACE = 1;
 
+	public static final BigDecimal FIRST_USER_ACCOUNT_BALANCE = BigDecimal.valueOf(100);
+	public static final BigDecimal FIRST_EVENT_TICKET_PRICE = BigDecimal.valueOf(15);
+
+	public static final Long NEXT_TICKET_ID = 92L;
 
 	public static final String SLASH = "/";
 
