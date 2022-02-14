@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.example.util.TestUtils.DEFAULT_TICKET_PLACE;
 import static org.example.util.TestUtils.ID_ONE;
 import static org.example.util.TestUtils.NOT_EXISTING_ID;
-import static org.example.util.TestUtils.createTicketDtoFotTicketCreateOperation;
+import static org.example.util.TestUtils.createTicketDtoForTicketCreateOperation;
 import static org.example.util.TestUtils.createUserDtoWithoutId;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -54,7 +53,7 @@ class TicketControllerTest {
 	void testCreateTicket_WithValidData() throws Exception {
 		mockMvc.perform(post(CONTROLLER_PATH)
 						.contentType(MediaType.APPLICATION_JSON)
-						.content(mapper.writeValueAsString(createTicketDtoFotTicketCreateOperation())))
+						.content(mapper.writeValueAsString(createTicketDtoForTicketCreateOperation())))
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.id").isNotEmpty())
 				.andExpect(jsonPath("$.user.id").value(ID_ONE))
@@ -65,7 +64,7 @@ class TicketControllerTest {
 
 	@Test
 	void testCreateTicket_WithId() throws Exception {
-		var ticketDto = createTicketDtoFotTicketCreateOperation();
+		var ticketDto = createTicketDtoForTicketCreateOperation();
 		ticketDto.setId(ID_ONE);
 		mockMvc.perform(post(CONTROLLER_PATH)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -75,7 +74,7 @@ class TicketControllerTest {
 
 	@Test
 	void testCreateTicket_WithoutUserId() throws Exception {
-		var ticketDto = createTicketDtoFotTicketCreateOperation();
+		var ticketDto = createTicketDtoForTicketCreateOperation();
 		ticketDto.getUser().setId(null);
 		mockMvc.perform(post(CONTROLLER_PATH)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -85,7 +84,7 @@ class TicketControllerTest {
 
 	@Test
 	void testCreateTicket_WithNotExistingUser() throws Exception {
-		var ticketDto = createTicketDtoFotTicketCreateOperation();
+		var ticketDto = createTicketDtoForTicketCreateOperation();
 		ticketDto.getUser().setId(NOT_EXISTING_ID);
 		mockMvc.perform(post(CONTROLLER_PATH)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -95,7 +94,7 @@ class TicketControllerTest {
 
 	@Test
 	void testCreateTicket_WithoutEventId() throws Exception {
-		var ticketDto = createTicketDtoFotTicketCreateOperation();
+		var ticketDto = createTicketDtoForTicketCreateOperation();
 		ticketDto.getEvent().setId(null);
 		mockMvc.perform(post(CONTROLLER_PATH)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -105,7 +104,7 @@ class TicketControllerTest {
 
 	@Test
 	void testCreateTicket_WithNotExistingEvent() throws Exception {
-		var ticketDto = createTicketDtoFotTicketCreateOperation();
+		var ticketDto = createTicketDtoForTicketCreateOperation();
 		ticketDto.getEvent().setId(NOT_EXISTING_ID);
 		mockMvc.perform(post(CONTROLLER_PATH)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -115,7 +114,7 @@ class TicketControllerTest {
 
 	@Test
 	void testCreateTicket_WithoutCategory() throws Exception {
-		var ticketDto = createTicketDtoFotTicketCreateOperation();
+		var ticketDto = createTicketDtoForTicketCreateOperation();
 		ticketDto.setCategory(null);
 		mockMvc.perform(post(CONTROLLER_PATH)
 						.contentType(MediaType.APPLICATION_JSON)
@@ -124,7 +123,7 @@ class TicketControllerTest {
 	}
 
 	@Test
-	void testCreateTicket_WithoutInsufficientAccountBalance() throws Exception {
+	void testCreateTicket_WithInsufficientAccountBalance() throws Exception {
 		var createdUserDtoJson =mockMvc.perform(post("/users")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(mapper.writeValueAsString(createUserDtoWithoutId())))
@@ -132,7 +131,7 @@ class TicketControllerTest {
 
 		var createdUserDto = mapper.readValue(createdUserDtoJson, UserDto.class);
 
-		var ticketDto = createTicketDtoFotTicketCreateOperation();
+		var ticketDto = createTicketDtoForTicketCreateOperation();
 		ticketDto.getUser().setId(createdUserDto.getId());
 
 		mockMvc.perform(post(CONTROLLER_PATH)
@@ -147,9 +146,9 @@ class TicketControllerTest {
 		mockMvc.perform(get(CONTROLLER_PATH)
 						.param("userId", ID_ONE.toString()))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$", hasSize(1)))
-				.andExpect(jsonPath("$[0].user.id").value(ID_ONE));
+				.andExpect(jsonPath("$.content").isArray())
+				.andExpect(jsonPath("$.content", hasSize(1)))
+				.andExpect(jsonPath("$.content[0].user.id").value(ID_ONE));
 	}
 
 	@Test
@@ -157,8 +156,8 @@ class TicketControllerTest {
 		mockMvc.perform(get(CONTROLLER_PATH)
 						.param("userId", NOT_EXISTING_ID.toString()))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$", hasSize(0)));
+				.andExpect(jsonPath("$.content").isArray())
+				.andExpect(jsonPath("$.content", hasSize(0)));
 	}
 
 	@Test
@@ -166,11 +165,11 @@ class TicketControllerTest {
 		mockMvc.perform(get(CONTROLLER_PATH)
 						.param("eventId", ID_ONE.toString()))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$", hasSize(3)))
-				.andExpect(jsonPath("$[0].event.id").value(ID_ONE))
-				.andExpect(jsonPath("$[1].event.id").value(ID_ONE))
-				.andExpect(jsonPath("$[2].event.id").value(ID_ONE));
+				.andExpect(jsonPath("$.content").isArray())
+				.andExpect(jsonPath("$.content", hasSize(3)))
+				.andExpect(jsonPath("$.content[0].event.id").value(ID_ONE))
+				.andExpect(jsonPath("$.content[1].event.id").value(ID_ONE))
+				.andExpect(jsonPath("$.content[2].event.id").value(ID_ONE));
 	}
 
 	@Test
@@ -178,8 +177,8 @@ class TicketControllerTest {
 		mockMvc.perform(get(CONTROLLER_PATH)
 						.param("userId", NOT_EXISTING_ID.toString()))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$", hasSize(0)));
+				.andExpect(jsonPath("$.content").isArray())
+				.andExpect(jsonPath("$.content", hasSize(0)));
 	}
 
 	@Test

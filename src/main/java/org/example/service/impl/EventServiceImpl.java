@@ -10,11 +10,11 @@ import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -45,18 +45,18 @@ public class EventServiceImpl implements EventService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<EventDto> getEventsByTitle(String title, Pageable pageable) {
+	public Page<EventDto> getEventsByTitle(String title, Pageable pageable) {
 		return mapper.map(repository.findEventsByTitleContainingIgnoreCase(title, pageable),
-				new TypeToken<List<EventDto>>(){}.getType());
+				new TypeToken<Page<EventDto>>(){}.getType());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<EventDto> getEventsForDay(LocalDate day, Pageable pageable) {
+	public Page<EventDto> getEventsForDay(LocalDate day, Pageable pageable) {
 		return mapper.map(repository.findEventsByDate(day, pageable),
-				new TypeToken<List<EventDto>>(){}.getType());
+				new TypeToken<Page<EventDto>>(){}.getType());
 	}
 
 	/**

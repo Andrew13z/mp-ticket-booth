@@ -5,12 +5,12 @@ import org.example.dto.EventDto;
 import org.example.dto.TicketDto;
 import org.example.dto.UserDto;
 import org.example.enums.Category;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 /**
  * Groups together all operations related to ticket booking.
@@ -33,7 +33,7 @@ public interface BookingFacade {
 	 * @param pageable Pageable
 	 * @return List of events.
 	 */
-	List<EventDto> getEventsByTitle(String title, Pageable pageable);
+	Page<EventDto> getEventsByTitle(String title, Pageable pageable);
 
 	/**
 	 * Get list of events for specified day.
@@ -43,7 +43,7 @@ public interface BookingFacade {
 	 * @param pageable Pageable
 	 * @return List of events.
 	 */
-	List<EventDto> getEventsByDate(LocalDate day, Pageable pageable);
+	Page<EventDto> getEventsByDate(LocalDate day, Pageable pageable);
 
 	/**
 	 * Creates new event. Event id should be auto-generated.
@@ -91,7 +91,7 @@ public interface BookingFacade {
 	 * @param pageable Pageable
 	 * @return List of users.
 	 */
-	List<UserDto> getUsersByName(String name, Pageable pageable);
+	Page<UserDto> getUsersByName(String name, Pageable pageable);
 
 	/**
 	 * Creates new user. User id should be auto-generated.
@@ -143,7 +143,7 @@ public interface BookingFacade {
 	 * @param pageable Pageable
 	 * @return List of Ticket objects.
 	 */
-	List<TicketDto> getBookedTicketsByUserId(Long userId, Pageable pageable);
+	Page<TicketDto> getBookedTicketsByUserId(Long userId, Pageable pageable);
 
 	/**
 	 * Gets a list of tickets by user id in pdf format.
@@ -160,13 +160,12 @@ public interface BookingFacade {
 	 * @param pageable Pageable
 	 * @return List of Ticket objects.
 	 */
-	List<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable);
+	Page<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable);
 
 	/**
 	 * Cancel ticket with a specified id.
 	 *
 	 * @param ticketId Ticket id.
-	 * @return Flag whether anything has been canceled.
 	 */
 	void cancelTicket(Long ticketId);
 

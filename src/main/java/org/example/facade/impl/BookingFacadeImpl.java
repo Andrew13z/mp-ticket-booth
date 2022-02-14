@@ -11,13 +11,13 @@ import org.example.service.EventService;
 import org.example.service.TicketService;
 import org.example.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @Component
 public class BookingFacadeImpl implements BookingFacade {
@@ -53,7 +53,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<EventDto> getEventsByTitle(String title, Pageable pageable) {
+	public Page<EventDto> getEventsByTitle(String title, Pageable pageable) {
 		return eventService.getEventsByTitle(title, pageable);
 	}
 
@@ -61,7 +61,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<EventDto> getEventsByDate(LocalDate day, Pageable pageable) {
+	public Page<EventDto> getEventsByDate(LocalDate day, Pageable pageable) {
 		return eventService.getEventsForDay(day, pageable);
 	}
 
@@ -109,7 +109,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<UserDto> getUsersByName(String name, Pageable pageable) {
+	public Page<UserDto> getUsersByName(String name, Pageable pageable) {
 		return userService.getUsersByName(name, pageable);
 	}
 
@@ -154,7 +154,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<TicketDto> getBookedTicketsByUserId(Long userId, Pageable pageable) {
+	public Page<TicketDto> getBookedTicketsByUserId(Long userId, Pageable pageable) {
 		return ticketService.getBookedTicketsByUserId(userId, pageable);
 	}
 
@@ -170,7 +170,7 @@ public class BookingFacadeImpl implements BookingFacade {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable) {
+	public Page<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable) {
 		return ticketService.getBookedTicketsByEventId(eventId, pageable);
 	}
 

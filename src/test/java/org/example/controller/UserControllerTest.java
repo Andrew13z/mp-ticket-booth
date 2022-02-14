@@ -127,9 +127,9 @@ class UserControllerTest {
 		mockMvc.perform(get(CONTROLLER_PATH + "/byName")
 						.param("name", PREEXISTING_USER_NAME))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$", hasSize(1)))
-				.andExpect(jsonPath("$[0].name").value(PREEXISTING_USER_NAME));
+				.andExpect(jsonPath("$.content").isArray())
+				.andExpect(jsonPath("$.content", hasSize(1)))
+				.andExpect(jsonPath("$.content[0].name").value(PREEXISTING_USER_NAME));
 	}
 
 	@Test
@@ -137,8 +137,8 @@ class UserControllerTest {
 		mockMvc.perform(get(CONTROLLER_PATH + "/byName")
 						.param("name", DEFAULT_USER_NAME))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$", hasSize(0)));
+				.andExpect(jsonPath("$.content").isArray())
+				.andExpect(jsonPath("$.content", hasSize(0)));
 	}
 
 	@Test

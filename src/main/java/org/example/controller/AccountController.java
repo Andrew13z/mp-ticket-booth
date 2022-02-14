@@ -3,6 +3,7 @@ package org.example.controller;
 import org.example.dto.AccountDto;
 import org.example.facade.BookingFacade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,8 +27,8 @@ public class AccountController {
 	}
 
 	@PatchMapping(value = "/{id}")
-	public AccountDto refillAccount(@PathVariable("id") Long id,
-									@RequestBody @Min(0) BigDecimal refillSum) {
-		return facade.refillAccount(id, refillSum);
+	public ResponseEntity<AccountDto> refillAccount(@PathVariable("id") Long id,
+												   @RequestBody @Min(0) BigDecimal refillSum) {
+		return ResponseEntity.ok(facade.refillAccount(id, refillSum));
 	}
 }

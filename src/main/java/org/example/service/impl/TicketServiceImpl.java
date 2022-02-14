@@ -16,10 +16,12 @@ import org.example.service.EventService;
 import org.example.service.TicketService;
 import org.example.util.DocumentUtil;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -94,11 +96,9 @@ public class TicketServiceImpl implements TicketService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<TicketDto> getBookedTicketsByUserId(Long userId, Pageable pageable) {
-		return ticketRepository.findByUserId(userId, pageable)
-				.stream()
-				.map(user -> mapper.map(user, TicketDto.class))
-				.collect(Collectors.toList());
+	public Page<TicketDto> getBookedTicketsByUserId(Long userId, Pageable pageable) {
+		return mapper.map(ticketRepository.findByUserId(userId, pageable),
+							new TypeToken<Page<TicketDto>>(){}.getType());
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class TicketServiceImpl implements TicketService {
 	@Override
 	public byte[] getBookedTicketsByUserIdAsPdf(Long userId) {
 		var ticketsByUserId = getBookedTicketsByUserId(userId, Pageable.ofSize(100));
-		var generatedFile = documentUtil.writeToPdf(ticketsByUserId);
+		var generatedFile = documentUtil.writeToPdf(ticketsByUserId.getContent());
 		try {
 			var stream = new FileSystemResource(generatedFile).getInputStream();
 			return IOUtils.toByteArray(stream);
@@ -120,11 +120,9 @@ public class TicketServiceImpl implements TicketService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable) {
-		return ticketRepository.findByEventId(eventId, pageable)
-				.stream()
-				.map(user -> mapper.map(user, TicketDto.class))
-				.collect(Collectors.toList());
+	public Page<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable) {
+		return mapper.map(ticketRepository.findByEventId(eventId, pageable),
+				new TypeToken<Page<TicketDto>>(){}.getType());
 	}
 
 	/**

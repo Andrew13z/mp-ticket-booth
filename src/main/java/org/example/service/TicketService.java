@@ -2,10 +2,9 @@ package org.example.service;
 
 import org.example.dto.TicketDto;
 import org.example.enums.Category;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 public interface TicketService {
 
@@ -35,7 +34,7 @@ public interface TicketService {
 	 * @param pageable Pageable
 	 * @return List of Ticket objects.
 	 */
-	List<TicketDto> getBookedTicketsByUserId(Long userId, Pageable pageable);
+	Page<TicketDto> getBookedTicketsByUserId(Long userId, Pageable pageable);
 
 	/**
 	 * Gets a list of tickets by user id in pdf format.
@@ -52,13 +51,12 @@ public interface TicketService {
 	 * @param pageable Pageable
 	 * @return List of Ticket objects.
 	 */
-	List<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable);
+	Page<TicketDto> getBookedTicketsByEventId(Long eventId, Pageable pageable);
 
 	/**
 	 * Cancel ticket with a specified id. And refunds the ticket price to the account.
 	 *
 	 * @param ticketId Ticket id.
-	 * @return Flag whether anything has been canceled.
 	 */
 	void cancelTicket(Long ticketId);
 }

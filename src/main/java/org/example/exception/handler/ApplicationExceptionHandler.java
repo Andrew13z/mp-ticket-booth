@@ -108,7 +108,9 @@ public class ApplicationExceptionHandler {
 	 * @return ResponseEntity with ErrorDto
 	 */
 	private ResponseEntity<ErrorDto> handleMethodArgumentNotValidException(Exception exception) {
-		return createResponseEntityWithBadRequestStatus(exception.getMessage());
+		var fieldError = ((MethodArgumentNotValidException) exception).getBindingResult().getFieldError();
+		return createResponseEntityWithBadRequestStatus(fieldError != null ?
+														fieldError.getDefaultMessage() : exception.getMessage());
 	}
 
 		/**

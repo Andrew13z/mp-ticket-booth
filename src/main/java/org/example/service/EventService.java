@@ -1,10 +1,10 @@
 package org.example.service;
 
 import org.example.dto.EventDto;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public interface EventService {
 
@@ -23,7 +23,7 @@ public interface EventService {
 	 * @param pageable Pageable
 	 * @return List of events.
 	 */
-	List<EventDto> getEventsByTitle(String title, Pageable pageable);
+	Page<EventDto> getEventsByTitle(String title, Pageable pageable);
 
 	/**
 	 * Get list of events for specified day.
@@ -33,7 +33,7 @@ public interface EventService {
 	 * @param pageable Pageable
 	 * @return List of events.
 	 */
-	List<EventDto> getEventsForDay(LocalDate day, Pageable pageable);
+	Page<EventDto> getEventsForDay(LocalDate day, Pageable pageable);
 
 	/**
 	 * Creates new event. Event id is be auto-generated.
@@ -56,7 +56,6 @@ public interface EventService {
 	 * Deletes event by its id.
 	 *
 	 * @param eventId Event id.
-	 * @return Flag that shows whether event has been deleted.
 	 */
 	void deleteEvent(Long eventId);
 }

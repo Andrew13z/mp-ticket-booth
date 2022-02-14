@@ -10,10 +10,9 @@ import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -54,9 +53,9 @@ public class UserServiceImpl implements UserService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<UserDto> getUsersByName(String name, Pageable pageable) {
+	public Page<UserDto> getUsersByName(String name, Pageable pageable) {
 		var users = repository.findUsersByNameContainingIgnoreCase(name, pageable);
-		return mapper.map(users, new TypeToken<List<UserDto>>(){}.getType());
+		return mapper.map(users, new TypeToken<Page<UserDto>>(){}.getType());
 	}
 
 	/**

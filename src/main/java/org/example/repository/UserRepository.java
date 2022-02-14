@@ -2,11 +2,11 @@ package org.example.repository;
 
 import org.example.model.User;
 import org.example.repository.cache.UserCacheRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -27,5 +27,5 @@ public interface UserRepository extends PagingAndSortingRepository<User, Long>, 
 	 * @param pageable Pageable.
 	 * @return List of users.
 	 */
-	List<User> findUsersByNameContainingIgnoreCase(String name, Pageable pageable);
+	Page<User> findUsersByNameContainingIgnoreCase(String name, Pageable pageable);
 }

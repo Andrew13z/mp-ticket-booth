@@ -7,6 +7,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import java.util.Objects;
 
 /**
  * User DTO
@@ -56,5 +57,20 @@ public class UserDto {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof UserDto)) return false;
+		UserDto userDto = (UserDto) o;
+		return Objects.equals(getId(), userDto.getId()) &&
+				Objects.equals(getName(), userDto.getName()) &&
+				Objects.equals(getEmail(), userDto.getEmail());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getId(), getName(), getEmail());
 	}
 }

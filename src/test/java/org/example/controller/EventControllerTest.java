@@ -112,7 +112,7 @@ class EventControllerTest {
 	void testGetEventById_WithExistingId() throws Exception {
 		mockMvc.perform(get(CONTROLLER_PATH + SLASH + ID_ONE))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.id").exists());
+				.andExpect(jsonPath("$.id").value(ID_ONE));
 	}
 
 	@Test
@@ -129,9 +129,9 @@ class EventControllerTest {
 		mockMvc.perform(get(CONTROLLER_PATH)
 						.param("title", DEFAULT_EVENT_TITLE))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$", hasSize(1)))
-				.andExpect(jsonPath("$[0].title").value(DEFAULT_EVENT_TITLE));
+				.andExpect(jsonPath("$.content").isArray())
+				.andExpect(jsonPath("$.content", hasSize(1)))
+				.andExpect(jsonPath("$.content[0].title").value(DEFAULT_EVENT_TITLE));
 	}
 
 	@Test
@@ -139,8 +139,8 @@ class EventControllerTest {
 		mockMvc.perform(get(CONTROLLER_PATH)
 						.param("title", NOT_EXISTING_EVENT_TITLE))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$", hasSize(0)));
+				.andExpect(jsonPath("$.content").isArray())
+				.andExpect(jsonPath("$.content", hasSize(0)));
 	}
 
 	@Test
@@ -151,9 +151,11 @@ class EventControllerTest {
 		mockMvc.perform(get(CONTROLLER_PATH)
 						.param("date", DEFAULT_EVENT_DATE.toString()))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$", hasSize(1)))
-				.andExpect(jsonPath("$[0].date").value(DEFAULT_EVENT_DATE.toString()));
+				.andExpect(jsonPath("$.content").isArray())
+				.andExpect(jsonPath("$.content", hasSize(1)))
+				.andExpect(jsonPath("$.content[0].date[0]").value(DEFAULT_EVENT_DATE.getYear()))
+				.andExpect(jsonPath("$.content[0].date[1]").value(DEFAULT_EVENT_DATE.getMonthValue()))
+				.andExpect(jsonPath("$.content[0].date[2]").value(DEFAULT_EVENT_DATE.getDayOfMonth()));
 	}
 
 	@Test
@@ -161,8 +163,8 @@ class EventControllerTest {
 		mockMvc.perform(get(CONTROLLER_PATH)
 						.param("date", NOT_EXISTING_EVENT_DATE.toString()))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$").isArray())
-				.andExpect(jsonPath("$", hasSize(0)));
+				.andExpect(jsonPath("$.content").isArray())
+				.andExpect(jsonPath("$.content", hasSize(0)));
 	}
 
 	@Test

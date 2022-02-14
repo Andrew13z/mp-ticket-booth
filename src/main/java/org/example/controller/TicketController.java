@@ -4,9 +4,11 @@ import org.example.dto.TicketDto;
 import org.example.facade.BookingFacade;
 import org.example.validation.group.OnTicketCreate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * Controller for all operations on Tickets.
@@ -47,13 +48,13 @@ public class TicketController {
 	 */
 	@PostMapping
 	@Transactional
-	@ResponseStatus(HttpStatus.CREATED)
 	@Validated(OnTicketCreate.class)
-	public TicketDto createTicket(@RequestBody @Valid TicketDto ticket) {
-		return facade.bookTicket(ticket.getUser().getId(),
-								ticket.getEvent().getId(),
-								ticket.getCategory(),
-								ticket.getPlace());
+	public ResponseEntity<TicketDto> createTicket(@RequestBody @Valid TicketDto ticket) {
+		return new ResponseEntity<>(facade.bookTicket(ticket.getUser().getId(),
+													ticket.getEvent().getId(),
+													ticket.getCategory(),
+													ticket.getPlace()),
+									HttpStatus.CREATED);
 	}
 
 	/**
@@ -64,7 +65,7 @@ public class TicketController {
 	 * @return List of tickets, or if none is found, empty list.
 	 */
 	@GetMapping
-	public List<TicketDto> getTicketsByUser(@RequestParam(value = "userId", required = false) Long userId,
+	public Page<TicketDto> getTicketsByUser(@RequestParam(value = "userId", required = false) Long userId,
 											@RequestParam(value = "eventId", required = false) Long eventId,
 											Pageable pageable) {
 		if (userId != null) {

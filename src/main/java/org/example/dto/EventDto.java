@@ -12,9 +12,11 @@ import javax.validation.constraints.Null;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Objects;
 
 /**
  * Event DTO
+ *
  * @author Andrii Krokhta
  */
 public class EventDto {
@@ -28,7 +30,7 @@ public class EventDto {
 
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(groups = OnCreate.class)
-	@FutureOrPresent
+	@FutureOrPresent(message = "The event date must be today or later")
 	private LocalDate date;
 
 	@Min(0)
@@ -75,5 +77,21 @@ public class EventDto {
 
 	public void setTicketPrice(BigDecimal ticketPrice) {
 		this.ticketPrice = ticketPrice != null ? ticketPrice.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof EventDto)) return false;
+		EventDto eventDto = (EventDto) o;
+		return Objects.equals(getId(), eventDto.getId()) &&
+				Objects.equals(getTitle(), eventDto.getTitle()) &&
+				Objects.equals(getDate(), eventDto.getDate()) &&
+				Objects.equals(getTicketPrice(), eventDto.getTicketPrice());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(getId(), getTitle(), getDate(), getTicketPrice());
 	}
 }

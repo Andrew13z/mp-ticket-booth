@@ -30,7 +30,7 @@ public final class DocumentUtil<T> {
 
 	/**
 	 * Writes a list of models to pdf file.
-	 * @param models
+	 * @param models models to write to pdf
 	 * @return String path to the file
 	 */
 	public String writeToPdf(List<T> models) {

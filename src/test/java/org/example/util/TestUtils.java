@@ -4,7 +4,6 @@ import org.example.dto.EventDto;
 import org.example.dto.TicketDto;
 import org.example.dto.UserDto;
 import org.example.enums.Category;
-import org.example.model.TicketBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -60,8 +59,16 @@ public class TestUtils {
 		return new UserDto(null, DEFAULT_USER_NAME, DEFAULT_USER_EMAIL);
 	}
 
-	public static TicketDto createTicketDtoFotTicketCreateOperation(){
+	public static TicketDto createTicketDtoForTicketCreateOperation(){
 		return new TicketDto(null,
+				new UserDto(ID_ONE, null, null),
+				new EventDto(ID_ONE, null, null, BigDecimal.ZERO),
+				DEFAULT_TICKET_CATEGORY,
+				DEFAULT_TICKET_PLACE);
+	}
+
+	public static TicketDto createDefaultTicketDto(){
+		return new TicketDto(ID_ONE,
 				new UserDto(ID_ONE, null, null),
 				new EventDto(ID_ONE, null, null, BigDecimal.ZERO),
 				DEFAULT_TICKET_CATEGORY,

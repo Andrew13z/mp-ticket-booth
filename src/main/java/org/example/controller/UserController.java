@@ -4,8 +4,10 @@ import org.example.dto.UserDto;
 import org.example.facade.BookingFacade;
 import org.example.validation.group.OnCreate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,11 +18,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.List;
 
 /**
  * RestController for all operations on Users.
@@ -46,12 +46,11 @@ public class UserController {
 	 * @return Created user.
 	 */
 	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
 	@Validated(OnCreate.class)
-	public UserDto createUser(@RequestBody @Valid UserDto user) {
+	public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto user) {
 		var createdUser = facade.createUser(user);
 		facade.createAccount(createdUser.getId());
-		return createdUser;
+		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
 	}
 
 	/**
@@ -61,8 +60,8 @@ public class UserController {
 	 * @return User found by id, otherwise throws EntityNotFoundException.
 	 */
 	@GetMapping("/{id}")
-	public UserDto getUserById(@PathVariable("id") Long id) {
-		return facade.getUserById(id);
+	public ResponseEntity<UserDto> getUserById(@PathVariable("id") Long id) {
+		return ResponseEntity.ok(facade.getUserById(id));
 	}
 
 	/**
@@ -72,8 +71,8 @@ public class UserController {
 	 * @return User found by email, otherwise throws EntityNotFoundException.
 	 */
 	@GetMapping("/byEmail")
-	public UserDto getUserByEmail(@RequestParam("email") String email) {
-		return facade.getUserByEmail(email);
+	public ResponseEntity<UserDto> getUserByEmail(@RequestParam("email") String email) {
+		return ResponseEntity.ok(facade.getUserByEmail(email));
 	}
 
 	/**
@@ -84,7 +83,7 @@ public class UserController {
 	 * @return List of users, or if none is found, empty list.
 	 */
 	@GetMapping("/byName")
-	public List<UserDto> getUsersByName(@RequestParam("name") String name, Pageable pageable) {
+	public Page<UserDto> getUsersByName(@RequestParam("name") String name, Pageable pageable) {
 		return facade.getUsersByName(name, pageable);
 	}
 
@@ -96,8 +95,8 @@ public class UserController {
 	 * @return Updated user.
 	 */
 	@PutMapping("/{id}")
-	public UserDto updateUser(@PathVariable("id") Long id, @RequestBody @Valid UserDto user) {
-		return facade.updateUser(id, user);
+	public ResponseEntity<UserDto> updateUser(@PathVariable("id") Long id, @RequestBody @Valid UserDto user) {
+		return ResponseEntity.ok(facade.updateUser(id, user));
 	}
 
 	/**
@@ -105,7 +104,7 @@ public class UserController {
 	 * @param id    Id of the user to be deleted.
 	 */
 	@DeleteMapping
-	@Transactional
+	@Transactional//todo set transactional on service level
 	public void deleteUser(@RequestBody Long id) {
 		facade.deleteAccount(id);
 		facade.deleteUser(id);

@@ -4,9 +4,11 @@ import org.example.dto.EventDto;
 import org.example.facade.BookingFacade;
 import org.example.validation.group.OnCreate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,12 +18,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
-import java.util.List;
 
 /**
  * RestController for all operations on Events.
@@ -47,10 +47,10 @@ public class EventController {
 	 * @return Created event.
 	 */
 	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
 	@Validated(OnCreate.class)
-	public EventDto createEvent(@RequestBody @Valid EventDto event) {
-		return facade.createEvent(event);
+	public ResponseEntity<EventDto> createEvent(@RequestBody @Valid EventDto event) {
+		var createdEvent = facade.createEvent(event);
+		return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
 	}
 
 	/**
@@ -60,8 +60,8 @@ public class EventController {
 	 * @return Event found by id, otherwise throws EntityNotFoundException.
 	 */
 	@GetMapping("/{id}")
-	public EventDto getEventById(@PathVariable("id") Long id) {
-		return facade.getEventById(id);
+	public ResponseEntity<EventDto> getEventById(@PathVariable("id") Long id) {
+		return ResponseEntity.ok(facade.getEventById(id));
 	}
 
 	/**
@@ -72,7 +72,7 @@ public class EventController {
 	 * @return List of events, or if none is found, empty list.
 	 */
 	@GetMapping
-	public List<EventDto> getEventsByTitle(@RequestParam(value = "title", required = false) String title,
+	public Page<EventDto> getEventsByTitle(@RequestParam(value = "title", required = false) String title,
 										   @RequestParam(value = "date", required = false)
 										   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
 										   Pageable pageable) {
@@ -93,8 +93,8 @@ public class EventController {
 	 * @return Updated Event.
 	 */
 	@PutMapping("/{id}")
-	public EventDto updateEvent(@PathVariable("id") Long id, @RequestBody EventDto event) {
-		return facade.updateEvent(id, event);
+	public ResponseEntity<EventDto> updateEvent(@PathVariable("id") Long id, @RequestBody EventDto event) {
+		return ResponseEntity.ok(facade.updateEvent(id, event));
 	}
 
 	/**
