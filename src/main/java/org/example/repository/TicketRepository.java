@@ -1,6 +1,6 @@
 package org.example.repository;
 
-import org.example.model.Ticket;
+import org.example.entity.Ticket;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;

@@ -1,6 +1,6 @@
 package org.example.repository.cache.impl;
 
-import org.example.model.Event;
+import org.example.entity.Event;
 import org.example.repository.EventRepository;
 import org.hibernate.Session;
 import org.junit.jupiter.api.Test;

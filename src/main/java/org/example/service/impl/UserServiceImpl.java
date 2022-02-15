@@ -2,7 +2,7 @@ package org.example.service.impl;
 
 import org.example.dto.UserDto;
 import org.example.exception.EntityNotFoundException;
-import org.example.model.User;
+import org.example.entity.User;
 import org.example.repository.UserRepository;
 import org.example.service.UserService;
 import org.modelmapper.ModelMapper;

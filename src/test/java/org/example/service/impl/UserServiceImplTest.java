@@ -2,7 +2,7 @@ package org.example.service.impl;
 
 import org.example.repository.UserRepository;
 import org.example.exception.EntityNotFoundException;
-import org.example.model.User;
+import org.example.entity.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,16 +13,15 @@ import org.modelmapper.ModelMapper;
 
 import java.util.Optional;
 
+import static org.example.util.TestUtils.DEFAULT_USER_EMAIL;
+import static org.example.util.TestUtils.ID_ONE;
+import static org.example.util.TestUtils.createDefaultUser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
-
-	private final Long ID = 1L;
-	private final String NAME = "Name";
-	private final String EMAIL = "email@mail.com";
 
 	@Mock
 	private UserRepository mockRepository;
@@ -35,30 +34,30 @@ class UserServiceImplTest {
 
 	@Test
 	void getUserByIdTestWithExistingId() {
-		when(mockRepository.findByIdWithCache(ID)).thenReturn(Optional.of(new User(ID, NAME, EMAIL)));
-		var user = userService.getUserById(ID);
-		assertEquals(user.getId(), ID);
+		when(mockRepository.findByIdWithCache(ID_ONE)).thenReturn(Optional.of(createDefaultUser()));
+		var user = userService.getUserById(ID_ONE);
+		assertEquals(ID_ONE, user.getId());
 	}
 
 	@Test
 	void getUserByIdTestWithNonExistingId() {
-		when(mockRepository.findByIdWithCache(ID)).thenReturn(Optional.empty());
-		var exception = assertThrows(EntityNotFoundException.class, () -> userService.getUserById(ID));
+		when(mockRepository.findByIdWithCache(ID_ONE)).thenReturn(Optional.empty());
+		var exception = assertThrows(EntityNotFoundException.class, () -> userService.getUserById(ID_ONE));
 		assertEquals("User not found by id: 1", exception.getMessage());
 	}
 
 	@Test
 	void getUserByEmailTestWithExistingId() {
-		when(mockRepository.findByEmail(EMAIL)).thenReturn(Optional.of(new User(ID, NAME, EMAIL)));
-		var user = userService.getUserByEmail(EMAIL);
-		assertEquals(user.getEmail(), EMAIL);
+		when(mockRepository.findByEmail(DEFAULT_USER_EMAIL)).thenReturn(Optional.of(createDefaultUser()));
+		var user = userService.getUserByEmail(DEFAULT_USER_EMAIL);
+		assertEquals(DEFAULT_USER_EMAIL, user.getEmail());
 	}
 
 	@Test
 	void getUserByEmailTestWithNonExistingId() {
-		when(mockRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
-		var exception = assertThrows(EntityNotFoundException.class, () -> userService.getUserByEmail(EMAIL));
-		assertEquals("User not found by email: email@mail.com", exception.getMessage());
+		when(mockRepository.findByEmail(DEFAULT_USER_EMAIL)).thenReturn(Optional.empty());
+		var exception = assertThrows(EntityNotFoundException.class, () -> userService.getUserByEmail(DEFAULT_USER_EMAIL));
+		assertEquals("User not found by email: " + DEFAULT_USER_EMAIL, exception.getMessage());
 	}
 
 }

@@ -1,6 +1,6 @@
 package org.example.repository.cache.impl;
 
-import org.example.model.User;
+import org.example.entity.User;
 import org.example.repository.cache.UserCacheRepository;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;

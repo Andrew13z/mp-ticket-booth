@@ -32,7 +32,7 @@ create table EVENTS (
 create table ACCOUNTS (
 	ID				bigint primary key,
 	BALANCE	numeric (10,2) default 0,
-	constraint USERS_FK foreign key (ID) references USERS (ID)
+	constraint USERS_FK foreign key (ID) references USERS (ID) ON DELETE CASCADE
 );
 
 create sequence TICKETS_ID_SEQ no maxvalue start with 1 increment by 10;

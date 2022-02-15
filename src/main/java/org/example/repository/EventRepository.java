@@ -1,6 +1,6 @@
 package org.example.repository;
 
-import org.example.model.Event;
+import org.example.entity.Event;
 import org.example.repository.cache.EventCacheRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

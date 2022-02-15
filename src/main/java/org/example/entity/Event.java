@@ -1,4 +1,4 @@
-package org.example.model;
+package org.example.entity;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;

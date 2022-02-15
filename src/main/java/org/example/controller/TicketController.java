@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +46,6 @@ public class TicketController {
 	 * @return Created ticket.
 	 */
 	@PostMapping
-	@Transactional
 	@Validated(OnTicketCreate.class)
 	public ResponseEntity<TicketDto> createTicket(@RequestBody @Valid TicketDto ticket) {
 		return new ResponseEntity<>(facade.bookTicket(ticket.getUser().getId(),
@@ -94,7 +92,6 @@ public class TicketController {
 	 * @return List of saved tickets.
 	 */
 	@PostMapping(value = "/batch")
-	@Transactional
 	@ResponseStatus(HttpStatus.CREATED)
 	public Iterable<TicketDto> batchBookTicketsFromFile(@RequestParam("file") MultipartFile file) {
 		return facade.batchBookTickets(file);
@@ -105,7 +102,6 @@ public class TicketController {
 	 * @param id    Id of the ticket to be deleted.
 	 */
 	@DeleteMapping
-	@Transactional
 	public void deleteTicket(@RequestBody Long id) {
 		facade.cancelTicket(id);
 	}

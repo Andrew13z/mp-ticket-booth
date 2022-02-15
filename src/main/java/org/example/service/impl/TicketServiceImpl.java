@@ -8,8 +8,8 @@ import org.example.enums.Category;
 import org.example.exception.EntityNotFoundException;
 import org.example.exception.PdfGenerationException;
 import org.example.exception.UnmarshallingException;
-import org.example.model.Ticket;
-import org.example.model.TicketBuilder;
+import org.example.entity.Ticket;
+import org.example.entity.TicketBuilder;
 import org.example.repository.TicketRepository;
 import org.example.service.AccountService;
 import org.example.service.EventService;
@@ -24,6 +24,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -61,6 +62,7 @@ public class TicketServiceImpl implements TicketService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Transactional
 	public TicketDto bookTicket(Long userId, Long eventId, Category category, int place) {
 		var ticketPrice = eventService.getEventById(eventId).getTicketPrice();
 		accountService.chargeForTicket(userId, ticketPrice);
@@ -79,6 +81,7 @@ public class TicketServiceImpl implements TicketService {
 	 * @param file input file.
 	 */
 	@Override
+	@Transactional
 	public Iterable<TicketDto> batchBookTickets(MultipartFile file) {
 		try {
 			var ticketsToBook = xmlMarshaller.parse(file.getInputStream(),
@@ -129,6 +132,7 @@ public class TicketServiceImpl implements TicketService {
 	 * {@inheritDoc}
 	 */
 	@Override
+	@Transactional
 	public void cancelTicket(Long ticketId) {
 		var ticket = ticketRepository.findById(ticketId)
 				.orElseThrow(() -> new EntityNotFoundException("Ticket with id {} does not exist." + ticketId));

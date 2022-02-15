@@ -1,6 +1,6 @@
 package org.example.repository;
 
-import org.example.model.User;
+import org.example.entity.User;
 import org.example.repository.cache.UserCacheRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

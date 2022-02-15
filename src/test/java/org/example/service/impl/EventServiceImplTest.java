@@ -2,7 +2,7 @@ package org.example.service.impl;
 
 import org.example.repository.EventRepository;
 import org.example.exception.EntityNotFoundException;
-import org.example.model.Event;
+import org.example.entity.Event;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,6 +15,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static org.example.util.TestUtils.ID_ONE;
+import static org.example.util.TestUtils.createDefaultEvent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
@@ -22,11 +24,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EventServiceImplTest {
-
-	private final long ID = 1L;
-	private final String TITLE = "Event";
-	private final LocalDate DATE = LocalDate.of(2022, 1, 1);
-	private final BigDecimal PRICE = BigDecimal.ZERO;
 
 	@Mock
 	private EventRepository mockDao;
@@ -39,15 +36,15 @@ class EventServiceImplTest {
 
 	@Test
 	void getEventByIdTestWithExistingId() {
-		when(mockDao.findByIdWithCache(ID)).thenReturn(Optional.of(new Event(ID, TITLE, DATE, PRICE)));
-		var eventById = eventService.getEventById(ID);
-		assertEquals(eventById.getId(), ID);
+		when(mockDao.findByIdWithCache(ID_ONE)).thenReturn(Optional.of(createDefaultEvent()));
+		var eventById = eventService.getEventById(ID_ONE);
+		assertEquals(ID_ONE, eventById.getId());
 	}
 
 	@Test
 	void getEventByIdTestWithNonExistingId() {
-		when(mockDao.findByIdWithCache(ID)).thenReturn(Optional.empty());
-		var exception = assertThrows(EntityNotFoundException.class, () -> eventService.getEventById(ID));
+		when(mockDao.findByIdWithCache(ID_ONE)).thenReturn(Optional.empty());
+		var exception = assertThrows(EntityNotFoundException.class, () -> eventService.getEventById(ID_ONE));
 		assertEquals("Event not found by id: 1", exception.getMessage());
 	}
 

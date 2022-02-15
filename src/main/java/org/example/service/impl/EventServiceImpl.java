@@ -2,7 +2,7 @@ package org.example.service.impl;
 
 import org.example.dto.EventDto;
 import org.example.exception.EntityNotFoundException;
-import org.example.model.Event;
+import org.example.entity.Event;
 import org.example.repository.EventRepository;
 import org.example.service.EventService;
 import org.modelmapper.ModelMapper;

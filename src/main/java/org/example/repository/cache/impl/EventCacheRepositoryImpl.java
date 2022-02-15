@@ -1,6 +1,6 @@
 package org.example.repository.cache.impl;
 
-import org.example.model.Event;
+import org.example.entity.Event;
 import org.example.repository.cache.EventCacheRepository;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;

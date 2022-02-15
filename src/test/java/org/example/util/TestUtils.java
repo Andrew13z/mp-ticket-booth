@@ -3,6 +3,9 @@ package org.example.util;
 import org.example.dto.EventDto;
 import org.example.dto.TicketDto;
 import org.example.dto.UserDto;
+import org.example.entity.Account;
+import org.example.entity.Event;
+import org.example.entity.User;
 import org.example.enums.Category;
 
 import java.math.BigDecimal;
@@ -39,6 +42,8 @@ public class TestUtils {
 	public static final BigDecimal FIRST_USER_ACCOUNT_BALANCE = BigDecimal.valueOf(100);
 	public static final BigDecimal FIRST_EVENT_TICKET_PRICE = BigDecimal.valueOf(15);
 
+	public static final BigDecimal DEFAULT_ACCOUNT_BALANCE = BigDecimal.valueOf(100);
+
 	public static final Long NEXT_TICKET_ID = 92L;
 
 	public static final String SLASH = "/";
@@ -73,5 +78,17 @@ public class TestUtils {
 				new EventDto(ID_ONE, null, null, BigDecimal.ZERO),
 				DEFAULT_TICKET_CATEGORY,
 				DEFAULT_TICKET_PLACE);
+	}
+
+	public static User createDefaultUser(){
+		return new User(ID_ONE, DEFAULT_USER_NAME, DEFAULT_USER_EMAIL);
+	}
+
+	public static Event createDefaultEvent(){
+		return new Event(ID_ONE, DEFAULT_EVENT_TITLE, DEFAULT_EVENT_DATE, DEFAULT_TICKET_PRICE);
+	}
+
+	public static Account createDefaultAccount(){
+		return new Account(ID_ONE, DEFAULT_ACCOUNT_BALANCE, createDefaultUser());
 	}
 }

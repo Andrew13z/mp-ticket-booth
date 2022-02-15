@@ -3,7 +3,7 @@ package org.example.service.impl;
 import org.example.dto.AccountDto;
 import org.example.exception.AccountBalanceException;
 import org.example.exception.EntityNotFoundException;
-import org.example.model.Account;
+import org.example.entity.Account;
 import org.example.repository.AccountRepository;
 import org.example.service.AccountService;
 import org.modelmapper.ModelMapper;
