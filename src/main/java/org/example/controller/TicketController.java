@@ -1,7 +1,7 @@
 package org.example.controller;
 
 import org.example.dto.TicketDto;
-import org.example.facade.BookingFacade;
+import org.example.service.TicketService;
 import org.example.validation.group.OnTicketCreate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,14 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
@@ -32,11 +25,11 @@ import javax.validation.Valid;
 @Validated
 public class TicketController {
 
-	private final BookingFacade facade;
+	private final TicketService ticketService;
 
 	@Autowired
-	public TicketController(BookingFacade facade) {
-		this.facade = facade;
+	public TicketController(TicketService ticketService) {
+		this.ticketService = ticketService;
 	}
 
 	/**
@@ -48,11 +41,11 @@ public class TicketController {
 	@PostMapping
 	@Validated(OnTicketCreate.class)
 	public ResponseEntity<TicketDto> createTicket(@RequestBody @Valid TicketDto ticket) {
-		return new ResponseEntity<>(facade.bookTicket(ticket.getUser().getId(),
-													ticket.getEvent().getId(),
-													ticket.getCategory(),
-													ticket.getPlace()),
-									HttpStatus.CREATED);
+		return new ResponseEntity<>(ticketService.bookTicket(ticket.getUser().getId(),
+				ticket.getEvent().getId(),
+				ticket.getCategory(),
+				ticket.getPlace()),
+				HttpStatus.CREATED);
 	}
 
 	/**
@@ -67,10 +60,10 @@ public class TicketController {
 											@RequestParam(value = "eventId", required = false) Long eventId,
 											Pageable pageable) {
 		if (userId != null) {
-			return facade.getBookedTicketsByUserId(userId, pageable);
+			return ticketService.getBookedTicketsByUserId(userId, pageable);
 		}
 		if (eventId != null) {
-			return facade.getBookedTicketsByEventId(eventId, pageable);
+			return ticketService.getBookedTicketsByEventId(eventId, pageable);
 		}
 		throw new IllegalArgumentException("No parameters provided to search by.");
 	}
@@ -78,12 +71,12 @@ public class TicketController {
 	/**
 	 * Gets a list of tickets by user in pdf format.
 	 *
-	 * @param userId   User id.
+	 * @param userId User id.
 	 * @return byte[] of pdf with ticket data.
 	 */
 	@GetMapping(headers = "Accept=application/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
 	public byte[] getTicketsByUserAsPdf(@RequestParam("userId") Long userId) {
-		return facade.getBookedTicketsByUserIdAsPdf(userId);
+		return ticketService.getBookedTicketsByUserIdAsPdf(userId);
 	}
 
 	/**
@@ -94,15 +87,16 @@ public class TicketController {
 	@PostMapping(value = "/batch")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Iterable<TicketDto> batchBookTicketsFromFile(@RequestParam("file") MultipartFile file) {
-		return facade.batchBookTickets(file);
+		return ticketService.batchBookTickets(file);
 	}
 
 	/**
 	 * Deletes a ticket by id.
-	 * @param id    Id of the ticket to be deleted.
+	 *
+	 * @param id Id of the ticket to be deleted.
 	 */
 	@DeleteMapping
 	public void deleteTicket(@RequestBody Long id) {
-		facade.cancelTicket(id);
+		ticketService.cancelTicket(id);
 	}
 }

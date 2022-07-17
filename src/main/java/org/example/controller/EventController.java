@@ -1,7 +1,7 @@
 package org.example.controller;
 
 import org.example.dto.EventDto;
-import org.example.facade.BookingFacade;
+import org.example.service.EventService;
 import org.example.validation.group.OnCreate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,15 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
@@ -33,11 +25,11 @@ import java.time.LocalDate;
 @Validated
 public class EventController {
 
-	private final BookingFacade facade;
+	private final EventService eventService;
 
 	@Autowired
-	public EventController(BookingFacade facade) {
-		this.facade = facade;
+	public EventController(EventService eventService) {
+		this.eventService = eventService;
 	}
 
 	/**
@@ -49,19 +41,19 @@ public class EventController {
 	@PostMapping
 	@Validated(OnCreate.class)
 	public ResponseEntity<EventDto> createEvent(@RequestBody @Valid EventDto event) {
-		var createdEvent = facade.createEvent(event);
+		var createdEvent = eventService.createEvent(event);
 		return new ResponseEntity<>(createdEvent, HttpStatus.CREATED);
 	}
 
 	/**
 	 * Gets an event by id.
 	 *
-	 * @param id    Event id.
+	 * @param id Event id.
 	 * @return Event found by id, otherwise throws EntityNotFoundException.
 	 */
 	@GetMapping("/{id}")
 	public ResponseEntity<EventDto> getEventById(@PathVariable("id") Long id) {
-		return ResponseEntity.ok(facade.getEventById(id));
+		return ResponseEntity.ok(eventService.getEventById(id));
 	}
 
 	/**
@@ -77,10 +69,10 @@ public class EventController {
 										   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
 										   Pageable pageable) {
 		if (title != null) {
-			return facade.getEventsByTitle(title, pageable);
+			return eventService.getEventsByTitle(title, pageable);
 		}
 		if (date != null) {
-			return facade.getEventsByDate(date, pageable);
+			return eventService.getEventsForDay(date, pageable);
 		}
 		throw new IllegalArgumentException("No parameters provided to search by.");
 	}
@@ -88,21 +80,22 @@ public class EventController {
 	/**
 	 * Updates an event by event id.
 	 *
-	 * @param id EventId.
+	 * @param id    EventId.
 	 * @param event Updated event with the same id.
 	 * @return Updated Event.
 	 */
 	@PutMapping("/{id}")
 	public ResponseEntity<EventDto> updateEvent(@PathVariable("id") Long id, @RequestBody EventDto event) {
-		return ResponseEntity.ok(facade.updateEvent(id, event));
+		return ResponseEntity.ok(eventService.updateEvent(id, event));
 	}
 
 	/**
 	 * Deletes an event by id.
-	 * @param id    Id of the event to be deleted.
+	 *
+	 * @param id Id of the event to be deleted.
 	 */
 	@DeleteMapping
 	public void deleteEvent(@RequestBody Long id) {
-		facade.deleteEvent(id);
+		eventService.deleteEvent(id);
 	}
 }
