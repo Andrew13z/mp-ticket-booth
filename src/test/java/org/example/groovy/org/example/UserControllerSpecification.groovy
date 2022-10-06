@@ -6,7 +6,8 @@ import org.example.controller.UserController
 import org.example.dto.ErrorDto
 import org.example.dto.UserDto
 import org.example.exception.EntityNotFoundException
-import org.example.facade.BookingFacade
+import org.example.service.AccountService
+import org.example.service.UserService
 import org.example.util.TestPageImpl
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
@@ -45,7 +46,10 @@ class UserControllerSpecification extends Specification {
     final CONTROLLER_PATH = "/users"
 
     @MockBean
-    private BookingFacade bookingFacade
+    private UserService userService
+
+    @MockBean
+    private AccountService accountService
 
     @MockBean
     private ConnectionFactory mockFactory
@@ -59,7 +63,7 @@ class UserControllerSpecification extends Specification {
     def "Test create user with valid data"() {
         setup:
         def userDtoWithId = createDefaultUserDto()
-        when(bookingFacade.createUser(any(UserDto.class))).thenReturn(userDtoWithId)
+        when(userService.createUser(any(UserDto.class))).thenReturn(userDtoWithId)
 
         when:
         def result = mockMvc.perform(post(CONTROLLER_PATH)
@@ -81,7 +85,7 @@ class UserControllerSpecification extends Specification {
     def "Test create user with preexisting email"() {
         setup:
         def userDto = createUserDtoWithoutId()
-        when(bookingFacade.createUser(any(UserDto.class))).thenThrow(new IllegalArgumentException("User email must be unique"))
+        when(userService.createUser(any(UserDto.class))).thenThrow(new IllegalArgumentException("User email must be unique"))
 
         when:
         def result = mockMvc.perform(post(CONTROLLER_PATH)
@@ -163,7 +167,7 @@ class UserControllerSpecification extends Specification {
     def "Test get user by existing id"() {
         setup:
         def userDto = createDefaultUserDto()
-        when(bookingFacade.getUserById(ID_ONE)).thenReturn(userDto)
+        when(userService.getUserById(ID_ONE)).thenReturn(userDto)
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH + SLASH + ID_ONE)).andReturn()
@@ -181,7 +185,7 @@ class UserControllerSpecification extends Specification {
 
     def "Test get user by not existing id"() {
         setup:
-        when(bookingFacade.getUserById(NOT_EXISTING_ID))
+        when(userService.getUserById(NOT_EXISTING_ID))
                         .thenThrow(new EntityNotFoundException("Entity not found by id: " + NOT_EXISTING_ID))
 
         when:
@@ -199,7 +203,7 @@ class UserControllerSpecification extends Specification {
     def "Test get user by existing email"() {
         setup:
         def userDto = createDefaultUserDto()
-        when(bookingFacade.getUserByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDto)
+        when(userService.getUserByEmail(DEFAULT_USER_EMAIL)).thenReturn(userDto)
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH + "/byEmail")
@@ -219,7 +223,7 @@ class UserControllerSpecification extends Specification {
 
     def "Test get user by not existing email"() {
         setup:
-        when(bookingFacade.getUserByEmail(DEFAULT_USER_EMAIL))
+        when(userService.getUserByEmail(DEFAULT_USER_EMAIL))
                 .thenThrow(new EntityNotFoundException("User not found by email: " + DEFAULT_USER_EMAIL))
 
         when:
@@ -240,7 +244,7 @@ class UserControllerSpecification extends Specification {
         setup:
         def userDtoList = List.of(createDefaultUserDto())
         def userDtoPage = new PageImpl<>(userDtoList, Pageable.unpaged(), userDtoList.size())
-        when(bookingFacade.getUsersByName(eq(DEFAULT_USER_NAME), any(Pageable.class))).thenReturn(userDtoPage)
+        when(userService.getUsersByName(eq(DEFAULT_USER_NAME), any(Pageable.class))).thenReturn(userDtoPage)
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH + "/byName")
@@ -260,7 +264,7 @@ class UserControllerSpecification extends Specification {
     def "Test get user by name with not existing name"() {
         setup:
         def emptyPage = new PageImpl<UserDto>(List.of(), Pageable.unpaged(), 0)
-        when(bookingFacade.getUsersByName(eq(DEFAULT_USER_NAME), any(Pageable.class))).thenReturn(emptyPage)
+        when(userService.getUsersByName(eq(DEFAULT_USER_NAME), any(Pageable.class))).thenReturn(emptyPage)
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH + "/byName")
@@ -279,7 +283,7 @@ class UserControllerSpecification extends Specification {
     def "Test update user with valid data"() {
         setup:
         def userDto = createDefaultUserDto()
-        when(bookingFacade.updateUser(ID_ONE, userDto)).then(returnsSecondArg())
+        when(userService.updateUser(ID_ONE, userDto)).then(returnsSecondArg())
 
         when:
         def result = mockMvc.perform(put(CONTROLLER_PATH + SLASH + ID_ONE)
@@ -301,7 +305,7 @@ class UserControllerSpecification extends Specification {
     def "Test update user with not existing id"() {
         setup:
         def userDto = createDefaultUserDto()
-        when(bookingFacade.updateUser(NOT_EXISTING_ID, userDto))
+        when(userService.updateUser(NOT_EXISTING_ID, userDto))
                 .thenThrow(new EntityNotFoundException("User not found by id: $NOT_EXISTING_ID"))
 
         when:

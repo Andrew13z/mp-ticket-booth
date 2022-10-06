@@ -4,11 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.example.controller.TicketController
 import org.example.dto.ErrorDto
-import org.example.dto.EventDto
 import org.example.dto.TicketDto
 import org.example.exception.AccountBalanceException
 import org.example.exception.EntityNotFoundException
-import org.example.facade.BookingFacade
+import org.example.service.TicketService
 import org.example.util.TestPageImpl
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
@@ -23,30 +22,19 @@ import org.springframework.test.web.servlet.MockMvc
 import spock.lang.Specification
 
 import javax.jms.ConnectionFactory
-import java.time.LocalDate
 
-import static org.example.util.TestUtils.DEFAULT_EVENT_DATE
-import static org.example.util.TestUtils.DEFAULT_EVENT_TITLE
 import static org.example.util.TestUtils.DEFAULT_TICKET_CATEGORY
 import static org.example.util.TestUtils.DEFAULT_TICKET_PLACE
 import static org.example.util.TestUtils.ID_ONE
-import static org.example.util.TestUtils.NOT_EXISTING_EVENT_DATE
-import static org.example.util.TestUtils.NOT_EXISTING_EVENT_TITLE
 import static org.example.util.TestUtils.NOT_EXISTING_ID
-import static org.example.util.TestUtils.SLASH
-import static org.example.util.TestUtils.createDefaultEventDto
 import static org.example.util.TestUtils.createDefaultTicketDto
-import static org.example.util.TestUtils.createDefaultUserDto
-import static org.example.util.TestUtils.createEventDtoWithoutId
 import static org.example.util.TestUtils.createTicketDtoForTicketCreateOperation
-import static org.mockito.AdditionalAnswers.returnsSecondArg
 import static org.mockito.ArgumentMatchers.any
 import static org.mockito.ArgumentMatchers.eq
 import static org.mockito.Mockito.when
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 
 @WebMvcTest(TicketController.class)
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +43,7 @@ class TicketControllerSpecification extends Specification {
     final CONTROLLER_PATH = "/tickets"
 
     @MockBean
-    private BookingFacade bookingFacade
+    private TicketService ticketService
 
     @MockBean
     private ConnectionFactory mockFactory
@@ -69,7 +57,7 @@ class TicketControllerSpecification extends Specification {
     def "Test create ticket with valid data"() {
         setup:
         def ticketDto = createDefaultTicketDto()
-        when(bookingFacade.bookTicket(ID_ONE, ID_ONE, DEFAULT_TICKET_CATEGORY, DEFAULT_TICKET_PLACE))
+        when(ticketService.bookTicket(ID_ONE, ID_ONE, DEFAULT_TICKET_CATEGORY, DEFAULT_TICKET_PLACE))
                 .thenReturn(ticketDto)
 
         when:
@@ -82,7 +70,7 @@ class TicketControllerSpecification extends Specification {
         result.response.status == HttpStatus.CREATED.value()
 
         and:
-        with (mapper.readValue(result.response.contentAsString, TicketDto)) {
+        with(mapper.readValue(result.response.contentAsString, TicketDto)) {
             it.id == ticketDto.id
             it.user.id == ticketDto.user.id
             it.event.id == ticketDto.event.id
@@ -102,7 +90,7 @@ class TicketControllerSpecification extends Specification {
         result.response.status == HttpStatus.BAD_REQUEST.value()
 
         and:
-        with (mapper.readValue(result.response.contentAsString, ErrorDto)) {
+        with(mapper.readValue(result.response.contentAsString, ErrorDto)) {
             it.message == "createTicket.ticket.id: must be null"
         }
     }
@@ -111,7 +99,7 @@ class TicketControllerSpecification extends Specification {
         setup:
         def ticketDto = createTicketDtoForTicketCreateOperation()
         ticketDto.user.id = null
-        when(bookingFacade.bookTicket(ID_ONE, ID_ONE, DEFAULT_TICKET_CATEGORY, DEFAULT_TICKET_PLACE))
+        when(ticketService.bookTicket(ID_ONE, ID_ONE, DEFAULT_TICKET_CATEGORY, DEFAULT_TICKET_PLACE))
                 .thenReturn(ticketDto)
 
         when:
@@ -124,14 +112,14 @@ class TicketControllerSpecification extends Specification {
         result.response.status == HttpStatus.BAD_REQUEST.value()
 
         and:
-        with (mapper.readValue(result.response.contentAsString, ErrorDto)) {
+        with(mapper.readValue(result.response.contentAsString, ErrorDto)) {
             it.message == "createTicket.ticket.user.id: must not be null"
         }
     }
 
     def "Test create ticket with not existing user"() {
         setup:
-        when(bookingFacade.bookTicket(ID_ONE, ID_ONE, DEFAULT_TICKET_CATEGORY, DEFAULT_TICKET_PLACE))
+        when(ticketService.bookTicket(ID_ONE, ID_ONE, DEFAULT_TICKET_CATEGORY, DEFAULT_TICKET_PLACE))
                 .thenThrow(new EntityNotFoundException("Account not found by id: $ID_ONE"))
 
         when:
@@ -144,7 +132,7 @@ class TicketControllerSpecification extends Specification {
         result.response.status == HttpStatus.NOT_FOUND.value()
 
         and:
-        with (mapper.readValue(result.response.contentAsString, ErrorDto)) {
+        with(mapper.readValue(result.response.contentAsString, ErrorDto)) {
             it.message == "Account not found by id: $ID_ONE"
         }
     }
@@ -153,7 +141,7 @@ class TicketControllerSpecification extends Specification {
         setup:
         def ticketDto = createTicketDtoForTicketCreateOperation()
         ticketDto.event.id = null
-        when(bookingFacade.bookTicket(ID_ONE, ID_ONE, DEFAULT_TICKET_CATEGORY, DEFAULT_TICKET_PLACE))
+        when(ticketService.bookTicket(ID_ONE, ID_ONE, DEFAULT_TICKET_CATEGORY, DEFAULT_TICKET_PLACE))
                 .thenReturn(ticketDto)
 
         when:
@@ -166,14 +154,14 @@ class TicketControllerSpecification extends Specification {
         result.response.status == HttpStatus.BAD_REQUEST.value()
 
         and:
-        with (mapper.readValue(result.response.contentAsString, ErrorDto)) {
+        with(mapper.readValue(result.response.contentAsString, ErrorDto)) {
             it.message == "createTicket.ticket.event.id: must not be null"
         }
     }
 
     def "Test create ticket with not existing event"() {
         setup:
-        when(bookingFacade.bookTicket(ID_ONE, ID_ONE, DEFAULT_TICKET_CATEGORY, DEFAULT_TICKET_PLACE))
+        when(ticketService.bookTicket(ID_ONE, ID_ONE, DEFAULT_TICKET_CATEGORY, DEFAULT_TICKET_PLACE))
                 .thenThrow(new EntityNotFoundException("Event not found by id: $ID_ONE"))
 
         when:
@@ -186,14 +174,14 @@ class TicketControllerSpecification extends Specification {
         result.response.status == HttpStatus.NOT_FOUND.value()
 
         and:
-        with (mapper.readValue(result.response.contentAsString, ErrorDto)) {
+        with(mapper.readValue(result.response.contentAsString, ErrorDto)) {
             it.message == "Event not found by id: $ID_ONE"
         }
     }
 
     def "Test create ticket with insufficient account balance"() {
         setup:
-        when(bookingFacade.bookTicket(ID_ONE, ID_ONE, DEFAULT_TICKET_CATEGORY, DEFAULT_TICKET_PLACE))
+        when(ticketService.bookTicket(ID_ONE, ID_ONE, DEFAULT_TICKET_CATEGORY, DEFAULT_TICKET_PLACE))
                 .thenThrow(new AccountBalanceException("Account has insufficient funds."))
 
         when:
@@ -206,7 +194,7 @@ class TicketControllerSpecification extends Specification {
         result.response.status == HttpStatus.BAD_REQUEST.value()
 
         and:
-        with (mapper.readValue(result.response.contentAsString, ErrorDto)) {
+        with(mapper.readValue(result.response.contentAsString, ErrorDto)) {
             it.message == "Account has insufficient funds."
         }
     }
@@ -215,7 +203,7 @@ class TicketControllerSpecification extends Specification {
         setup:
         def ticketDtoList = List.of(createDefaultTicketDto())
         def ticketDtoPage = new PageImpl<>(ticketDtoList, Pageable.unpaged(), ticketDtoList.size())
-        when(bookingFacade.getBookedTicketsByUserId(eq(ID_ONE), any(Pageable.class))).thenReturn(ticketDtoPage)
+        when(ticketService.getBookedTicketsByUserId(eq(ID_ONE), any(Pageable.class))).thenReturn(ticketDtoPage)
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH)
@@ -226,7 +214,7 @@ class TicketControllerSpecification extends Specification {
         result.response.status == HttpStatus.OK.value()
 
         and:
-        with (mapper.readValue(result.response.contentAsString, new TypeReference<TestPageImpl<TicketDto>>() {})) {
+        with(mapper.readValue(result.response.contentAsString, new TypeReference<TestPageImpl<TicketDto>>() {})) {
             it.content.size() == 1
             it.first().id == ID_ONE
             it.first().user.id == ID_ONE
@@ -236,7 +224,7 @@ class TicketControllerSpecification extends Specification {
     def "Test get ticket by user with not existing user"() {
         setup:
         def emptyPage = new PageImpl<TicketDto>(List.of(), Pageable.unpaged(), 0)
-        when(bookingFacade.getBookedTicketsByUserId(eq(NOT_EXISTING_ID), any(Pageable.class))).thenReturn(emptyPage)
+        when(ticketService.getBookedTicketsByUserId(eq(NOT_EXISTING_ID), any(Pageable.class))).thenReturn(emptyPage)
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH)
@@ -247,7 +235,7 @@ class TicketControllerSpecification extends Specification {
         result.response.status == HttpStatus.OK.value()
 
         and:
-        with (mapper.readValue(result.response.contentAsString, new TypeReference<TestPageImpl<TicketDto>>() {})) {
+        with(mapper.readValue(result.response.contentAsString, new TypeReference<TestPageImpl<TicketDto>>() {})) {
             it.content.size() == 0
         }
     }
@@ -256,7 +244,7 @@ class TicketControllerSpecification extends Specification {
         setup:
         def ticketDtoList = List.of(createDefaultTicketDto())
         def ticketDtoPage = new PageImpl<>(ticketDtoList, Pageable.unpaged(), ticketDtoList.size())
-        when(bookingFacade.getBookedTicketsByEventId(eq(ID_ONE), any(Pageable.class))).thenReturn(ticketDtoPage)
+        when(ticketService.getBookedTicketsByEventId(eq(ID_ONE), any(Pageable.class))).thenReturn(ticketDtoPage)
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH)
@@ -267,7 +255,7 @@ class TicketControllerSpecification extends Specification {
         result.response.status == HttpStatus.OK.value()
 
         and:
-        with (mapper.readValue(result.response.contentAsString, new TypeReference<TestPageImpl<TicketDto>>() {})) {
+        with(mapper.readValue(result.response.contentAsString, new TypeReference<TestPageImpl<TicketDto>>() {})) {
             it.content.size() == 1
             it.first().id == ID_ONE
             it.first().event.id == ID_ONE
@@ -277,7 +265,7 @@ class TicketControllerSpecification extends Specification {
     def "Test get ticket by event with not existing event"() {
         setup:
         def emptyPage = new PageImpl<TicketDto>(List.of(), Pageable.unpaged(), 0)
-        when(bookingFacade.getBookedTicketsByEventId(eq(NOT_EXISTING_ID), any(Pageable.class))).thenReturn(emptyPage)
+        when(ticketService.getBookedTicketsByEventId(eq(NOT_EXISTING_ID), any(Pageable.class))).thenReturn(emptyPage)
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH)
@@ -288,7 +276,7 @@ class TicketControllerSpecification extends Specification {
         result.response.status == HttpStatus.OK.value()
 
         and:
-        with (mapper.readValue(result.response.contentAsString, new TypeReference<TestPageImpl<TicketDto>>() {})) {
+        with(mapper.readValue(result.response.contentAsString, new TypeReference<TestPageImpl<TicketDto>>() {})) {
             it.content.size() == 0
         }
     }

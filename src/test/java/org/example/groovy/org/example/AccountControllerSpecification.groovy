@@ -5,7 +5,7 @@ import org.example.controller.AccountController
 import org.example.dto.AccountDto
 import org.example.dto.ErrorDto
 import org.example.exception.EntityNotFoundException
-import org.example.facade.BookingFacade
+import org.example.service.AccountService
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,7 +30,7 @@ class AccountControllerSpecification extends Specification {
     final CONTROLLER_PATH = "/accounts"
 
     @MockBean
-    private BookingFacade bookingFacade
+    private AccountService accountService
 
     @MockBean
     private ConnectionFactory mockFactory
@@ -43,7 +43,7 @@ class AccountControllerSpecification extends Specification {
 
     def "Test refill account by id with valid data"() {
         setup:
-        when(bookingFacade.refillAccount(1L, BigDecimal.TEN))
+        when(accountService.refillAccount(1L, BigDecimal.TEN))
                 .thenReturn(new AccountDto(1L, BigDecimal.TEN))
         when:
         def result = mockMvc.perform(patch(CONTROLLER_PATH + SLASH + ID_ONE)
@@ -64,7 +64,7 @@ class AccountControllerSpecification extends Specification {
     def "Test refill account by id with not existing user"() {
         setup:
         def id = 1L
-        when(bookingFacade.refillAccount(id, BigDecimal.TEN))
+        when(accountService.refillAccount(id, BigDecimal.TEN))
                 .thenThrow(new EntityNotFoundException("Entity not found by id: $id"))
         when:
         def result = mockMvc.perform(patch(CONTROLLER_PATH + SLASH + ID_ONE)

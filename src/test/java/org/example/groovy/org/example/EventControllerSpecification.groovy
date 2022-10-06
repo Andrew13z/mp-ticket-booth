@@ -6,7 +6,7 @@ import org.example.controller.EventController
 import org.example.dto.ErrorDto
 import org.example.dto.EventDto
 import org.example.exception.EntityNotFoundException
-import org.example.facade.BookingFacade
+import org.example.service.EventService
 import org.example.util.TestPageImpl
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.junit.jupiter.MockitoExtension
@@ -48,7 +48,7 @@ class EventControllerSpecification extends Specification {
     final CONTROLLER_PATH = "/events"
 
     @MockBean
-    private BookingFacade bookingFacade
+    private EventService eventService
 
     @MockBean
     private ConnectionFactory mockFactory
@@ -62,7 +62,7 @@ class EventControllerSpecification extends Specification {
     def "Test create event with valid data"() {
         setup:
         def eventDtoWithId = createDefaultEventDto()
-        when(bookingFacade.createEvent(any(EventDto.class))).thenReturn(eventDtoWithId)
+        when(eventService.createEvent(any(EventDto.class))).thenReturn(eventDtoWithId)
 
         when:
         def result = mockMvc.perform(post(CONTROLLER_PATH)
@@ -165,7 +165,7 @@ class EventControllerSpecification extends Specification {
     def "Test get event by existing id"() {
         setup:
         def eventDto = createDefaultEventDto()
-        when(bookingFacade.getEventById(ID_ONE)).thenReturn(eventDto)
+        when(eventService.getEventById(ID_ONE)).thenReturn(eventDto)
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH + SLASH + ID_ONE)).andReturn()
@@ -183,7 +183,7 @@ class EventControllerSpecification extends Specification {
 
     def "Test get event by not existing id"() {
         setup:
-        when(bookingFacade.getEventById(ID_ONE)).thenThrow(new EntityNotFoundException("Entity not found by id: $ID_ONE"))
+        when(eventService.getEventById(ID_ONE)).thenThrow(new EntityNotFoundException("Entity not found by id: $ID_ONE"))
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH + SLASH + ID_ONE)).andReturn()
@@ -201,7 +201,7 @@ class EventControllerSpecification extends Specification {
         setup:
         def eventDtoList = List.of(createDefaultEventDto())
         def eventDtoPage = new PageImpl<>(eventDtoList, Pageable.unpaged(), eventDtoList.size())
-        when(bookingFacade.getEventsByTitle(eq(DEFAULT_EVENT_TITLE), any(Pageable.class))).thenReturn(eventDtoPage)
+        when(eventService.getEventsByTitle(eq(DEFAULT_EVENT_TITLE), any(Pageable.class))).thenReturn(eventDtoPage)
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH)
@@ -221,7 +221,7 @@ class EventControllerSpecification extends Specification {
     def "Test get event by title with not existing title"() {
         setup:
         def emptyPage = new PageImpl<EventDto>(List.of(), Pageable.unpaged(), 0)
-        when(bookingFacade.getEventsByTitle(eq(NOT_EXISTING_EVENT_TITLE), any(Pageable.class))).thenReturn(emptyPage)
+        when(eventService.getEventsByTitle(eq(NOT_EXISTING_EVENT_TITLE), any(Pageable.class))).thenReturn(emptyPage)
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH)
@@ -241,7 +241,7 @@ class EventControllerSpecification extends Specification {
         setup:
         def eventDtoList = List.of(createDefaultEventDto())
         def eventDtoPage = new PageImpl<>(eventDtoList, Pageable.unpaged(), eventDtoList.size())
-        when(bookingFacade.getEventsByDate(eq(DEFAULT_EVENT_DATE), any(Pageable.class))).thenReturn(eventDtoPage)
+        when(eventService.getEventsForDay(eq(DEFAULT_EVENT_DATE), any(Pageable.class))).thenReturn(eventDtoPage)
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH)
@@ -261,7 +261,7 @@ class EventControllerSpecification extends Specification {
     def "Test get event by date with not existing date"() {
         setup:
         def emptyPage = new PageImpl<EventDto>(List.of(), Pageable.unpaged(), 0)
-        when(bookingFacade.getEventsByDate(eq(NOT_EXISTING_EVENT_DATE), any(Pageable.class))).thenReturn(emptyPage)
+        when(eventService.getEventsForDay(eq(NOT_EXISTING_EVENT_DATE), any(Pageable.class))).thenReturn(emptyPage)
 
         when:
         def result = mockMvc.perform(get(CONTROLLER_PATH)
@@ -280,7 +280,7 @@ class EventControllerSpecification extends Specification {
     def "Test update event with valid data"() {
         setup:
         def eventDto = createDefaultEventDto()
-        when(bookingFacade.updateEvent(ID_ONE, eventDto)).then(returnsSecondArg())
+        when(eventService.updateEvent(ID_ONE, eventDto)).then(returnsSecondArg())
 
         when:
         def result = mockMvc.perform(put(CONTROLLER_PATH + SLASH + ID_ONE)
@@ -302,7 +302,7 @@ class EventControllerSpecification extends Specification {
     def "Test update event with not existing id"() {
         setup:
         def eventDto = createDefaultEventDto()
-        when(bookingFacade.updateEvent(NOT_EXISTING_ID, eventDto))
+        when(eventService.updateEvent(NOT_EXISTING_ID, eventDto))
                 .thenThrow(new EntityNotFoundException("Entity not found by id: $NOT_EXISTING_ID"))
 
         when:
