@@ -56,8 +56,8 @@ public class TicketController {
 	 * @return List of tickets, or if none is found, empty list.
 	 */
 	@GetMapping
-	public Page<TicketDto> getTicketsByUser(@RequestParam(value = "userId", required = false) Long userId,
-											@RequestParam(value = "eventId", required = false) Long eventId,
+	public Page<TicketDto> getTicketsByUser(@RequestParam(value = "userId", required = false) String userId,
+											@RequestParam(value = "eventId", required = false) String eventId,
 											Pageable pageable) {
 		if (userId != null) {
 			return ticketService.getBookedTicketsByUserId(userId, pageable);
@@ -75,7 +75,7 @@ public class TicketController {
 	 * @return byte[] of pdf with ticket data.
 	 */
 	@GetMapping(headers = "Accept=application/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
-	public byte[] getTicketsByUserAsPdf(@RequestParam("userId") Long userId) {
+	public byte[] getTicketsByUserAsPdf(@RequestParam("userId") String userId) {
 		return ticketService.getBookedTicketsByUserIdAsPdf(userId);
 	}
 
@@ -96,7 +96,7 @@ public class TicketController {
 	 * @param id Id of the ticket to be deleted.
 	 */
 	@DeleteMapping
-	public void deleteTicket(@RequestBody Long id) {
+	public void deleteTicket(@RequestBody String id) {
 		ticketService.cancelTicket(id);
 	}
 }

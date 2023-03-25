@@ -2,6 +2,8 @@ package org.example.entity;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
@@ -18,43 +20,39 @@ import java.time.LocalDate;
 /**
  * Event entity
  */
-@Entity
-@Table(name = "EVENTS")
+@Document("events")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Event {
 
 	@Id
-	@SequenceGenerator(name = "EVENTS_ID_SEQ", sequenceName = "EVENTS_ID_SEQ", allocationSize = 1)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EVENTS_ID_SEQ")
-	@Column(name = "ID")
-	private Long id;
+	private String id;
 
-	@Column(name = "TITLE")
+	@Indexed(unique = true)
 	private String title;
 
-	@Column(name = "DATE_HELD")
+	@Indexed(name = "DATE_HELD")
 	private LocalDate date;
 
-	@Column(name = "TICKET_PRICE")
+	@Indexed(name = "TICKET_PRICE")
 	private BigDecimal ticketPrice;
 
 	public Event() {
 		this.ticketPrice = BigDecimal.ZERO;
 	}
 
-	public Event(Long id, String title, LocalDate date, BigDecimal ticketPrice) {
+	public Event(String id, String title, LocalDate date, BigDecimal ticketPrice) {
 		this.id = id;
 		this.title = title;
 		this.date = date;
 		this.ticketPrice = ticketPrice != null ? ticketPrice.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

@@ -52,7 +52,7 @@ public class EventController {
 	 * @return Event found by id, otherwise throws EntityNotFoundException.
 	 */
 	@GetMapping("/{id}")
-	public ResponseEntity<EventDto> getEventById(@PathVariable("id") Long id) {
+	public ResponseEntity<EventDto> getEventById(@PathVariable("id") String id) {
 		return ResponseEntity.ok(eventService.getEventById(id));
 	}
 
@@ -85,7 +85,7 @@ public class EventController {
 	 * @return Updated Event.
 	 */
 	@PutMapping("/{id}")
-	public ResponseEntity<EventDto> updateEvent(@PathVariable("id") Long id, @RequestBody EventDto event) {
+	public ResponseEntity<EventDto> updateEvent(@PathVariable("id") String id, @RequestBody EventDto event) {
 		return ResponseEntity.ok(eventService.updateEvent(id, event));
 	}
 
@@ -95,7 +95,7 @@ public class EventController {
 	 * @param id Id of the event to be deleted.
 	 */
 	@DeleteMapping
-	public void deleteEvent(@RequestBody Long id) {
+	public void deleteEvent(@RequestBody String id) {
 		eventService.deleteEvent(id);
 	}
 }

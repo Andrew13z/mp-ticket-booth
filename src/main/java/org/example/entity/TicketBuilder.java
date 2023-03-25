@@ -6,23 +6,23 @@ import org.example.enums.Category;
  * Builder for ticket entity.
  */
 public class TicketBuilder {
-	private Long id;
-	private Long userId;
-	private Long eventId;
+	private String id;
+	private String userId;
+	private String eventId;
 	private Category category;
 	private int place;
 
-	public TicketBuilder setId(Long id) {
+	public TicketBuilder setId(String id) {
 		this.id = id;
 		return this;
 	}
 
-	public TicketBuilder setUserId(Long userId) {
+	public TicketBuilder setUserId(String userId) {
 		this.userId = userId;
 		return this;
 	}
 
-	public TicketBuilder setEventId(Long eventId) {
+	public TicketBuilder setEventId(String eventId) {
 		this.eventId = eventId;
 		return this;
 	}
@@ -40,27 +40,11 @@ public class TicketBuilder {
 	public Ticket createTicket() {
 		var ticket = new Ticket();
 		ticket.setId(id);
-		setUserIfNotNull(ticket);
-		setEventIfNotNull(ticket);
+		ticket.setUser(userId);
+		ticket.setEvent(eventId);
 		ticket.setCategory(category);
 		ticket.setPlace(place);
 
 		return ticket;
-	}
-
-	private void setEventIfNotNull(Ticket ticket) {
-		if (eventId != null) {
-			var event = new Event();
-			event.setId(eventId);
-			ticket.setEvent(event);
-		}
-	}
-
-	private void setUserIfNotNull(Ticket ticket) {
-		if (userId != null) {
-			var user = new User();
-			user.setId(userId);
-			ticket.setUser(user);
-		}
 	}
 }

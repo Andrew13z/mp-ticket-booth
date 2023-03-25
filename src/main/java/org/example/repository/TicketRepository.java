@@ -3,13 +3,12 @@ package org.example.repository;
 import org.example.entity.Ticket;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.repository.query.Param;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface TicketRepository extends PagingAndSortingRepository<Ticket, Long> {
+public interface TicketRepository extends MongoRepository<Ticket, String> {
 
 	/**
 	 * Get list of tickets by specified user id.
@@ -19,8 +18,8 @@ public interface TicketRepository extends PagingAndSortingRepository<Ticket, Lon
 	 * @param pageable Pageable.
 	 * @return List of tickets.
 	 */
-	@Query("select t from Ticket t where t.user.id = :userId")
-	Page<Ticket> findByUserId(@Param("userId") Long userId, Pageable pageable);
+	@Query("{'userId': ?0}")
+	Page<Ticket> findByUserId(String userId, Pageable pageable);
 
 	/**
 	 * Get list of tickets by specified event id.
@@ -30,6 +29,6 @@ public interface TicketRepository extends PagingAndSortingRepository<Ticket, Lon
 	 * @param pageable Pageable.
 	 * @return List of tickets.
 	 */
-	@Query("select t from Ticket t where t.event.id = :eventId")
-	Page<Ticket> findByEventId(@Param("eventId") Long eventId, Pageable pageable);
+	@Query("{'eventId': ?0}")
+	Page<Ticket> findByEventId(String eventId, Pageable pageable);
 }

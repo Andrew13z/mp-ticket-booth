@@ -1,8 +1,7 @@
-package org.example.service.impl;
+package org.example.service;
 
 import org.example.repository.UserRepository;
 import org.example.exception.EntityNotFoundException;
-import org.example.entity.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -21,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceImplTest {
+class UserServiceTest {
 
 	@Mock
 	private UserRepository mockRepository;
@@ -30,18 +29,18 @@ class UserServiceImplTest {
 	private ModelMapper mapper;
 
 	@InjectMocks
-	private UserServiceImpl userService;
+	private UserService userService;
 
 	@Test
 	void getUserByIdTestWithExistingId() {
-		when(mockRepository.findByIdWithCache(ID_ONE)).thenReturn(Optional.of(createDefaultUser()));
+		when(mockRepository.findById(ID_ONE)).thenReturn(Optional.of(createDefaultUser()));
 		var user = userService.getUserById(ID_ONE);
 		assertEquals(ID_ONE, user.getId());
 	}
 
 	@Test
 	void getUserByIdTestWithNonExistingId() {
-		when(mockRepository.findByIdWithCache(ID_ONE)).thenReturn(Optional.empty());
+		when(mockRepository.findById(ID_ONE)).thenReturn(Optional.empty());
 		var exception = assertThrows(EntityNotFoundException.class, () -> userService.getUserById(ID_ONE));
 		assertEquals("User not found by id: 1", exception.getMessage());
 	}

@@ -1,7 +1,6 @@
 package org.example.controller;
 
 import org.example.dto.UserDto;
-import org.example.service.AccountService;
 import org.example.service.UserService;
 import org.example.validation.group.OnCreate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import java.math.BigDecimal;
 
 /**
  * RestController for all operations on Users.
@@ -25,12 +26,10 @@ import javax.validation.Valid;
 public class UserController {
 
 	private final UserService userService;
-	private final AccountService accountService;
 
 	@Autowired
-	public UserController(UserService userService, AccountService accountService) {
+	public UserController(UserService userService) {
 		this.userService = userService;
-		this.accountService = accountService;
 	}
 
 	/**
@@ -43,7 +42,6 @@ public class UserController {
 	@Validated(OnCreate.class)
 	public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto user) {
 		var createdUser = userService.createUser(user);
-		accountService.createAccount(createdUser.getId());
 		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
 	}
 
@@ -54,7 +52,7 @@ public class UserController {
 	 * @return User found by id, otherwise throws EntityNotFoundException.
 	 */
 	@GetMapping("/{id}")
-	public ResponseEntity<UserDto> getUserById(@PathVariable("id") Long id) {
+	public ResponseEntity<UserDto> getUserById(@PathVariable("id") String id) {
 		return ResponseEntity.ok(userService.getUserById(id));
 	}
 
@@ -89,8 +87,14 @@ public class UserController {
 	 * @return Updated user.
 	 */
 	@PutMapping("/{id}")
-	public ResponseEntity<UserDto> updateUser(@PathVariable("id") Long id, @RequestBody @Valid UserDto user) {
+	public ResponseEntity<UserDto> updateUser(@PathVariable("id") String id, @RequestBody @Valid UserDto user) {
 		return ResponseEntity.ok(userService.updateUser(id, user));
+	}
+
+	@PatchMapping(value = "/{id}")
+	public ResponseEntity<UserDto> refillAccount(@PathVariable("id") String id,
+												 @RequestBody @Min(0) BigDecimal refillSum) {
+		return ResponseEntity.ok(userService.refillBalance(id, refillSum));
 	}
 
 	/**
@@ -99,7 +103,7 @@ public class UserController {
 	 * @param id Id of the user to be deleted.
 	 */
 	@DeleteMapping
-	public void deleteUser(@RequestBody Long id) {
+	public void deleteUser(@RequestBody String id) {
 		userService.deleteUser(id);
 	}
 }

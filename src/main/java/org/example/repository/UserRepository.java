@@ -1,16 +1,15 @@
 package org.example.repository;
 
 import org.example.entity.User;
-import org.example.repository.cache.UserCacheRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends PagingAndSortingRepository<User, Long>, UserCacheRepository {
+public interface UserRepository extends MongoRepository<User, String> {
 
 	/**
 	 * Gets user by email.

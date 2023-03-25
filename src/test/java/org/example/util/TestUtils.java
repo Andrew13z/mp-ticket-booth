@@ -3,7 +3,6 @@ package org.example.util;
 import org.example.dto.EventDto;
 import org.example.dto.TicketDto;
 import org.example.dto.UserDto;
-import org.example.entity.Account;
 import org.example.entity.Event;
 import org.example.entity.User;
 import org.example.enums.Category;
@@ -13,8 +12,8 @@ import java.time.LocalDate;
 
 public class TestUtils {
 
-	public static final Long ID_ONE = 1L;
-	public static final Long NOT_EXISTING_ID = 100L;
+	public static final String ID_ONE = "1";
+	public static final String NOT_EXISTING_ID = "100";
 
 	public static final String DEFAULT_EVENT_TITLE = "Leading Edge Events";
 	public static final LocalDate DEFAULT_EVENT_DATE = LocalDate.now().plusMonths(6);
@@ -86,9 +85,5 @@ public class TestUtils {
 
 	public static Event createDefaultEvent(){
 		return new Event(ID_ONE, DEFAULT_EVENT_TITLE, DEFAULT_EVENT_DATE, DEFAULT_TICKET_PRICE);
-	}
-
-	public static Account createDefaultAccount(){
-		return new Account(ID_ONE, DEFAULT_ACCOUNT_BALANCE, createDefaultUser());
 	}
 }

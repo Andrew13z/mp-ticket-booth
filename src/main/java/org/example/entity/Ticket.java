@@ -2,16 +2,8 @@ package org.example.entity;
 
 import org.example.enums.Category;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
@@ -23,59 +15,50 @@ import javax.persistence.Table;
 public class Ticket {
 
 	@Id
-	@SequenceGenerator(name = "TICKETS_ID_SEQ", sequenceName = "TICKETS_ID_SEQ", allocationSize = 10)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TICKETS_ID_SEQ")
-	@Column(name = "ID")
-	private Long id;
+	private String id;
 
-	@ManyToOne
-	@JoinColumn(name = "USER_ID")
-	private User user;
+	private String userId;
 
-	@ManyToOne
-	@JoinColumn(name = "EVENT_ID")
-	private Event event;
+	private String eventId;
 
-	@Column(name = "CATEGORY")
-	@Enumerated(EnumType.STRING)
+//	@Enumerated(EnumType.STRING)
 	private Category category;
 
-	@Column(name = "PLACE")
 	private int place;
 
 	public Ticket() {
 	}
 
-	public Ticket(Long id, User user, Event event, Category category, int place) {
+	public Ticket(String id, String userId, String eventId, Category category, int place) {
 		this.id = id;
-		this.user = user;
-		this.event = event;
+		this.userId = userId;
+		this.eventId = eventId;
 		this.category = category;
 		this.place = place;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
-	public Event getEvent() {
-		return event;
+	public String getEventId() {
+		return eventId;
 	}
 
-	public User getUser() {
-		return user;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setUser(String userId) {
+		this.userId = userId;
 	}
 
-	public void setEvent(Event event) {
-		this.event = event;
+	public void setEvent(String eventId) {
+		this.eventId = eventId;
 	}
 
 	public Category getCategory() {

@@ -14,7 +14,7 @@ import javax.validation.constraints.Null;
 public class TicketDto {
 
 	@Null(groups = OnTicketCreate.class)
-	private Long id;
+	private String id;
 
 	@Valid
 	@NotNull(groups = OnTicketCreate.class)
@@ -32,7 +32,7 @@ public class TicketDto {
 	public TicketDto() {
 	}
 
-	public TicketDto(Long id, UserDto user, EventDto event, Category category, int place) {
+	public TicketDto(String id, UserDto user, EventDto event, Category category, int place) {
 		this.id = id;
 		this.user = user;
 		this.event = event;
@@ -40,11 +40,11 @@ public class TicketDto {
 		this.place = place;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

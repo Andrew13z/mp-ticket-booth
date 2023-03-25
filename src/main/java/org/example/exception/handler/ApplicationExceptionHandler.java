@@ -1,7 +1,7 @@
 package org.example.exception.handler;
 
 import org.example.dto.ErrorDto;
-import org.example.exception.AccountBalanceException;
+import org.example.exception.UserBalanceException;
 import org.example.exception.EntityNotFoundException;
 import org.example.exception.PdfGenerationException;
 import org.example.exception.UnmarshallingException;
@@ -28,7 +28,7 @@ public class ApplicationExceptionHandler {
 								PdfGenerationException.class, this::handlePdfGenerationException,
 								UnmarshallingException.class, this::handleUnmarshallingException,
 								IllegalArgumentException.class, this::handleIllegalArgumentException,
-								AccountBalanceException.class, this::handleAccountBalanceException,
+								UserBalanceException.class, this::handleUserBalanceException,
 								ConstraintViolationException.class, this::handleConstraintViolationException,
 								MethodArgumentNotValidException.class, this::handleMethodArgumentNotValidException);
 
@@ -87,7 +87,7 @@ public class ApplicationExceptionHandler {
 	 * @param exception thrown AccountBalanceException
 	 * @return ResponseEntity with ErrorDto
 	 */
-	private ResponseEntity<ErrorDto> handleAccountBalanceException(Exception exception) {
+	private ResponseEntity<ErrorDto> handleUserBalanceException(Exception exception) {
 		return createResponseEntityWithBadRequestStatus(exception.getMessage());
 	}
 

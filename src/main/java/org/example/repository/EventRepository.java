@@ -1,16 +1,15 @@
 package org.example.repository;
 
 import org.example.entity.Event;
-import org.example.repository.cache.EventCacheRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 
 @Repository
-public interface EventRepository extends PagingAndSortingRepository<Event, Long>, EventCacheRepository {
+public interface EventRepository extends MongoRepository<Event, String> {
 
 	/**
 	 * Get list of events by matching title. Title is matched using 'contains' approach.

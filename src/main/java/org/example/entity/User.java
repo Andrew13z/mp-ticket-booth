@@ -2,6 +2,7 @@ package org.example.entity;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Cacheable;
 import javax.persistence.Column;
@@ -11,43 +12,40 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import java.math.BigDecimal;
 
 /**
  * User entity
  * @author Andrii Krokhta
  */
-@Entity
-@Table(name = "USERS")
+@Document("users")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User {
 
 	@Id
-	@SequenceGenerator(name = "USERS_ID_SEQ", sequenceName = "USERS_ID_SEQ", allocationSize = 1)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "USERS_ID_SEQ")
-	@Column(name = "ID")
-	private Long id;
+	private String id;
 
-	@Column(name = "FULL_NAME")
 	private String name;
 
-	@Column(name = "EMAIL", unique = true)
 	private String email;
+
+	private BigDecimal balance;
 
 	public User() {
 	}
 
-	public User(Long id, String name, String email) {
+	public User(String id, String name, String email) {
 		this.id = id;
 		this.name = name;
 		this.email = email;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -65,5 +63,13 @@ public class User {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public BigDecimal getBalance() {
+		return balance;
+	}
+
+	public void setBalance(BigDecimal balance) {
+		this.balance = balance;
 	}
 }

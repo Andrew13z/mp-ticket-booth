@@ -23,7 +23,7 @@ public class EventDto {
 
 	@Null(groups = OnCreate.class)
 	@NotNull(groups = OnTicketCreate.class)
-	private Long id;
+	private String id;
 
 	@NotBlank(groups = OnCreate.class)
 	private String title;
@@ -40,18 +40,18 @@ public class EventDto {
 		this.ticketPrice = BigDecimal.ZERO;
 	}
 
-	public EventDto(Long id, String title, LocalDate date, BigDecimal ticketPrice) {
+	public EventDto(String id, String title, LocalDate date, BigDecimal ticketPrice) {
 		this.id = id;
 		this.title = title;
 		this.date = date;
 		this.ticketPrice = ticketPrice != null ? ticketPrice.setScale(2, RoundingMode.HALF_UP) : BigDecimal.ZERO;
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
